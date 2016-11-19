@@ -1,9 +1,11 @@
 import sys
 import lcd
 
-lcd.lcd_init()
-lcd.lcd_byte(lcd.LCD_LINE_1, lcd.LCD_CMD)
-lcd.lcd_string("Raspberry Pi", 2)
-lcd.lcd_byte(lcd.LCD_LINE_2, lcd.LCD_CMD)
-lcd.lcd_string("Model B+", 2)
-lcd.GPIO.cleanup()
+lcd.init()
+lcd.sendByteData(lcd.LCD_LINE_1, lcd.LCD_CMD)
+lcd.message("Raspberry Pi", 2)
+lcd.sendByteData(lcd.LCD_LINE_2, lcd.LCD_CMD)
+lcd.message("is ready!", 2)
+
+
+lcd.cleanup()

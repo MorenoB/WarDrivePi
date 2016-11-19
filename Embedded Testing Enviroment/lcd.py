@@ -6,8 +6,10 @@
 # Author : Matt Hawkins
 # Site   : http://www.raspberrypi-spy.co.uk
 # 
-# Date   : 03/08/2012
-#
+# Original Date   : 03/08/2012
+# Revision Date	  : 11/19/2016
+# Revision Author Moreno Bralts
+# Revisioned PINS layout & cleared up function names.
 
 # The wiring for the LCD is as follows:
 # 1 : GND
@@ -56,7 +58,7 @@ def main():
   # Main program block
 
   # Initialise display
-  lcd_init()
+  init()
 
   # Toggle backlight on-off-on
   GPIO.output(LED_ON, True)
@@ -67,33 +69,33 @@ def main():
   time.sleep(1)
 
   # Send some centred test
-  lcd_byte(LCD_LINE_1, LCD_CMD)
-  lcd_string("Rasbperry Pi",2)
-  lcd_byte(LCD_LINE_2, LCD_CMD)
-  lcd_string("Model B",2)
+  sendByteData(LCD_LINE_1, LCD_CMD)
+  message("Rasbperry Pi",2)
+  sendByteData(LCD_LINE_2, LCD_CMD)
+  message("Model B",2)
 
   time.sleep(3) # 3 second delay
 
   # Send some left justified text
-  lcd_byte(LCD_LINE_1, LCD_CMD)
-  lcd_string("1234567890123456",1)
-  lcd_byte(LCD_LINE_2, LCD_CMD)
-  lcd_string("abcdefghijklmnop",1)
+  sendByteData(LCD_LINE_1, LCD_CMD)
+  message("1234567890123456",1)
+  sendByteData(LCD_LINE_2, LCD_CMD)
+  message("abcdefghijklmnop",1)
 
   time.sleep(3) # 3 second delay
 
   # Send some right justified text
-  lcd_byte(LCD_LINE_1, LCD_CMD)
-  lcd_string("Raspberrypi-spy",3)
-  lcd_byte(LCD_LINE_2, LCD_CMD)
-  lcd_string(".co.uk",3)
+  sendByteData(LCD_LINE_1, LCD_CMD)
+  message("Raspberrypi-spy",3)
+  sendByteData(LCD_LINE_2, LCD_CMD)
+  message(".co.uk",3)
 
   time.sleep(30)
 
   # Turn off backlight
   GPIO.output(LED_ON, False)
 
-def lcd_init():
+def init():
   GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
   GPIO.setup(LCD_E, GPIO.OUT)  # E
   GPIO.setup(LCD_RS, GPIO.OUT) # RS
@@ -103,15 +105,15 @@ def lcd_init():
   GPIO.setup(LCD_D7, GPIO.OUT) # DB7
   GPIO.setup(LED_ON, GPIO.OUT) # Backlight enable  
   # Initialise display
-  lcd_byte(0x33,LCD_CMD)
-  lcd_byte(0x32,LCD_CMD)
-  lcd_byte(0x28,LCD_CMD)
-  lcd_byte(0x0C,LCD_CMD)  
-  lcd_byte(0x06,LCD_CMD)
-  lcd_byte(0x01,LCD_CMD)  
+  sendByteData(0x33,LCD_CMD)
+  sendByteData(0x32,LCD_CMD)
+  sendByteData(0x28,LCD_CMD)
+  sendByteData(0x0C,LCD_CMD)  
+  sendByteData(0x06,LCD_CMD)
+  sendByteData(0x01,LCD_CMD)  
   time.sleep(1)
 
-def lcd_string(message,style):
+def message(message,style):
   # Send string to display
   # style=1 Left justified
   # style=2 Centred
@@ -125,9 +127,9 @@ def lcd_string(message,style):
     message = message.rjust(LCD_WIDTH," ")
 
   for i in range(LCD_WIDTH):
-    lcd_byte(ord(message[i]),LCD_CHR)
+    sendByteData(ord(message[i]),LCD_CHR)
 
-def lcd_byte(bits, mode):
+def sendByteData(bits, mode):
   # Send byte to data pins
   # bits = data
   # mode = True  for character
@@ -176,6 +178,9 @@ def lcd_byte(bits, mode):
   time.sleep(E_PULSE)
   GPIO.output(LCD_E, False)  
   time.sleep(E_DELAY)   
+  
+def cleanup():
+  GPIO.cleanup()
 
 if __name__ == '__main__':
   main()
