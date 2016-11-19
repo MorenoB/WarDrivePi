@@ -109,6 +109,7 @@ def lcd_init():
   lcd_byte(0x0C,LCD_CMD)  
   lcd_byte(0x06,LCD_CMD)
   lcd_byte(0x01,LCD_CMD)  
+  time.sleep(1)
 
 def lcd_string(message,style):
   # Send string to display
