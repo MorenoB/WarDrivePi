@@ -49,12 +49,17 @@
 # Import all necessary libraries
 import RPi.GPIO as GPIO, sys, threading, time, os, subprocess
 
-# Pins 24, 26 Right Motor
-# Pins 19, 21 Left Motor
-R1 = 24
-R2 = 26
-L1 = 19
-L2 = 21
+# Pins used to enable/disable the motors & enable/disable forward or backward motion,
+IN1 = 18  # Right
+IN2 = 23  # Right Backward
+IN3 = 24  # Left
+IN4 = 25  # Left Backward
+
+# Pins used for PWM, used for motor control
+ENA = 17  # Right PWM motor
+ENB = 22  # Left PWM motor
+
+
 
 # Define obstacle sensors and line sensors
 irFL = 7
@@ -74,7 +79,7 @@ ServosActive = False
 #
 # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
 def init():
-    global p, q, a, b
+    global pin_ena, pin_enb
 
     GPIO.setwarnings(False)
 
@@ -90,22 +95,21 @@ def init():
     GPIO.setup(irFL, GPIO.IN)  # Left obstacle sensor
     GPIO.setup(irFR, GPIO.IN)  # Right obstacle sensor
 
-    # use pwm on inputs so motors don't go too fast
-    GPIO.setup(L1, GPIO.OUT)
-    p = GPIO.PWM(L1, 20)
-    p.start(0)
+    # Right motors activation and deactivation
+    GPIO.setup(IN1, GPIO.OUT)
+    GPIO.setup(IN2, GPIO.OUT)
 
-    GPIO.setup(L2, GPIO.OUT)
-    q = GPIO.PWM(L2, 20)
-    q.start(0)
+    # Left motors activation and deactivation
+    GPIO.setup(IN3, GPIO.OUT)
+    GPIO.setup(IN4, GPIO.OUT)
 
-    GPIO.setup(R1, GPIO.OUT)
-    a = GPIO.PWM(R1, 20)
-    a.start(0)
+    GPIO.setup(ENA, GPIO.OUT)
+    pin_ena = GPIO.PWM(ENA, 20)
+    pin_ena.start(0)
 
-    GPIO.setup(R2, GPIO.OUT)
-    b = GPIO.PWM(R2, 20)
-    b.start(0)
+    GPIO.setup(ENB, GPIO.OUT)
+    pin_enb = GPIO.PWM(ENB, 20)
+    pin_enb.start(0)
 
     start_servos()
 
@@ -131,70 +135,85 @@ def version():
 #
 # stop(): Stops both motors
 def stop():
-    p.ChangeDutyCycle(0)
-    q.ChangeDutyCycle(0)
-    a.ChangeDutyCycle(0)
-    b.ChangeDutyCycle(0)
+    pin_ena.ChangeDutyCycle(0)
+    pin_enb.ChangeDutyCycle(0)
 
 
 # forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
 def forward(speed):
-    p.ChangeDutyCycle(speed)
-    q.ChangeDutyCycle(0)
-    a.ChangeDutyCycle(speed)
-    b.ChangeDutyCycle(0)
-    p.ChangeFrequency(speed + 5)
-    a.ChangeFrequency(speed + 5)
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
+
+    pin_ena.ChangeDutyCycle(speed)
+    pin_enb.ChangeDutyCycle(speed)
+
+    pin_ena.ChangeFrequency(speed + 5)
+    pin_enb.ChangeFrequency(speed + 5)
 
 
 # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
 def reverse(speed):
-    p.ChangeDutyCycle(0)
-    q.ChangeDutyCycle(speed)
-    a.ChangeDutyCycle(0)
-    b.ChangeDutyCycle(speed)
-    q.ChangeFrequency(speed + 5)
-    b.ChangeFrequency(speed + 5)
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+
+    pin_ena.ChangeDutyCycle(speed)
+    pin_enb.ChangeDutyCycle(speed)
+
+    pin_ena.ChangeFrequency(speed + 5)
+    pin_enb.ChangeFrequency(speed + 5)
 
 
 # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
 def spin_left(speed):
-    p.ChangeDutyCycle(0)
-    q.ChangeDutyCycle(speed)
-    a.ChangeDutyCycle(speed)
-    b.ChangeDutyCycle(0)
-    q.ChangeFrequency(speed + 5)
-    a.ChangeFrequency(speed + 5)
+
+    GPIO.output(IN1, GPIO.LOW)
+    GPIO.output(IN2, GPIO.HIGH)
+
+    GPIO.output(IN3, GPIO.HIGH)
+    GPIO.output(IN4, GPIO.LOW)
+
+    pin_ena.ChangeDutyCycle(speed)
+    pin_enb.ChangeDutyCycle(speed)
+    pin_ena.ChangeFrequency(speed + 5)
+    pin_enb.ChangeFrequency(speed + 5)
 
 
 # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
 def spin_right(speed):
-    p.ChangeDutyCycle(speed)
-    q.ChangeDutyCycle(0)
-    a.ChangeDutyCycle(0)
-    b.ChangeDutyCycle(speed)
-    p.ChangeFrequency(speed + 5)
-    b.ChangeFrequency(speed + 5)
+
+    GPIO.output(IN1, GPIO.HIGH)
+    GPIO.output(IN2, GPIO.LOW)
+
+    GPIO.output(IN3, GPIO.LOW)
+    GPIO.output(IN4, GPIO.HIGH)
+
+    pin_ena.ChangeDutyCycle(speed)
+    pin_enb.ChangeDutyCycle(speed)
+
+    pin_ena.ChangeFrequency(speed + 5)
+    pin_enb.ChangeFrequency(speed + 5)
 
 
 # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,rightSpeed <= 100
-def turn_forward(left_speed, right_speed):
-    p.ChangeDutyCycle(left_speed)
-    q.ChangeDutyCycle(0)
-    a.ChangeDutyCycle(right_speed)
-    b.ChangeDutyCycle(0)
-    p.ChangeFrequency(left_speed + 5)
-    a.ChangeFrequency(right_speed + 5)
+#def turn_forward(left_speed, right_speed):
+#    pin_ena.ChangeDutyCycle(left_speed)
+#    pin_enb.ChangeDutyCycle(right_speed)
+#    pin_ena.ChangeFrequency(left_speed + 5)
+#    pin_enb.ChangeFrequency(right_speed + 5)
 
 
 # turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0 <= leftSpeed,rightSpeed <= 100
-def turn_reverse(left_speed, right_speed):
-    p.ChangeDutyCycle(0)
-    q.ChangeDutyCycle(left_speed)
-    a.ChangeDutyCycle(0)
-    b.ChangeDutyCycle(right_speed)
-    q.ChangeFrequency(left_speed + 5)
-    b.ChangeFrequency(right_speed + 5)
+#def turn_reverse(left_speed, right_speed):
+#    pin_ena.ChangeDutyCycle(left_speed)
+#    pin_enb.ChangeDutyCycle(right_speed)
+#    pin_ena.ChangeFrequency(left_speed + 5)
+#    pin_enb.ChangeFrequency(right_speed + 5)
 
 
 # End of Motor Functions
