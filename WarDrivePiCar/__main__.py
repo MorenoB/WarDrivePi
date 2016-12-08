@@ -1,7 +1,11 @@
-import pydevd
-
 from Controller.Controller import *
 from Sniffer.Sniffer import *
+
+from time import sleep
+
+import pydevd
+
+__CYCLE_TIME = 0.1  # 100 ms
 
 
 class SysArgv:
@@ -62,7 +66,7 @@ def main():
 
     while True:
         try:
-            time.sleep(0.1)
+            sleep(__CYCLE_TIME)
 
         except KeyboardInterrupt:
             print
