@@ -1,0 +1,1 @@
+sudo git pull https://github.com/MorenoB/WarDrivePi.git
