@@ -1,3 +1,6 @@
+import os
+import sys
+
 from Controller.Controller import *
 from Sniffer.Sniffer import *
 
