@@ -1,15 +1,16 @@
 # Import all necessary libraries
 from gpiocrust import Header, OutputPin, PWMOutputPin
 
+# Board setup is being used.
 # Pins used to enable/disable the motors & enable/disable forward or backward motion,
-IN1 = 18  # Right
-IN2 = 23  # Right Backward
-IN3 = 24  # Left
-IN4 = 25  # Left Backward
+IN1 = 12  # Right
+IN2 = 16  # Right Backward
+IN3 = 18  # Left
+IN4 = 22  # Left Backward
 
 # Pins used for PWM, used for motor control
-ENA = 17  # Right PWM motor
-ENB = 22  # Left PWM motor
+ENA = 11  # Right PWM motor
+ENB = 15  # Left PWM motor
 
 
 # stop(): Stops both motors
