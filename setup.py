@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='WarDrivePiCar',
     version='1.0',
-    packages=['WarDrivePi', 'WarDrivePiCar.Tests', 'WarDrivePiCar.Sniffer', 'WarDrivePiCar.Movement',
+    packages=['WarDrivePiCar', 'WarDrivePiCar.Tests', 'WarDrivePiCar.Sniffer', 'WarDrivePiCar.Movement',
               'WarDrivePiCar.Controller', 'WarDrivePiCar.Communication'],
     url='',
     license='',
