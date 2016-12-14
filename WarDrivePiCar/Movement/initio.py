@@ -15,13 +15,11 @@
 # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
 # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
 # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
-# turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,rightSpeed <= 100
-# turnreverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0 <= leftSpeed,rightSpeed <= 100
+# turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds.
+#  0 <= leftSpeed,rightSpeed <= 100
+# turnreverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds.
+#  0 <= leftSpeed,rightSpeed <= 100
 # ======================================================================
-
-
-# Import all necessary libraries
-import RPi.GPIO as GPIO
 
 # Pins used to enable/disable the motors & enable/disable forward or backward motion,
 IN1 = 18  # Right
@@ -34,9 +32,21 @@ ENA = 17  # Right PWM motor
 ENB = 22  # Left PWM motor
 
 
-# ======================================================================
-# General Functions
-#
+# Import GPIO library and support mock-up fallback
+try:
+    import RPi.GPIO as GPIO
+except RuntimeError:
+    print('----------------------------------------------------------------------------')
+    print(' WARNING: RPi.GPIO can only be run on the RPi. Falling back to mock objects.')
+    print('----------------------------------------------------------------------------')
+    import gpio_mock as GPIO
+except ImportError:
+    print('-------------------------------------------------------------------')
+    print(' WARNING: RPi.GPIO library not found. Falling back to mock objects.')
+    print('-------------------------------------------------------------------')
+    import gpio_mock as GPIO
+
+
 # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
 def init():
     global pin_ena, pin_enb
@@ -75,13 +85,6 @@ def version():
     return 1
 
 
-# End of General Functions
-# ======================================================================
-
-
-# ======================================================================
-# Motor Functions
-#
 # stop(): Stops both motors
 def stop():
     pin_ena.ChangeDutyCycle(0)
@@ -163,7 +166,3 @@ def spin_right(speed):
 #    pin_enb.ChangeDutyCycle(right_speed)
 #    pin_ena.ChangeFrequency(left_speed + 5)
 #    pin_enb.ChangeFrequency(right_speed + 5)
-
-
-# End of Motor Functions
-# ======================================================================
