@@ -1,6 +1,4 @@
 from unittest import TestCase
-import sys
-sys.path.append("/WarDrivePiCar/")
 from Movement import initio
 
 # Import GPIO library and support mock-up fallback
