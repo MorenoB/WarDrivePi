@@ -29,6 +29,8 @@
 # ======================================================================
 
 # Import GPIO library and support mock-up fallback
+from axel import Event
+
 try:
     import RPi.GPIO as GPIO
 except RuntimeError:
@@ -44,6 +46,9 @@ except ImportError:
 
 
 class Initio():
+
+    __BOUNCE_TIME = 200
+
     # Pins used to self.ENAble/disable the motors & self.ENAble/disable forward or backward motion,
     IN1 = 18  # Right
     IN2 = 23  # Right Backward
@@ -55,16 +60,22 @@ class Initio():
     ENB = 22  # Left PWM motor
 
     # Pins used for wheel speed encoders.
-    speed_encoder_left_interrupt = -1  # Left interrupt speed encoder value
-    speed_encoder_left_direction = -1  # Left direction speed encoder value
-    speed_encoder_right_interrupt = -1  # Right interrupt speed encoder value
-    speed_encoder_right_direction = -1  # Right direction speed encoder value
+    SPEED_ENCODER_LEFT_INTERRUPT = -1  # Left interrupt speed encoder value
+    SPEED_ENCODER_LEFT_DIRECTION = -1  # Left direction speed encoder value
+    SPEED_ENCODER_RIGHT_INTERRUPT = -1  # Right interrupt speed encoder value
+    SPEED_ENCODER_RIGHT_DIRECTION = -1  # Right direction speed encoder value
 
-    pin_ena = None
-    pin_enb = None
+    # Values from the wheel speed encoders.
+    direction = ""
+    numberOfRightPulses = 0
+    numberOfLeftPulses = 0
 
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
+        # Set up events.
+        self.onLeftEncoderTriggered = Event(self)
+        self.onRightEncoderTriggered = Event(self)
+
         GPIO.setwarnings(False)
 
         # use BCM pin numbering
@@ -87,7 +98,30 @@ class Initio():
         self.pin_enb = GPIO.PWM(self.ENB, 20)
         self.pin_enb.start(0)
 
-    # cleanup(). Sets all motors off and sets GPIO to standard values
+        GPIO.add_event_detect(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.FALLING,
+                              callback=self.__left_encoder_callback(self), bouncetime=self.__BOUNCE_TIME)
+        GPIO.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.FALLING,
+                              callback=self.__right_encoder_callback(self), bouncetime=self.__BOUNCE_TIME)
+
+    def __left_encoder_callback(self, channel):
+        if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
+            self.numberOfLeftPulses += 1
+        else:
+            self.numberOfLeftPulses -= 1
+
+        self.direction = "LEFT"
+        self.onLeftEncoderTriggered.fire(self, {})
+
+    def __right_encoder_callback(self, channel):
+        if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
+            self.numberOfRightPulses += 1
+        else:
+            self.numberOfRightPulses -= 1
+
+        self.direction = "RIGHT"
+        self.onRightEncoderTriggered.fire(self, {})
+
+        # cleanup(). Sets all motors off and sets GPIO to standard values
     def cleanup(self):
         self.stop()
         GPIO.cleanup()

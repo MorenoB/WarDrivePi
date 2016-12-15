@@ -5,6 +5,7 @@ OUT = "out"
 IN = "in"
 HIGH = "HIGH"
 LOW = "LOW"
+FALLING = "FALLING"
 
 __pin_state_dict = {}
 __mode = BOARD
@@ -66,3 +67,7 @@ class PWM:
     def ChangeFrequency(self, frequency):
         self._frequency = frequency
         print "Changed frequency to ", self._frequency
+
+
+def add_event_detect(param, FALLING, callback, bouncetime):
+    return None
