@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Movement import initio
+from Movement.initio import Initio
 
 # Import GPIO library and support mock-up fallback
 try:
@@ -16,19 +16,19 @@ except ImportError:
     from Movement import gpio_mock as GPIO
 
 
-class TestInitio(TestCase):
+class Test__carMovement(TestCase):
     def test_forward(self):
-        initio.init()
-        initio.forward(50)
+        __carMovement = Initio()
+        __carMovement.forward(50)
 
-        self.assertEquals(GPIO.input(initio.IN1), GPIO.HIGH)
-        self.assertEquals(GPIO.input(initio.IN2), GPIO.LOW)
+        self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
+        self.assertEquals(GPIO.input(__carMovement.IN2), GPIO.LOW)
 
-        self.assertEquals(GPIO.input(initio.IN3), GPIO.HIGH)
-        self.assertEquals(GPIO.input(initio.IN4), GPIO.LOW)
+        self.assertEquals(GPIO.input(__carMovement.IN3), GPIO.HIGH)
+        self.assertEquals(GPIO.input(__carMovement.IN4), GPIO.LOW)
 
     def test_init(self):
-        initio.init()
+        __carMovement = Initio()
 
         self.assertEquals(GPIO.getmode(), GPIO.BCM)
 
