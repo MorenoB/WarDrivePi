@@ -1,5 +1,9 @@
-from Controller.Controller import *
-from Sniffer.Sniffer import *
+import os
+import sys
+
+from threading import Thread
+from Controller.Controller import Controller
+from Sniffer.Sniffer import Sniffer
 
 from time import sleep
 
