@@ -43,7 +43,7 @@ def getmode():
     return __mode
 
 
-def add_event_detect(param, FALLING, callback, bouncetime):
+def add_event_detect(param, FALLING, callback):
     print "added event callback"
     callable(callback)
 
