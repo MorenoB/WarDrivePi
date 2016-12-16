@@ -3,4 +3,3 @@ pytest
 pytest-cov
 pydevd
 scapy
-axel==src-0.0.5
