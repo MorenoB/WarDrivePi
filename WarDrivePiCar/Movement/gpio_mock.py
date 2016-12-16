@@ -43,6 +43,11 @@ def getmode():
     return __mode
 
 
+def add_event_detect(param, FALLING, callback, bouncetime):
+    print "added event callback"
+    callable(callback)
+
+
 class PWM:
     _frequency = 0
     _value = 0
@@ -67,7 +72,3 @@ class PWM:
     def ChangeFrequency(self, frequency):
         self._frequency = frequency
         print "Changed frequency to ", self._frequency
-
-
-def add_event_detect(param, FALLING, callback, bouncetime):
-    return None
