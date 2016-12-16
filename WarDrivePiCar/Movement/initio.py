@@ -99,10 +99,16 @@ class Initio():
         self.pin_enb = GPIO.PWM(self.ENB, 20)
         self.pin_enb.start(0)
 
+        GPIO.setup(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.IN)
+        GPIO.setup(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.IN)
+
+        GPIO.setup(self.SPEED_ENCODER_RIGHT_DIRECTION, GPIO.IN)
+        GPIO.setup(self.SPEED_ENCODER_LEFT_DIRECTION, GPIO.IN)
+
         GPIO.add_event_detect(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.FALLING,
-                              callback=self.__left_encoder_callback(self), bouncetime=self.__BOUNCE_TIME)
+                              self.__left_encoder_callback)
         GPIO.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.FALLING,
-                              callback=self.__right_encoder_callback(self), bouncetime=self.__BOUNCE_TIME)
+                              self.__right_encoder_callback)
 
     def __left_encoder_callback(self, channel):
         if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
@@ -111,7 +117,7 @@ class Initio():
             self.numberOfLeftPulses -= 1
 
         self.direction = "LEFT"
-        self.onLeftEncoderTriggered.fire(self, {})
+        #self.onLeftEncoderTriggered.fire()
 
     def __right_encoder_callback(self, channel):
         if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
@@ -120,7 +126,7 @@ class Initio():
             self.numberOfRightPulses -= 1
 
         self.direction = "RIGHT"
-        self.onRightEncoderTriggered.fire(self, {})
+        #self.onRightEncoderTriggered.fire(self, {})
 
         # cleanup(). Sets all motors off and sets GPIO to standard values
     def cleanup(self):
