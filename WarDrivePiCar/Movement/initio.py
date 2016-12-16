@@ -29,7 +29,7 @@
 # ======================================================================
 
 # Import GPIO library and support mock-up fallback
-from axel import Event
+from pubsub import pub
 
 try:
     import RPi.GPIO as GPIO
@@ -68,14 +68,15 @@ class Initio():
 
     # Values from the wheel speed encoders.
     direction = ""
-    numberOfRightPulses = 0
-    numberOfLeftPulses = 0
+    __numberOfRightPulses = 0
+    __numberOfLeftPulses = 0
+
+    # Event identifiers used for event listeners.
+    EVENT_ON_LEFT_ENCODER = "OnLeftEncoderTriggered"
+    EVENT_ON_RIGHT_ENCODER = "OnRightEncoderTriggered"
 
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
-        # Set up events.
-        self.onLeftEncoderTriggered = Event(self)
-        self.onRightEncoderTriggered = Event(self)
 
         GPIO.setwarnings(False)
 
@@ -112,21 +113,21 @@ class Initio():
 
     def __left_encoder_callback(self, channel):
         if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
-            self.numberOfLeftPulses += 1
+            self.__numberOfLeftPulses += 1
         else:
-            self.numberOfLeftPulses -= 1
+            self.__numberOfLeftPulses -= 1
 
         self.direction = "LEFT"
-        #self.onLeftEncoderTriggered.fire()
+        pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
 
     def __right_encoder_callback(self, channel):
         if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
-            self.numberOfRightPulses += 1
+            self.__numberOfRightPulses += 1
         else:
-            self.numberOfRightPulses -= 1
+            self.__numberOfRightPulses -= 1
 
         self.direction = "RIGHT"
-        #self.onRightEncoderTriggered.fire(self, {})
+        pub.sendMessage(self.EVENT_ON_RIGHT_ENCODER, right_pulses=self.__numberOfRightPulses)
 
         # cleanup(). Sets all motors off and sets GPIO to standard values
     def cleanup(self):

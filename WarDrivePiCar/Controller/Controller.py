@@ -1,7 +1,7 @@
 from threading import Thread
 from time import sleep
 from Movement.initio import Initio
-
+from pubsub import pub
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
@@ -16,8 +16,8 @@ class Controller(Thread):
         self.__carMovement.forward(50)
 
         # Register events
-        self.__carMovement.onRightEncoderTriggered += self.__print_number_of_pulses
-        self.__carMovement.onLeftEncoderTriggered += self.__print_number_of_pulses
+        pub.subscribe(self.__print_number_of_left_pulses, self.__carMovement.EVENT_ON_LEFT_ENCODER)
+        pub.subscribe(self.__print_number_of_right_pulses, self.__carMovement.EVENT_ON_RIGHT_ENCODER)
 
         # Main Loop
         while not self.name.endswith("--"):
@@ -25,13 +25,11 @@ class Controller(Thread):
 
         self.__shutdown_controller()
 
-        #  De register events
-        self.__carMovement.onRightEncoderTriggered -= self.__print_number_of_pulses
-        self.__carMovement.onLeftEncoderTriggered -= self.__print_number_of_pulses
+    def __print_number_of_left_pulses(self, left_pulses):
+        print "Left pulses: ", left_pulses
 
-    def __print_number_of_pulses(self):
-        print "Left pulses: ", self.__carMovement.numberOfLeftPulses,\
-            " Right Pulses: ", self.__carMovement.numberOfRightPulses
+    def __print_number_of_right_pulses(self, right_pulses):
+        print "Right pulses: ", right_pulses
 
     def __shutdown_controller(self):
         print "Shutting down controller..."
