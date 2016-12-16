@@ -49,6 +49,7 @@ class Initio():
 
     __BOUNCE_TIME = 200
 
+    # Using BCM pins!
     # Pins used to self.ENAble/disable the motors & self.ENAble/disable forward or backward motion,
     IN1 = 18  # Right
     IN2 = 23  # Right Backward
@@ -60,10 +61,10 @@ class Initio():
     ENB = 22  # Left PWM motor
 
     # Pins used for wheel speed encoders.
-    SPEED_ENCODER_LEFT_INTERRUPT = -1  # Left interrupt speed encoder value
-    SPEED_ENCODER_LEFT_DIRECTION = -1  # Left direction speed encoder value
-    SPEED_ENCODER_RIGHT_INTERRUPT = -1  # Right interrupt speed encoder value
-    SPEED_ENCODER_RIGHT_DIRECTION = -1  # Right direction speed encoder value
+    SPEED_ENCODER_LEFT_INTERRUPT = 9  # Left interrupt speed encoder value
+    SPEED_ENCODER_LEFT_DIRECTION = 11  # Left direction speed encoder value
+    SPEED_ENCODER_RIGHT_INTERRUPT = 2  # Right interrupt speed encoder value
+    SPEED_ENCODER_RIGHT_DIRECTION = 3  # Right direction speed encoder value
 
     # Values from the wheel speed encoders.
     direction = ""
