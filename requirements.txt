@@ -4,3 +4,4 @@ pytest-cov
 pydevd
 scapy
 pypubsub
+pynput
