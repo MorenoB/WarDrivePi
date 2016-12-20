@@ -44,6 +44,10 @@ class Controller(Thread):
         if key == Key.up or key == Key.down or key == Key.left or key == Key.right:
             self.__carMovement.stop()
 
+        if key == Key.esc:
+            thread.interrupt_main()
+            return False
+
     def run(self):
 
         # Collect events until released
