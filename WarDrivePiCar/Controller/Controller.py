@@ -1,7 +1,5 @@
 from time import sleep
 
-import thread
-
 from Movement.initio import Initio
 from pubsub import pub
 from pynput.keyboard import Key, Listener
@@ -12,9 +10,13 @@ class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
     __carMovement = None
     __carSpeed = 15
+    __programInstance = None
+    __ListenerInstance = None
 
-    def __init__(self):
+    def __init__(self, main_obj):
         Thread.__init__(self)
+
+        self.__programInstance = main_obj
 
         # Initialise car hardware library.
         self.__carMovement = Initio()
@@ -45,29 +47,37 @@ class Controller(Thread):
             self.__carMovement.stop()
 
         if key == Key.esc:
-            thread.interrupt_main()
-            return False
+            print "Stop keyboard command is pressed."
+            self.__programInstance.stop()
+
+    def join(self, timeout=None):
+        self.__shutdown_controller()
+        super(Controller)
+
+    def __start_keyboard_listener(self):
+        self.__ListenerInstance = Listener(on_press=self.__on_press, on_release=self.__on_release)
+        self.__ListenerInstance.name = "Keyboard-Listener"
+        self.__ListenerInstance.start()
+        self.__ListenerInstance.join()
 
     def run(self):
 
         # Collect events until released
-        with Listener(
-                on_press=self.__on_press,
-                on_release=self.__on_release) as listener:
-            listener.join()
+        self.__start_keyboard_listener()
 
         # Main Loop
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
 
-        self.__shutdown_controller()
-
-    def __print_number_of_left_pulses(self, left_pulses):
+    @staticmethod
+    def __print_number_of_left_pulses(left_pulses):
         print "Left pulses: ", left_pulses
 
-    def __print_number_of_right_pulses(self, right_pulses):
+    @staticmethod
+    def __print_number_of_right_pulses(right_pulses):
         print "Right pulses: ", right_pulses
 
     def __shutdown_controller(self):
         print "Shutting down controller..."
         self.__carMovement.cleanup()
+        self.__ListenerInstance.stop()
