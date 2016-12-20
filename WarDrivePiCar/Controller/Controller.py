@@ -1,8 +1,11 @@
-from threading import Thread
 from time import sleep
+
+import thread
+
 from Movement.initio import Initio
 from pubsub import pub
 from pynput.keyboard import Key, Listener
+from threading import Thread
 
 
 class Controller(Thread):
@@ -19,12 +22,6 @@ class Controller(Thread):
         # Register events
         pub.subscribe(self.__print_number_of_left_pulses, self.__carMovement.EVENT_ON_LEFT_ENCODER)
         pub.subscribe(self.__print_number_of_right_pulses, self.__carMovement.EVENT_ON_RIGHT_ENCODER)
-
-        # Collect events until released
-        with Listener(
-                on_press=self.__on_press,
-                on_release=self.__on_release) as listener:
-            listener.join()
 
     def __on_press(self, key):
 
@@ -49,6 +46,12 @@ class Controller(Thread):
 
     def run(self):
 
+        # Collect events until released
+        with Listener(
+                on_press=self.__on_press,
+                on_release=self.__on_release) as listener:
+            listener.join()
+
         # Main Loop
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
@@ -64,6 +67,3 @@ class Controller(Thread):
     def __shutdown_controller(self):
         print "Shutting down controller..."
         self.__carMovement.cleanup()
-
-        # Stop keyboard listener.
-        Listener.stop()
