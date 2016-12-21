@@ -42,6 +42,9 @@ class Main:
         self.__join_threads(self.__Threads)
         self.__isRunning = False
 
+    def is_running(self):
+        return self.__isRunning
+
     @staticmethod
     def __start_threads(threads):
         for thread_instance in threads:
