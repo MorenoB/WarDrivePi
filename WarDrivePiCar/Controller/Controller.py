@@ -49,6 +49,8 @@ class Controller(Thread):
         if key == Key.esc:
             print "Stop keyboard command is pressed."
             self.__programInstance.stop()
+            print "Shutting down keyboard listener..."
+            return False
 
     def join(self, timeout=None):
         self.__shutdown_controller()
@@ -78,6 +80,6 @@ class Controller(Thread):
         print "Right pulses: ", right_pulses
 
     def __shutdown_controller(self):
-        print "Shutting down controller..."
+        print "Cleaning up GPIO"
         self.__carMovement.cleanup()
-        self.__ListenerInstance.stop()
+        print "Shutting down controller..."
