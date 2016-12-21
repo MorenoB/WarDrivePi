@@ -42,6 +42,7 @@ class TestMain(TestCase):
         self.assertEquals(program.is_running(), False)
 
         program.stop()
+        new_thread.join()
 
 
 class TestThread(Thread):
@@ -49,9 +50,11 @@ class TestThread(Thread):
 
     def __init__(self, thread_obj):
         Thread.__init__(self)
+        Thread.name = "Test thread"
         self.__thread_obj = thread_obj
 
     def run(self):
 
         t = threading.Thread(target=self.__thread_obj.start())
+        t.name = "Testing (run) thread"
         t.start()
