@@ -2,6 +2,11 @@ notifications:
   email: false
 
 language: python
+addons:
+  apt:
+    packages:
+    - python-xlib
+    - python-pip
 python:
   - "2.7"
 install:
