@@ -12,6 +12,7 @@ class Controller(Thread):
     __carSpeed = 15
     __programInstance = None
     __ListenerInstance = None
+    __isRunning = False
 
     def __init__(self, main_obj):
         Thread.__init__(self)
@@ -64,6 +65,7 @@ class Controller(Thread):
 
     def run(self):
 
+        self.__isRunning = True
         # Collect events until released
         self.__start_keyboard_listener()
 
@@ -80,12 +82,16 @@ class Controller(Thread):
         print "Right pulses: ", right_pulses
 
     def __shutdown_controller(self):
+        if not self.__isRunning:
+            return
+
         print "Cleaning up GPIO"
         self.__carMovement.cleanup()
         print "Shutting down controller..."
 
+        self.__isRunning = False
         # Force the key listener to stop by raising stop exception. This is to prevent thread deadlock.
         try:
             raise self.__ListenerInstance.StopException
         except Listener.StopException:
-            return
+            pass
