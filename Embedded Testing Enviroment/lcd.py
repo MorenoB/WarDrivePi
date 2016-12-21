@@ -70,25 +70,25 @@ def main():
     time.sleep(1)
 
     # Send some centred test
-    sendByteData(LCD_LINE_1, LCD_CMD)
+    send_byte_data(LCD_LINE_1, LCD_CMD)
     message("Rasbperry Pi", 2)
-    sendByteData(LCD_LINE_2, LCD_CMD)
+    send_byte_data(LCD_LINE_2, LCD_CMD)
     message("Model B", 2)
 
     time.sleep(3)  # 3 second delay
 
     # Send some left justified text
-    sendByteData(LCD_LINE_1, LCD_CMD)
+    send_byte_data(LCD_LINE_1, LCD_CMD)
     message("1234567890123456", 1)
-    sendByteData(LCD_LINE_2, LCD_CMD)
+    send_byte_data(LCD_LINE_2, LCD_CMD)
     message("abcdefghijklmnop", 1)
 
     time.sleep(3)  # 3 second delay
 
     # Send some right justified text
-    sendByteData(LCD_LINE_1, LCD_CMD)
+    send_byte_data(LCD_LINE_1, LCD_CMD)
     message("Raspberrypi-spy", 3)
-    sendByteData(LCD_LINE_2, LCD_CMD)
+    send_byte_data(LCD_LINE_2, LCD_CMD)
     message(".co.uk", 3)
 
     time.sleep(30)
@@ -107,12 +107,12 @@ def init():
     GPIO.setup(LCD_D7, GPIO.OUT)  # DB7
     GPIO.setup(LED_ON, GPIO.OUT)  # Backlight enable
     # Initialise display
-    sendByteData(0x33, LCD_CMD)
-    sendByteData(0x32, LCD_CMD)
-    sendByteData(0x28, LCD_CMD)
-    sendByteData(0x0C, LCD_CMD)
-    sendByteData(0x06, LCD_CMD)
-    sendByteData(0x01, LCD_CMD)
+    send_byte_data(0x33, LCD_CMD)
+    send_byte_data(0x32, LCD_CMD)
+    send_byte_data(0x28, LCD_CMD)
+    send_byte_data(0x0C, LCD_CMD)
+    send_byte_data(0x06, LCD_CMD)
+    send_byte_data(0x01, LCD_CMD)
     time.sleep(1)
 
 
@@ -131,7 +131,7 @@ def message(_message, style):
         new_message = _message.rjust(LCD_WIDTH, " ")
 
     for i in range(LCD_WIDTH):
-        sendByteData(ord(new_message[i]), LCD_CHR)
+        send_byte_data(ord(new_message[i]), LCD_CHR)
 
 
 def send_byte_data(bits, mode):

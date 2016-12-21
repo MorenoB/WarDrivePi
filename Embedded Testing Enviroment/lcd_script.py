@@ -1,4 +1,3 @@
-import sys
 import lcd
 
 lcd.init()
