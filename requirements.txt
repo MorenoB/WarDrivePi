@@ -1,7 +1,7 @@
 coveralls
 pytest
 pytest-cov
-pytest-timeout
+pytest-timeout>=1.0.0
 pydevd
 scapy
 pypubsub
