@@ -5,3 +5,4 @@ pydevd
 scapy
 pypubsub
 pynput
+python-xlib
