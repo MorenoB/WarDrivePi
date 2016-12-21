@@ -4,4 +4,5 @@ pytest-cov
 pydevd
 scapy
 python-xlib
+pillow
 pyautogui
