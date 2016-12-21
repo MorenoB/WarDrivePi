@@ -1,13 +1,13 @@
 from unittest import TestCase
 from pynput.keyboard import Controller, Key
-from Main import Main
+from WarDrivePiCar import Main
 import time
 from threading import Thread
 
 
 class TestMain(TestCase):
     def test_movement(self):
-        program = Main()
+        program = Main.Main()
         new_thread = TestThread(program)
         new_thread.start()
 
