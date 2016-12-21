@@ -83,3 +83,9 @@ class Controller(Thread):
         print "Cleaning up GPIO"
         self.__carMovement.cleanup()
         print "Shutting down controller..."
+
+        # Force the key listener to stop by raising stop exception. This is to prevent thread deadlock.
+        try:
+            raise self.__ListenerInstance.StopException
+        except Listener.StopException:
+            return
