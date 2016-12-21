@@ -63,8 +63,8 @@ class Initio():
     # Pins used for wheel speed encoders.
     SPEED_ENCODER_LEFT_INTERRUPT = 9  # Left interrupt speed encoder value
     SPEED_ENCODER_LEFT_DIRECTION = 11  # Left direction speed encoder value
-    SPEED_ENCODER_RIGHT_INTERRUPT = 2  # Right interrupt speed encoder value
-    SPEED_ENCODER_RIGHT_DIRECTION = 3  # Right direction speed encoder value
+    SPEED_ENCODER_RIGHT_INTERRUPT = 5  # Right interrupt speed encoder value
+    SPEED_ENCODER_RIGHT_DIRECTION = 6  # Right direction speed encoder value
 
     # Values from the wheel speed encoders.
     direction = ""
