@@ -8,10 +8,12 @@ from threading import Thread
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
-    __carMovement = None
-    __carSpeed = 15
+    __CAR_SPEED = 15
+    __ROTATION_SPEED = 90
+
     __programInstance = None
     __ListenerInstance = None
+    __carMovement = None
     __isRunning = False
 
     def __init__(self, main_obj):
@@ -30,21 +32,27 @@ class Controller(Thread):
 
         # Move the car according to directional keyboard input events
         if key == Key.up:
-            self.__carMovement.forward(self.__carSpeed)
+            self.__carMovement.forward(self.__CAR_SPEED)
 
         if key == Key.down:
-            self.__carMovement.reverse(self.__carSpeed)
+            self.__carMovement.reverse(self.__CAR_SPEED)
 
         if key == Key.left:
-            self.__carMovement.spin_left(self.__carSpeed)
+            self.__carMovement.turn_forward(self.__ROTATION_SPEED, self.__CAR_SPEED)
 
         if key == Key.right:
-            self.__carMovement.spin_right(self.__carSpeed)
+            self.__carMovement.turn_forward(self.__CAR_SPEED, self.__ROTATION_SPEED)
+
+        if key == Key.page_up:
+            self.__carMovement.spin_left(self.__CAR_SPEED)
+
+        if key == Key.page_down:
+            self.__carMovement.spin_right(self.__CAR_SPEED)
 
     def __on_release(self, key):
 
         # Car needs to stop moving when a key is being released.
-        if key == Key.up or key == Key.down or key == Key.left or key == Key.right:
+        if key == Key.up or key == Key.down or key == Key.left or key == Key.right or key == Key.page_up or key == Key.page_down:
             self.__carMovement.stop()
 
         if key == Key.esc:

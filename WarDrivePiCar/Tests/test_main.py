@@ -1,13 +1,15 @@
 from unittest import TestCase
 from pynput.keyboard import Controller, Key
 from WarDrivePiCar import Main
-import time
 from threading import Thread
+import threading
+import time
 
 
 class TestMain(TestCase):
     def test_movement(self):
         program = Main.Main()
+
         new_thread = TestThread(program)
         new_thread.start()
 
@@ -39,13 +41,20 @@ class TestMain(TestCase):
         print "Checking if program is done..."
         self.assertEquals(program.is_running(), False)
 
+        program.stop()
+        new_thread.join()
+
 
 class TestThread(Thread):
     __thread_obj = None
 
     def __init__(self, thread_obj):
         Thread.__init__(self)
+        Thread.name = "Test thread"
         self.__thread_obj = thread_obj
 
     def run(self):
-        self.__thread_obj.start()
+
+        t = threading.Thread(target=self.__thread_obj.start())
+        t.name = "Testing (run) thread"
+        t.start()
