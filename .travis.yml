@@ -7,6 +7,8 @@ addons:
     packages:
     - python-xlib
     - python-pip
+    - postgresql-9.4
+    - psycopg2
     - vnc4server # to mock an X Server
 python:
   - "2.7"
