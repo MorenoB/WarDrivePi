@@ -1,5 +1,5 @@
 coveralls
-pytest
+pytest>=2.9.1
 pytest-cov
 pytest-timeout==1.0.0
 pydevd
