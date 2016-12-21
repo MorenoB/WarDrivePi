@@ -10,6 +10,7 @@ class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
     __carMovement = None
     __carSpeed = 15
+    __rotationSpeed = 5  # This value will be added on top of the __carSpeed value
     __programInstance = None
     __ListenerInstance = None
     __isRunning = False
@@ -29,22 +30,28 @@ class Controller(Thread):
     def __on_press(self, key):
 
         # Move the car according to directional keyboard input events
-        if key == Key.up:
+        if key == 'W':
             self.__carMovement.forward(self.__carSpeed)
 
-        if key == Key.down:
+        if key == 'S':
             self.__carMovement.reverse(self.__carSpeed)
 
-        if key == Key.left:
+        if key == 'A':
+            self.__carMovement.turn_forward(self.__carSpeed + self.__rotationSpeed, self.__carSpeed)
+
+        if key == 'D':
+            self.__carMovement.turn_forward(self.__carSpeed, self.__carSpeed + self.__rotationSpeed)
+
+        if key == 'Q':
             self.__carMovement.spin_left(self.__carSpeed)
 
-        if key == Key.right:
+        if key == 'E':
             self.__carMovement.spin_right(self.__carSpeed)
 
     def __on_release(self, key):
 
         # Car needs to stop moving when a key is being released.
-        if key == Key.up or key == Key.down or key == Key.left or key == Key.right:
+        if key == 'W' or key == 'S' or key == 'A' or key == 'D' or key == 'Q' or key == 'E':
             self.__carMovement.stop()
 
         if key == Key.esc:

@@ -134,10 +134,6 @@ class Initio():
         self.stop()
         GPIO.cleanup()
 
-    # version(). Returns 1. Invalid until after init() has been called
-    def version(self):
-        return 1
-
     # stop(): Stops both motors
     def stop(self):
         self.pin_ena.ChangeDutyCycle(0)
@@ -145,11 +141,7 @@ class Initio():
 
     # forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
     def forward(self, speed):
-        GPIO.output(self.IN1, GPIO.HIGH)
-        GPIO.output(self.IN2, GPIO.LOW)
-
-        GPIO.output(self.IN3, GPIO.HIGH)
-        GPIO.output(self.IN4, GPIO.LOW)
+        self.__set_pins_to_forward_mode()
 
         self.pin_ena.ChangeDutyCycle(speed)
         self.pin_enb.ChangeDutyCycle(speed)
@@ -159,11 +151,7 @@ class Initio():
 
     # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
     def reverse(self, speed):
-        GPIO.output(self.IN1, GPIO.LOW)
-        GPIO.output(self.IN2, GPIO.HIGH)
-
-        GPIO.output(self.IN3, GPIO.LOW)
-        GPIO.output(self.IN4, GPIO.HIGH)
+        self.__set_pins_to_reverse_mode()
 
         self.pin_ena.ChangeDutyCycle(speed)
         self.pin_enb.ChangeDutyCycle(speed)
@@ -199,18 +187,36 @@ class Initio():
         self.pin_ena.ChangeFrequency(speed + 5)
         self.pin_enb.ChangeFrequency(speed + 5)
 
-        # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
-        # rightSpeed <= 100
-        # def turn_forward(left_speed, right_speed):
-        #    pin_self.ENA.ChangeDutyCycle(left_speed)
-        #    pin_self.ENB.ChangeDutyCycle(right_speed)
-        #    pin_self.ENA.ChangeFrequency(left_speed + 5)
-        #    pin_self.ENB.ChangeFrequency(right_speed + 5)
+    # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
+    # rightSpeed <= 100
+    def turn_forward(self, left_speed, right_speed):
+        self.__set_pins_to_forward_mode()
 
-        # turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0
-        # <= leftSpeed,rightSpeed <= 100
-        # def turn_reverse(left_speed, right_speed):
-        #    pin_self.ENA.ChangeDutyCycle(left_speed)
-        #    pin_self.ENB.ChangeDutyCycle(right_speed)
-        #    pin_self.ENA.ChangeFrequency(left_speed + 5)
-        #    pin_self.ENB.ChangeFrequency(right_speed + 5)
+        self.pin_ena.ChangeDutyCycle(left_speed)
+        self.pin_enb.ChangeDutyCycle(right_speed)
+        self.pin_ena.ChangeFrequency(left_speed + 5)
+        self.pin_enb.ChangeFrequency(right_speed + 5)
+
+    # turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0
+    # <= leftSpeed,rightSpeed <= 100
+    def turn_reverse(self, left_speed, right_speed):
+        self.__set_pins_to_reverse_mode()
+
+        self.pin_ena.ChangeDutyCycle(left_speed)
+        self.pin_enb.ChangeDutyCycle(right_speed)
+        self.pin_ena.ChangeFrequency(left_speed + 5)
+        self.pin_enb.ChangeFrequency(right_speed + 5)
+
+    def __set_pins_to_forward_mode(self):
+        GPIO.output(self.IN1, GPIO.HIGH)
+        GPIO.output(self.IN2, GPIO.LOW)
+
+        GPIO.output(self.IN3, GPIO.HIGH)
+        GPIO.output(self.IN4, GPIO.LOW)
+
+    def __set_pins_to_reverse_mode(self):
+        GPIO.output(self.IN1, GPIO.LOW)
+        GPIO.output(self.IN2, GPIO.HIGH)
+
+        GPIO.output(self.IN3, GPIO.LOW)
+        GPIO.output(self.IN4, GPIO.HIGH)
