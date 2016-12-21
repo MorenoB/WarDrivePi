@@ -5,6 +5,7 @@ OUT = "out"
 IN = "in"
 HIGH = "HIGH"
 LOW = "LOW"
+FALLING = "FALLING"
 
 __pin_state_dict = {}
 __mode = BOARD
@@ -40,6 +41,11 @@ def input(pin):
 
 def getmode():
     return __mode
+
+
+def add_event_detect(param, FALLING, callback):
+    print "added event callback"
+    callable(callback)
 
 
 class PWM:

@@ -21,18 +21,16 @@
 #  0 <= leftSpeed,rightSpeed <= 100
 # ======================================================================
 
-# Pins used to enable/disable the motors & enable/disable forward or backward motion,
-IN1 = 18  # Right
-IN2 = 23  # Right Backward
-IN3 = 24  # Left
-IN4 = 25  # Left Backward
 
-# Pins used for PWM, used for motor control
-ENA = 17  # Right PWM motor
-ENB = 22  # Left PWM motor
-
+# ======================================================================
+# Sensor Functions
+#
+#
+# ======================================================================
 
 # Import GPIO library and support mock-up fallback
+from pubsub import pub
+
 try:
     import RPi.GPIO as GPIO
 except RuntimeError:
@@ -47,122 +45,172 @@ except ImportError:
     import gpio_mock as GPIO
 
 
-# init(). Initialises GPIO pins, switches motors and LEDs Off, etc
-def init():
-    global pin_ena, pin_enb
+class Initio():
 
-    GPIO.setwarnings(False)
+    __BOUNCE_TIME = 200
 
-    # use BCM pin numbering
-    GPIO.setmode(GPIO.BCM)
-    # print GPIO.RPI_REVISION
+    # Using BCM pins!
+    # Pins used to self.ENAble/disable the motors & self.ENAble/disable forward or backward motion,
+    IN1 = 18  # Right
+    IN2 = 23  # Right Backward
+    IN3 = 24  # Left
+    IN4 = 25  # Left Backward
 
-    # Right motors activation and deactivation
-    GPIO.setup(IN1, GPIO.OUT)
-    GPIO.setup(IN2, GPIO.OUT)
+    # Pins used for PWM, used for motor control
+    ENA = 17  # Right PWM motor
+    ENB = 22  # Left PWM motor
 
-    # Left motors activation and deactivation
-    GPIO.setup(IN3, GPIO.OUT)
-    GPIO.setup(IN4, GPIO.OUT)
+    # Pins used for wheel speed encoders.
+    SPEED_ENCODER_LEFT_INTERRUPT = 9  # Left interrupt speed encoder value
+    SPEED_ENCODER_LEFT_DIRECTION = 11  # Left direction speed encoder value
+    SPEED_ENCODER_RIGHT_INTERRUPT = 2  # Right interrupt speed encoder value
+    SPEED_ENCODER_RIGHT_DIRECTION = 3  # Right direction speed encoder value
 
-    GPIO.setup(ENA, GPIO.OUT)
-    pin_ena = GPIO.PWM(ENA, 20)
-    pin_ena.start(0)
+    # Values from the wheel speed encoders.
+    direction = ""
+    __numberOfRightPulses = 0
+    __numberOfLeftPulses = 0
 
-    GPIO.setup(ENB, GPIO.OUT)
-    pin_enb = GPIO.PWM(ENB, 20)
-    pin_enb.start(0)
+    # Event identifiers used for event listeners.
+    EVENT_ON_LEFT_ENCODER = "OnLeftEncoderTriggered"
+    EVENT_ON_RIGHT_ENCODER = "OnRightEncoderTriggered"
 
+    # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
+    def __init__(self):
 
-# cleanup(). Sets all motors off and sets GPIO to standard values
-def cleanup():
-    stop()
-    GPIO.cleanup()
+        GPIO.setwarnings(False)
 
+        # use BCM pin numbering
+        GPIO.setmode(GPIO.BCM)
+        # print GPIO.RPI_REVISION
 
-# version(). Returns 1. Invalid until after init() has been called
-def version():
-    return 1
+        # Right motors activation and deactivation
+        GPIO.setup(self.IN1, GPIO.OUT)
+        GPIO.setup(self.IN2, GPIO.OUT)
 
+        # Left motors activation and deactivation
+        GPIO.setup(self.IN3, GPIO.OUT)
+        GPIO.setup(self.IN4, GPIO.OUT)
 
-# stop(): Stops both motors
-def stop():
-    pin_ena.ChangeDutyCycle(0)
-    pin_enb.ChangeDutyCycle(0)
+        GPIO.setup(self.ENA, GPIO.OUT)
+        self.pin_ena = GPIO.PWM(self.ENA, 20)
+        self.pin_ena.start(0)
 
+        GPIO.setup(self.ENB, GPIO.OUT)
+        self.pin_enb = GPIO.PWM(self.ENB, 20)
+        self.pin_enb.start(0)
 
-# forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
-def forward(speed):
-    GPIO.output(IN1, GPIO.HIGH)
-    GPIO.output(IN2, GPIO.LOW)
+        GPIO.setup(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.IN)
+        GPIO.setup(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.IN)
 
-    GPIO.output(IN3, GPIO.HIGH)
-    GPIO.output(IN4, GPIO.LOW)
+        GPIO.setup(self.SPEED_ENCODER_RIGHT_DIRECTION, GPIO.IN)
+        GPIO.setup(self.SPEED_ENCODER_LEFT_DIRECTION, GPIO.IN)
 
-    pin_ena.ChangeDutyCycle(speed)
-    pin_enb.ChangeDutyCycle(speed)
+        GPIO.add_event_detect(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.FALLING,
+                              self.__left_encoder_callback)
+        GPIO.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.FALLING,
+                              self.__right_encoder_callback)
 
-    pin_ena.ChangeFrequency(speed + 5)
-    pin_enb.ChangeFrequency(speed + 5)
+    def __left_encoder_callback(self, channel):
+        if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
+            self.__numberOfLeftPulses += 1
+        else:
+            self.__numberOfLeftPulses -= 1
 
+        self.direction = "LEFT"
+        pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
 
-# reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
-def reverse(speed):
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)
+    def __right_encoder_callback(self, channel):
+        if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
+            self.__numberOfRightPulses += 1
+        else:
+            self.__numberOfRightPulses -= 1
 
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.HIGH)
+        self.direction = "RIGHT"
+        pub.sendMessage(self.EVENT_ON_RIGHT_ENCODER, right_pulses=self.__numberOfRightPulses)
 
-    pin_ena.ChangeDutyCycle(speed)
-    pin_enb.ChangeDutyCycle(speed)
+        # cleanup(). Sets all motors off and sets GPIO to standard values
+    def cleanup(self):
+        self.stop()
+        GPIO.cleanup()
 
-    pin_ena.ChangeFrequency(speed + 5)
-    pin_enb.ChangeFrequency(speed + 5)
+    # version(). Returns 1. Invalid until after init() has been called
+    def version(self):
+        return 1
 
+    # stop(): Stops both motors
+    def stop(self):
+        self.pin_ena.ChangeDutyCycle(0)
+        self.pin_enb.ChangeDutyCycle(0)
 
-# spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
-def spin_left(speed):
+    # forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
+    def forward(self, speed):
+        GPIO.output(self.IN1, GPIO.HIGH)
+        GPIO.output(self.IN2, GPIO.LOW)
 
-    GPIO.output(IN1, GPIO.LOW)
-    GPIO.output(IN2, GPIO.HIGH)
+        GPIO.output(self.IN3, GPIO.HIGH)
+        GPIO.output(self.IN4, GPIO.LOW)
 
-    GPIO.output(IN3, GPIO.HIGH)
-    GPIO.output(IN4, GPIO.LOW)
+        self.pin_ena.ChangeDutyCycle(speed)
+        self.pin_enb.ChangeDutyCycle(speed)
 
-    pin_ena.ChangeDutyCycle(speed)
-    pin_enb.ChangeDutyCycle(speed)
-    pin_ena.ChangeFrequency(speed + 5)
-    pin_enb.ChangeFrequency(speed + 5)
+        self.pin_ena.ChangeFrequency(speed + 5)
+        self.pin_enb.ChangeFrequency(speed + 5)
 
+    # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
+    def reverse(self, speed):
+        GPIO.output(self.IN1, GPIO.LOW)
+        GPIO.output(self.IN2, GPIO.HIGH)
 
-# spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
-def spin_right(speed):
+        GPIO.output(self.IN3, GPIO.LOW)
+        GPIO.output(self.IN4, GPIO.HIGH)
 
-    GPIO.output(IN1, GPIO.HIGH)
-    GPIO.output(IN2, GPIO.LOW)
+        self.pin_ena.ChangeDutyCycle(speed)
+        self.pin_enb.ChangeDutyCycle(speed)
 
-    GPIO.output(IN3, GPIO.LOW)
-    GPIO.output(IN4, GPIO.HIGH)
+        self.pin_ena.ChangeFrequency(speed + 5)
+        self.pin_enb.ChangeFrequency(speed + 5)
 
-    pin_ena.ChangeDutyCycle(speed)
-    pin_enb.ChangeDutyCycle(speed)
+    # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
+    def spin_left(self, speed):
+        GPIO.output(self.IN1, GPIO.LOW)
+        GPIO.output(self.IN2, GPIO.HIGH)
 
-    pin_ena.ChangeFrequency(speed + 5)
-    pin_enb.ChangeFrequency(speed + 5)
+        GPIO.output(self.IN3, GPIO.HIGH)
+        GPIO.output(self.IN4, GPIO.LOW)
 
+        self.pin_ena.ChangeDutyCycle(speed)
+        self.pin_enb.ChangeDutyCycle(speed)
 
-# turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,rightSpeed <= 100
-#def turn_forward(left_speed, right_speed):
-#    pin_ena.ChangeDutyCycle(left_speed)
-#    pin_enb.ChangeDutyCycle(right_speed)
-#    pin_ena.ChangeFrequency(left_speed + 5)
-#    pin_enb.ChangeFrequency(right_speed + 5)
+        self.pin_ena.ChangeFrequency(speed + 5)
+        self.pin_enb.ChangeFrequency(speed + 5)
 
+    # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
+    def spin_right(self, speed):
+        GPIO.output(self.IN1, GPIO.HIGH)
+        GPIO.output(self.IN2, GPIO.LOW)
 
-# turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0 <= leftSpeed,rightSpeed <= 100
-#def turn_reverse(left_speed, right_speed):
-#    pin_ena.ChangeDutyCycle(left_speed)
-#    pin_enb.ChangeDutyCycle(right_speed)
-#    pin_ena.ChangeFrequency(left_speed + 5)
-#    pin_enb.ChangeFrequency(right_speed + 5)
+        GPIO.output(self.IN3, GPIO.LOW)
+        GPIO.output(self.IN4, GPIO.HIGH)
+
+        self.pin_ena.ChangeDutyCycle(speed)
+        self.pin_enb.ChangeDutyCycle(speed)
+
+        self.pin_ena.ChangeFrequency(speed + 5)
+        self.pin_enb.ChangeFrequency(speed + 5)
+
+        # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
+        # rightSpeed <= 100
+        # def turn_forward(left_speed, right_speed):
+        #    pin_self.ENA.ChangeDutyCycle(left_speed)
+        #    pin_self.ENB.ChangeDutyCycle(right_speed)
+        #    pin_self.ENA.ChangeFrequency(left_speed + 5)
+        #    pin_self.ENB.ChangeFrequency(right_speed + 5)
+
+        # turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0
+        # <= leftSpeed,rightSpeed <= 100
+        # def turn_reverse(left_speed, right_speed):
+        #    pin_self.ENA.ChangeDutyCycle(left_speed)
+        #    pin_self.ENB.ChangeDutyCycle(right_speed)
+        #    pin_self.ENA.ChangeFrequency(left_speed + 5)
+        #    pin_self.ENB.ChangeFrequency(right_speed + 5)
