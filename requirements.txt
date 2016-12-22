@@ -1,5 +1,5 @@
 coveralls
-pip install pytest>=3.0.5
+pytest>=3.0.5
 pytest-cov
 pytest-timeout
 pydevd
