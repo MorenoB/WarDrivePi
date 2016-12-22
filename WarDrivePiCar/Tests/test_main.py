@@ -1,7 +1,7 @@
 from unittest import TestCase
 from pynput.keyboard import Controller, Key
 from WarDrivePiCar import Main
-from threading import Thread
+from WarDrivePiCar.Util.TestingUtils import TestThread
 import time
 
 
@@ -42,15 +42,3 @@ class TestMain(TestCase):
 
         program.stop()
         new_thread.join()
-
-
-class TestThread(Thread):
-    __thread_obj = None
-
-    def __init__(self, thread_obj):
-        Thread.__init__(self)
-        Thread.name = "Test thread"
-        self.__thread_obj = thread_obj
-
-    def run(self):
-        self.__thread_obj.start()
