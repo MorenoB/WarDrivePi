@@ -8,7 +8,7 @@ from threading import Thread
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
-    __CAR_SPEED = 5
+    __CAR_SPEED = 50
 
     __programInstance = None
     __ListenerInstance = None
