@@ -39,6 +39,3 @@ class TestMain(TestCase):
 
         print "Checking if program is done..."
         self.assertEquals(program.is_running(), False)
-
-        program.stop()
-        new_thread.join()

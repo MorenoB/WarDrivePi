@@ -11,7 +11,6 @@ class Controller(Thread):
     __CAR_SPEED = 50
 
     __programInstance = None
-    __ListenerInstance = None
     __carMovement = None
     __isRunning = False
 
@@ -66,10 +65,11 @@ class Controller(Thread):
         super(Controller)
 
     def __start_keyboard_listener(self):
-        self.__ListenerInstance = Listener(on_press=self.__on_press, on_release=self.__on_release)
-        self.__ListenerInstance.name = "Keyboard-Listener"
-        self.__ListenerInstance.start()
-        self.__ListenerInstance.join()
+        with Listener(
+                on_press=self.__on_press, on_release=self.__on_release)\
+                as listener:
+            listener.join()
+            listener.name = "Keyboard-Listener"
 
     def run(self):
 
@@ -102,8 +102,3 @@ class Controller(Thread):
         print "Shutting down controller..."
 
         self.__isRunning = False
-        # Force the key listener to stop by raising stop exception. This is to prevent thread deadlock.
-        try:
-            raise self.__ListenerInstance.StopException
-        except Listener.StopException:
-            pass
