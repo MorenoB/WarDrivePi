@@ -32,20 +32,20 @@
 from pubsub import pub
 
 try:
-    import RPi.GPIO as GPIO
+    import RPi.GPIO as gpio
 except RuntimeError:
     print('----------------------------------------------------------------------------')
     print(' WARNING: RPi.GPIO can only be run on the RPi. Falling back to mock objects.')
     print('----------------------------------------------------------------------------')
-    import gpio_mock as GPIO
+    import gpio_mock as gpio
 except ImportError:
     print('-------------------------------------------------------------------')
     print(' WARNING: RPi.GPIO library not found. Falling back to mock objects.')
     print('-------------------------------------------------------------------')
-    import gpio_mock as GPIO
+    import gpio_mock as gpio
 
 
-class Initio():
+class CarControl:
 
     __BOUNCE_TIME = 200
 
@@ -79,46 +79,48 @@ class Initio():
     __ROTATING_WHEELS_SPEED = 100
     __COUNTER_ROTATING_WHEELS_SPEED = 5
 
+    __lastWheelEncoderPinUsed = -1
+
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
 
-        GPIO.setwarnings(False)
+        gpio.setwarnings(False)
 
         # use BCM pin numbering
-        GPIO.setmode(GPIO.BCM)
+        gpio.setmode(gpio.BCM)
         # print GPIO.RPI_REVISION
 
         # Right motors activation and deactivation
-        GPIO.setup(self.IN1, GPIO.OUT)
-        GPIO.setup(self.IN2, GPIO.OUT)
+        gpio.setup(self.IN1, gpio.OUT)
+        gpio.setup(self.IN2, gpio.OUT)
 
         # Left motors activation and deactivation
-        GPIO.setup(self.IN3, GPIO.OUT)
-        GPIO.setup(self.IN4, GPIO.OUT)
+        gpio.setup(self.IN3, gpio.OUT)
+        gpio.setup(self.IN4, gpio.OUT)
 
-        GPIO.setup(self.ENA, GPIO.OUT)
-        self.pin_ena = GPIO.PWM(self.ENA, 20)
+        gpio.setup(self.ENA, gpio.OUT)
+        self.pin_ena = gpio.PWM(self.ENA, 20)
         self.pin_ena.start(0)
 
-        GPIO.setup(self.ENB, GPIO.OUT)
-        self.pin_enb = GPIO.PWM(self.ENB, 20)
+        gpio.setup(self.ENB, gpio.OUT)
+        self.pin_enb = gpio.PWM(self.ENB, 20)
         self.pin_enb.start(0)
 
-        GPIO.setup(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.IN)
-        GPIO.setup(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.IN)
+        gpio.setup(self.SPEED_ENCODER_LEFT_INTERRUPT, gpio.IN)
+        gpio.setup(self.SPEED_ENCODER_RIGHT_INTERRUPT, gpio.IN)
 
-        GPIO.setup(self.SPEED_ENCODER_RIGHT_DIRECTION, GPIO.IN)
-        GPIO.setup(self.SPEED_ENCODER_LEFT_DIRECTION, GPIO.IN)
+        gpio.setup(self.SPEED_ENCODER_RIGHT_DIRECTION, gpio.IN)
+        gpio.setup(self.SPEED_ENCODER_LEFT_DIRECTION, gpio.IN)
 
-        GPIO.add_event_detect(self.SPEED_ENCODER_LEFT_INTERRUPT, GPIO.FALLING,
+        gpio.add_event_detect(self.SPEED_ENCODER_LEFT_INTERRUPT, gpio.FALLING,
                               self.__left_encoder_callback)
-        GPIO.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.FALLING,
+        gpio.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, gpio.FALLING,
                               self.__right_encoder_callback)
 
         # cleanup(). Sets all motors off and sets GPIO to standard values
     def cleanup(self):
         self.stop()
-        GPIO.cleanup()
+        gpio.cleanup()
 
     # stop(): Stops both motors
     def stop(self):
@@ -147,11 +149,11 @@ class Initio():
 
     # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_left(self, speed):
-        GPIO.output(self.IN1, GPIO.LOW)
-        GPIO.output(self.IN2, GPIO.HIGH)
+        gpio.output(self.IN1, gpio.LOW)
+        gpio.output(self.IN2, gpio.HIGH)
 
-        GPIO.output(self.IN3, GPIO.HIGH)
-        GPIO.output(self.IN4, GPIO.LOW)
+        gpio.output(self.IN3, gpio.HIGH)
+        gpio.output(self.IN4, gpio.LOW)
 
         self.pin_ena.ChangeDutyCycle(speed)
         self.pin_enb.ChangeDutyCycle(speed)
@@ -161,11 +163,11 @@ class Initio():
 
     # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_right(self, speed):
-        GPIO.output(self.IN1, GPIO.HIGH)
-        GPIO.output(self.IN2, GPIO.LOW)
+        gpio.output(self.IN1, gpio.HIGH)
+        gpio.output(self.IN2, gpio.LOW)
 
-        GPIO.output(self.IN3, GPIO.LOW)
-        GPIO.output(self.IN4, GPIO.HIGH)
+        gpio.output(self.IN3, gpio.LOW)
+        gpio.output(self.IN4, gpio.HIGH)
 
         self.pin_ena.ChangeDutyCycle(speed)
         self.pin_enb.ChangeDutyCycle(speed)
@@ -206,21 +208,25 @@ class Initio():
         self.pin_enb.ChangeFrequency(right_speed + 5)
 
     def __set_pins_to_forward_mode(self):
-        GPIO.output(self.IN1, GPIO.HIGH)
-        GPIO.output(self.IN2, GPIO.LOW)
+        gpio.output(self.IN1, gpio.HIGH)
+        gpio.output(self.IN2, gpio.LOW)
 
-        GPIO.output(self.IN3, GPIO.HIGH)
-        GPIO.output(self.IN4, GPIO.LOW)
+        gpio.output(self.IN3, gpio.HIGH)
+        gpio.output(self.IN4, gpio.LOW)
 
     def __set_pins_to_reverse_mode(self):
-        GPIO.output(self.IN1, GPIO.LOW)
-        GPIO.output(self.IN2, GPIO.HIGH)
+        gpio.output(self.IN1, gpio.LOW)
+        gpio.output(self.IN2, gpio.HIGH)
 
-        GPIO.output(self.IN3, GPIO.LOW)
-        GPIO.output(self.IN4, GPIO.HIGH)
+        gpio.output(self.IN3, gpio.LOW)
+        gpio.output(self.IN4, gpio.HIGH)
 
     def __left_encoder_callback(self, channel):
-        if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
+
+        # Channel is not used but is being given by the GPIO library
+        self.__lastWheelEncoderPinUsed = channel
+
+        if gpio.input(self.SPEED_ENCODER_LEFT_DIRECTION) == gpio.HIGH:
             self.__numberOfLeftPulses += 1
         else:
             self.__numberOfLeftPulses -= 1
@@ -229,7 +235,11 @@ class Initio():
         pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
 
     def __right_encoder_callback(self, channel):
-        if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
+
+        # Channel is not used but is being given by the GPIO library
+        self.__lastWheelEncoderPinUsed = channel
+
+        if gpio.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == gpio.HIGH:
             self.__numberOfRightPulses += 1
         else:
             self.__numberOfRightPulses -= 1

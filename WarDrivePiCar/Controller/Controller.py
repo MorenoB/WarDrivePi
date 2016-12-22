@@ -1,6 +1,6 @@
 from time import sleep
 
-from Movement.initio import Initio
+from Movement.CarControl import CarControl
 from pubsub import pub
 from pynput.keyboard import Key, Listener
 from threading import Thread
@@ -21,7 +21,7 @@ class Controller(Thread):
         self.__programInstance = main_obj
 
         # Initialise car hardware library.
-        self.__carMovement = Initio()
+        self.__carMovement = CarControl()
 
         # Register events
         pub.subscribe(self.__print_number_of_left_pulses, self.__carMovement.EVENT_ON_LEFT_ENCODER)
