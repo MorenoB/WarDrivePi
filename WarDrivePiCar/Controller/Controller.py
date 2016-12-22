@@ -93,6 +93,10 @@ class Controller(Thread):
         if not self.__isRunning:
             return
 
+        # De-register events
+        pub.unsubscribe(self.__print_number_of_left_pulses, self.__carMovement.EVENT_ON_LEFT_ENCODER)
+        pub.unsubscribe(self.__print_number_of_right_pulses, self.__carMovement.EVENT_ON_RIGHT_ENCODER)
+
         print "Cleaning up GPIO"
         self.__carMovement.cleanup()
         print "Shutting down controller..."
