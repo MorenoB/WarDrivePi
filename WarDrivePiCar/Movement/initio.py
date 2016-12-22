@@ -75,6 +75,10 @@ class Initio():
     EVENT_ON_LEFT_ENCODER = "OnLeftEncoderTriggered"
     EVENT_ON_RIGHT_ENCODER = "OnRightEncoderTriggered"
 
+    # Wheel speed when turning the car.
+    __ROTATING_WHEELS_SPEED = 100
+    __COUNTER_ROTATING_WHEELS_SPEED = 5
+
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
 
@@ -110,24 +114,6 @@ class Initio():
                               self.__left_encoder_callback)
         GPIO.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, GPIO.FALLING,
                               self.__right_encoder_callback)
-
-    def __left_encoder_callback(self, channel):
-        if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
-            self.__numberOfLeftPulses += 1
-        else:
-            self.__numberOfLeftPulses -= 1
-
-        self.direction = "LEFT"
-        pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
-
-    def __right_encoder_callback(self, channel):
-        if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
-            self.__numberOfRightPulses += 1
-        else:
-            self.__numberOfRightPulses -= 1
-
-        self.direction = "RIGHT"
-        pub.sendMessage(self.EVENT_ON_RIGHT_ENCODER, right_pulses=self.__numberOfRightPulses)
 
         # cleanup(). Sets all motors off and sets GPIO to standard values
     def cleanup(self):
@@ -187,9 +173,21 @@ class Initio():
         self.pin_ena.ChangeFrequency(speed + 5)
         self.pin_enb.ChangeFrequency(speed + 5)
 
+    def turn_left(self, reverse=False):
+        if reverse:
+            self.__turn_reverse(self.__ROTATING_WHEELS_SPEED, self.__COUNTER_ROTATING_WHEELS_SPEED)
+        else:
+            self.__turn_forward(self.__ROTATING_WHEELS_SPEED, self.__COUNTER_ROTATING_WHEELS_SPEED)
+
+    def turn_right(self, reverse=False):
+        if reverse:
+            self.__turn_reverse(self.__COUNTER_ROTATING_WHEELS_SPEED, self.__ROTATING_WHEELS_SPEED)
+        else:
+            self.__turn_forward(self.__COUNTER_ROTATING_WHEELS_SPEED, self.__ROTATING_WHEELS_SPEED)
+
     # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
     # rightSpeed <= 100
-    def turn_forward(self, left_speed, right_speed):
+    def __turn_forward(self, left_speed, right_speed):
         self.__set_pins_to_forward_mode()
 
         self.pin_ena.ChangeDutyCycle(left_speed)
@@ -199,7 +197,7 @@ class Initio():
 
     # turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0
     # <= leftSpeed,rightSpeed <= 100
-    def turn_reverse(self, left_speed, right_speed):
+    def __turn_reverse(self, left_speed, right_speed):
         self.__set_pins_to_reverse_mode()
 
         self.pin_ena.ChangeDutyCycle(left_speed)
@@ -220,3 +218,21 @@ class Initio():
 
         GPIO.output(self.IN3, GPIO.LOW)
         GPIO.output(self.IN4, GPIO.HIGH)
+
+    def __left_encoder_callback(self, channel):
+        if GPIO.input(self.SPEED_ENCODER_LEFT_DIRECTION) == GPIO.HIGH:
+            self.__numberOfLeftPulses += 1
+        else:
+            self.__numberOfLeftPulses -= 1
+
+        self.direction = "LEFT"
+        pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
+
+    def __right_encoder_callback(self, channel):
+        if GPIO.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == GPIO.HIGH:
+            self.__numberOfRightPulses += 1
+        else:
+            self.__numberOfRightPulses -= 1
+
+        self.direction = "RIGHT"
+        pub.sendMessage(self.EVENT_ON_RIGHT_ENCODER, right_pulses=self.__numberOfRightPulses)

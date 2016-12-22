@@ -51,9 +51,9 @@ class Test__carMovement(TestCase):
 
         __carMovement.cleanup()
 
-    def test_turn_forward(self):
+    def test_turn_lef_forward(self):
         __carMovement = Initio()
-        __carMovement.turn_forward(20, 15)
+        __carMovement.turn_left()
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
         self.assertEquals(GPIO.input(__carMovement.IN2), GPIO.LOW)
@@ -63,9 +63,9 @@ class Test__carMovement(TestCase):
 
         __carMovement.cleanup()
 
-    def test_turn_reverse(self):
+    def test_turn_right_reverse(self):
         __carMovement = Initio()
-        __carMovement.turn_reverse(20, 15)
+        __carMovement.turn_right(True)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
         self.assertEquals(GPIO.input(__carMovement.IN2), GPIO.HIGH)
@@ -110,5 +110,3 @@ class Test__carMovement(TestCase):
         self.assertEquals(GPIO.input(__carMovement.IN4), GPIO.HIGH)
 
         __carMovement.cleanup()
-
-
