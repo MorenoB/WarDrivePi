@@ -1,5 +1,6 @@
 from threading import Thread
 from Controller.Controller import Controller
+from Controller.Keyboard import Keyboard
 # from Sniffer.Sniffer import Sniffer
 
 from time import sleep
@@ -12,11 +13,13 @@ class Main:
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
         # Sniffer()
+        Controller()
     ]
 
     def __init__(self):
-        # Controller class need to have a reference to the main class in order to quit the application with keyboard
-        self.__Threads.append(Controller(self))
+        # Keyboard class need to have a reference to the main class in order to quit the application with keyboard
+        self.__Threads.append(Keyboard(self))
+        return
 
     def start(self):
 

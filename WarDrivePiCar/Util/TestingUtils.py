@@ -6,7 +6,7 @@ class TestThread(Thread):
 
     def __init__(self, thread_obj):
         Thread.__init__(self)
-        Thread.name = "Test thread"
+        Thread.name = "Unit-Testing separate thread"
         self.__thread_obj = thread_obj
 
     def run(self):
