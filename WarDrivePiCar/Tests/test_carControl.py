@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Movement.initio import Initio
+from Movement.CarControl import CarControl
 
 # Import GPIO library and support mock-up fallback
 try:
@@ -19,14 +19,14 @@ except ImportError:
 class Test__carMovement(TestCase):
 
     def test_init(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
 
         self.assertEquals(GPIO.getmode(), GPIO.BCM)
 
         __carMovement.cleanup()
 
     def test_stop(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
 
         __carMovement.stop()
 
@@ -34,13 +34,13 @@ class Test__carMovement(TestCase):
         self.skipTest("Due to unexposed functions/variables.")
 
     def test_cleanup(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
 
         __carMovement.cleanup()
         self.skipTest("Due to unexposed functions/variables.")
 
     def test_forward(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
         __carMovement.forward(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
@@ -51,9 +51,9 @@ class Test__carMovement(TestCase):
 
         __carMovement.cleanup()
 
-    def test_turn_forward(self):
-        __carMovement = Initio()
-        __carMovement.turn_forward(20, 15)
+    def test_turn_lef_forward(self):
+        __carMovement = CarControl()
+        __carMovement.turn_left()
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
         self.assertEquals(GPIO.input(__carMovement.IN2), GPIO.LOW)
@@ -63,9 +63,9 @@ class Test__carMovement(TestCase):
 
         __carMovement.cleanup()
 
-    def test_turn_reverse(self):
-        __carMovement = Initio()
-        __carMovement.turn_reverse(20, 15)
+    def test_turn_right_reverse(self):
+        __carMovement = CarControl()
+        __carMovement.turn_right(True)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
         self.assertEquals(GPIO.input(__carMovement.IN2), GPIO.HIGH)
@@ -76,7 +76,7 @@ class Test__carMovement(TestCase):
         __carMovement.cleanup()
 
     def test_reverse(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
         __carMovement.reverse(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
@@ -88,7 +88,7 @@ class Test__carMovement(TestCase):
         __carMovement.cleanup()
 
     def test_spin_left(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
         __carMovement.spin_left(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
@@ -100,7 +100,7 @@ class Test__carMovement(TestCase):
         __carMovement.cleanup()
 
     def test_spin_right(self):
-        __carMovement = Initio()
+        __carMovement = CarControl()
         __carMovement.spin_right(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
@@ -110,5 +110,3 @@ class Test__carMovement(TestCase):
         self.assertEquals(GPIO.input(__carMovement.IN4), GPIO.HIGH)
 
         __carMovement.cleanup()
-
-

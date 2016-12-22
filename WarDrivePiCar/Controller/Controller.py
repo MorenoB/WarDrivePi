@@ -1,6 +1,6 @@
 from time import sleep
 
-from Movement.initio import Initio
+from Movement.CarControl import CarControl
 from pubsub import pub
 from pynput.keyboard import Key, Listener
 from threading import Thread
@@ -8,8 +8,7 @@ from threading import Thread
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
-    __CAR_SPEED = 15
-    __ROTATION_SPEED = 90
+    __CAR_SPEED = 50
 
     __programInstance = None
     __ListenerInstance = None
@@ -22,7 +21,7 @@ class Controller(Thread):
         self.__programInstance = main_obj
 
         # Initialise car hardware library.
-        self.__carMovement = Initio()
+        self.__carMovement = CarControl()
 
         # Register events
         pub.subscribe(self.__print_number_of_left_pulses, self.__carMovement.EVENT_ON_LEFT_ENCODER)
@@ -38,10 +37,10 @@ class Controller(Thread):
             self.__carMovement.reverse(self.__CAR_SPEED)
 
         if key == Key.left:
-            self.__carMovement.turn_forward(self.__ROTATION_SPEED, self.__CAR_SPEED)
+            self.__carMovement.turn_left()
 
         if key == Key.right:
-            self.__carMovement.turn_forward(self.__CAR_SPEED, self.__ROTATION_SPEED)
+            self.__carMovement.turn_right()
 
         if key == Key.page_up:
             self.__carMovement.spin_left(self.__CAR_SPEED)
@@ -52,7 +51,8 @@ class Controller(Thread):
     def __on_release(self, key):
 
         # Car needs to stop moving when a key is being released.
-        if key == Key.up or key == Key.down or key == Key.left or key == Key.right or key == Key.page_up or key == Key.page_down:
+        if key == Key.up or key == Key.down or key == Key.left or key == Key.right or key == Key.page_up \
+                or key == Key.page_down:
             self.__carMovement.stop()
 
         if key == Key.esc:
