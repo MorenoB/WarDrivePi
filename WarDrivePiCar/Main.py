@@ -54,6 +54,9 @@ class Main:
             if not isinstance(thread_instance, Thread):
                 continue
 
+            if thread_instance.name.endswith("--"):
+                continue
+
             thread_instance.setName(type(thread_instance).__name__)
 
             print "Thread '{0}' starting...".format(thread_instance.getName())
