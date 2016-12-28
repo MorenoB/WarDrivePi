@@ -4,7 +4,7 @@ from Movement.CarControl import CarControl
 from pubsub import pub
 from threading import Thread
 from Keyboard import Keyboard
-from Enums import MovementType
+from WarDrivePiCar.Enums import MovementType
 
 
 class Controller(Thread):

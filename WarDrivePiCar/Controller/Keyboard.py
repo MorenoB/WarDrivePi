@@ -1,6 +1,6 @@
 from Movement.CarControl import CarControl
 from threading import Thread
-from Enums import MovementType, TurnModeType
+from WarDrivePiCar.Enums import MovementType, TurnModeType
 from pubsub import pub
 import sys
 
