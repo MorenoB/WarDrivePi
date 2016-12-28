@@ -13,12 +13,11 @@ class Main:
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
         # Sniffer()
-        Controller()
+        Controller(),
+        Keyboard()
     ]
 
     def __init__(self):
-        # Keyboard class need to have a reference to the main class in order to quit the application with keyboard
-        self.__Threads.append(Keyboard(self))
         return
 
     def start(self):

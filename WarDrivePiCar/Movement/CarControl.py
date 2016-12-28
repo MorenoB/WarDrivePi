@@ -84,7 +84,9 @@ class CarControl:
 
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
+        return
 
+    def setup_pins(self):
         gpio.setwarnings(False)
 
         # use BCM pin numbering

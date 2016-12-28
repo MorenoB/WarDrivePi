@@ -1,41 +1,34 @@
 from unittest import TestCase
-from pynput.keyboard import Controller, Key
-from WarDrivePiCar import Main
+from WarDrivePiCar.Main import Main
 from WarDrivePiCar.Util.TestingUtils import TestThread
+import sys
 import time
-
 
 class TestMain(TestCase):
     def test_movement(self):
-        program = Main.Main()
+        program = Main()
 
         new_thread = TestThread(program)
         new_thread.start()
 
-        # Wait a some time until we simulate key presses
-        time.sleep(1)
+        stdin = sys.stdin
 
-        # Simulate keyboard presses to test our keyboard listeners inside our Controller module.
-        simulated_keyboard = Controller()
+        try:
+            # Simulate keyboard presses to test our keyboard listeners inside our Controller module.
+            # os.write(0, "\x1b[A")
 
-        simulated_keyboard.press(Key.up)
-        simulated_keyboard.release(Key.up)
+            sys.stdin = open('simulatedInput.txt', 'r')
 
-        simulated_keyboard.press(Key.down)
-        simulated_keyboard.release(Key.down)
+            time.sleep(1)
 
-        simulated_keyboard.press(Key.left)
-        simulated_keyboard.release(Key.left)
+            print "Simulating Keyboard Interrupt..."
+            program.stop()
 
-        simulated_keyboard.press(Key.right)
-        simulated_keyboard.release(Key.right)
-
-        print "Simulating shutdown keyboard event..."
-        simulated_keyboard.press(Key.esc)
-        simulated_keyboard.release(Key.esc)
-
-        # Wait for program to terminate.
-        time.sleep(1)
+        except IOError:
+            pass
 
         print "Checking if program is done..."
+
+        # sys.stdin = stdin
         self.assertEquals(program.is_running(), False)
+

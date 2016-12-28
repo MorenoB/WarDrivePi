@@ -1,6 +1,8 @@
 from Movement.CarControl import CarControl
-from pynput.keyboard import Key, Listener
 from threading import Thread
+from Enums import MovementType, TurnModeType
+from pubsub import pub
+import sys
 
 
 class Keyboard(Thread):
@@ -9,81 +11,83 @@ class Keyboard(Thread):
 
     __carMovement = None
     __isRunning = False
-    __programInstance = None
 
-    __lastMoveCommand = "NONE"
+    __turnMode = TurnModeType.Turning
+    __moveType = MovementType.Idle
 
-    def __init__(self, program_instance):
+    # Event identifiers used for event listeners.
+    EVENT_ON_MOVETYPE_CHANGED = "OnMoveTypeChanged"
+
+    def __init__(self):
         Thread.__init__(self)
 
-        self.__programInstance = program_instance
         # Initialise car hardware library.
         self.__carMovement = CarControl()
-
-    def __on_press(self, key):
-
-        # Move the car according to directional keyboard input events
-        if key == Key.up:
-            self.__carMovement.forward(self.__CAR_SPEED)
-            self.__lastMoveCommand = "FORWARD"
-
-        if key == Key.down:
-            self.__carMovement.reverse(self.__CAR_SPEED)
-            self.__lastMoveCommand = "REVERSE"
-
-        if key == Key.left:
-            self.__carMovement.turn_left()
-            self.__lastMoveCommand = "TURNLEFT"
-
-        if key == Key.right:
-            self.__carMovement.turn_right()
-            self.__lastMoveCommand = "TURNRIGHT"
-
-        if key == Key.page_up:
-            self.__carMovement.spin_left(self.__CAR_SPEED)
-            self.__lastMoveCommand = "SPINLEFT"
-
-        if key == Key.page_down:
-            self.__carMovement.spin_right(self.__CAR_SPEED)
-            self.__lastMoveCommand = "SPINRIGHT"
-
-    def __on_release(self, key):
-
-        # Car needs to stop moving when a key is being released.
-        if key == Key.up or key == Key.down or key == Key.left or key == Key.right or key == Key.page_up \
-                or key == Key.page_down:
-            self.__carMovement.stop()
-            self.__lastMoveCommand = "STOP"
-
-        if key == Key.esc:
-            print "Shutdown keyboard press received! Calling stop()..."
-            self.__programInstance.stop()
-            return False
 
     def join(self, timeout=None):
         self.__shutdown_controller()
         super(Keyboard)
 
-    def __start_keyboard_listener(self):
-        with Listener(
-                on_press=self.__on_press, on_release=self.__on_release)\
-                as listener:
-            listener.join()
-            listener.name = "Keyboard-Listener"
-
     def run(self):
 
         self.__isRunning = True
-        # Collect events until released
-        self.__start_keyboard_listener()
+
+        self.__set_move_type(MovementType.Idle)
+        
+        while self.__isRunning:
+            try:
+                key = sys.stdin.read(3)
+
+                if key == "":
+                    continue
+
+                if key == "\x1b[A":  # Up arrow key
+                    self.__set_move_type(MovementType.Forward)
+                elif key == "\x1b[B":  # Down arrow key
+                    self.__set_move_type(MovementType.Reverse)
+                elif key == "\x1b[C":  # Right arrow key
+                    if self.__turnMode == TurnModeType.Turning:
+                        self.__set_move_type(MovementType.Turn_Right)
+                    else:
+                        self.__set_move_type(MovementType.Spin_Right)
+                elif key == "\x1b[D":  # Left arrow key
+                    if self.__turnMode == TurnModeType.Turning:
+                        self.__set_move_type(MovementType.Turn_Left)
+                    else:
+                        self.__set_move_type(MovementType.Spin_Left)
+                elif key == "m" or key == "M":  # m or M key
+                    self.__switch_turn_mode()
+                else:
+                    self.__set_move_type(MovementType.Idle)
+
+                print "Keyboard input : " + str(key)
+
+            except EOFError:
+                print "Program has read input from a file! -- Probably in testing mode, shutting down module!"
+                self.__shutdown_controller()
+            except IOError:
+                self.__set_move_type(MovementType.Idle)
+            except KeyboardInterrupt:
+                self.__shutdown_controller()
+
+    def __set_move_type(self, new_move_type):
+        if self.__moveType == new_move_type:
+            return
+
+        self.__moveType = new_move_type
+        print "Move type changed to " + str(new_move_type)
+        pub.sendMessage(self.EVENT_ON_MOVETYPE_CHANGED, self.__moveType)
+
+    def __switch_turn_mode(self):
+        self.__turnMode = not self.__turnMode
+        if self.__turnMode == TurnModeType.Turning:
+            print "Movement -> Changed to turn mode"
+        else:
+            print "Movement -> Changed to spin mode"
 
     def __shutdown_controller(self):
         if not self.__isRunning:
             return
 
-        self.__isRunning = False
         print "Shutting down keyboard controller..."
-        try:
-            raise Listener.StopException
-        except Listener.StopException:
-            pass
+        self.__isRunning = False
