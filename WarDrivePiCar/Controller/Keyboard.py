@@ -76,7 +76,7 @@ class Keyboard(Thread):
 
         self.__moveType = new_move_type
         print "Move type changed to " + str(new_move_type)
-        pub.sendMessage(self.EVENT_ON_MOVETYPE_CHANGED, self.__moveType)
+        pub.sendMessage(self.EVENT_ON_MOVETYPE_CHANGED, move_type=self.__moveType)
 
     def __switch_turn_mode(self):
         self.__turnMode = not self.__turnMode
