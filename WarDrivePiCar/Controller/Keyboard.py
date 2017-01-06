@@ -4,6 +4,7 @@ from Enums import MovementType, TurnModeType
 from pubsub import pub
 import sys
 import os
+import time
 
 
 # Make sure we only use this component in a LINUX os. Otherwise shut down..
@@ -97,6 +98,9 @@ class Keyboard(Thread):
                     self.__switch_turn_mode()
                 else:
                     self.__set_move_type(MovementType.Idle)
+
+                # Added a small sleep to make sure the wheels will keep turning when key is being held down.
+                time.sleep(self.__CPU_CYCLE_TIME)
 
             except EOFError:
                 print "Program has read input from a file! -- Probably in testing mode, shutting down module!"
