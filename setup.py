@@ -1,10 +1,10 @@
 from distutils.core import setup
+from setuptools import find_packages
 
 setup(
     name='WarDrivePiCar',
     version='1.0',
-    packages=['Movement', 'Util'],
-    package_dir={'Movement': 'WarDrivePiCar/Movement', 'Util': 'WarDrivePiCar/Util'},
+    packages=find_packages(exclude=['tests*']),
     url='',
     license='',
     author='Jelmer & Moreno',
