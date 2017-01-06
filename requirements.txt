@@ -4,6 +4,6 @@ pytest-cov
 pytest-timeout
 pydevd
 scapy
-pypubsub
+pypubsub==3.3.0
 pynput
 python-xlib
