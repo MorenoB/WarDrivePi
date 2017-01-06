@@ -1,8 +1,19 @@
 from Movement.CarControl import CarControl
 from threading import Thread
-from WarDrivePiCar.Enums import MovementType, TurnModeType
+from Enums import MovementType, TurnModeType
 from pubsub import pub
 import sys
+import os
+
+
+# Make sure we only use this component in a LINUX os. Otherwise shut down..
+importError = False
+try:
+    import termios
+    import fcntl
+except ImportError:
+    print "Keyboard component only supported on Linux! Shutting down..."
+    importError = True
 
 
 class Keyboard(Thread):
@@ -15,11 +26,20 @@ class Keyboard(Thread):
     __turnMode = TurnModeType.Turning
     __moveType = MovementType.Idle
 
+    # Terminal housekeeping settings
+    __fd = None
+    __oldTerm = None
+    __newAttr = None
+    __oldFlags = None
+
     # Event identifiers used for event listeners.
     EVENT_ON_MOVETYPE_CHANGED = "OnMoveTypeChanged"
 
     def __init__(self):
         Thread.__init__(self)
+
+        if importError:
+            self.__shutdown_controller()
 
         # Initialise car hardware library.
         self.__carMovement = CarControl()
@@ -28,11 +48,29 @@ class Keyboard(Thread):
         self.__shutdown_controller()
         super(Keyboard)
 
+    # Initializes terminal settings to allow us to make use of keyboard inputs without destroying the terminal.
+    # Only supported on Linux
+    def __init_terminal(self):
+        self.__fd = sys.stdin.fileno()
+        self.__oldTerm = termios.tcgetattr(self.__fd)
+        self.__newAttr = termios.tcgetattr(self.__fd)
+        self.__newAttr[3] = self.__newAttr[3] & ~termios.ICANON & ~termios.ECHO
+        termios.tcsetattr(self.__fd, termios.TCSANOW, self.__newAttr)
+
+        self.__oldFlags = fcntl.fcntl(self.__fd, fcntl.F_GETFL)
+
+        fcntl.fcntl(self.__fd, fcntl.F_SETFL, self.__oldFlags | os.O_NONBLOCK)
+
     def run(self):
+
+        if importError:
+            return
 
         self.__isRunning = True
 
         self.__set_move_type(MovementType.Idle)
+
+        self.__init_terminal()
         
         while self.__isRunning:
             try:
@@ -59,8 +97,6 @@ class Keyboard(Thread):
                     self.__switch_turn_mode()
                 else:
                     self.__set_move_type(MovementType.Idle)
-
-                print "Keyboard input : " + str(key)
 
             except EOFError:
                 print "Program has read input from a file! -- Probably in testing mode, shutting down module!"
@@ -89,5 +125,14 @@ class Keyboard(Thread):
         if not self.__isRunning:
             return
 
+        try:
+            termios.tcsetattr(self.__fd, termios.TCSAFLUSH, self.__oldTerm)
+            fcntl.fcntl(self.__fd, fcntl.F_SETFL, self.__oldFlags)
+        except:
+            pass
+
         print "Shutting down keyboard controller..."
         self.__isRunning = False
+
+        # Force closing of line input reading.
+        sys.stdin.close()
