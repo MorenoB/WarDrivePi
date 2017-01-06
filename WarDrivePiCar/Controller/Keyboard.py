@@ -5,8 +5,8 @@ from threading import Thread
 
 from pubsub import pub
 
-from Movement.CarControl import CarControl
-from Util.Enums import MovementType, TurnModeType
+from Movement.car_control import CarControl
+from Util.enums import MovementType, TurnModeType
 
 # Make sure we only use this component in a LINUX os. Otherwise shut down..
 importError = False

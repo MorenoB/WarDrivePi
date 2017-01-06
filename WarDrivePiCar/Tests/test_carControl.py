@@ -1,5 +1,5 @@
 from unittest import TestCase
-from Movement.CarControl import CarControl
+from Movement.car_control import CarControl
 
 # Import GPIO library and support mock-up fallback
 try:

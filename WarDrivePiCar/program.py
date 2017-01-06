@@ -1,12 +1,12 @@
 from threading import Thread
-from Controller.Controller import Controller
-from Controller.Keyboard import Keyboard
+from Controller.controller import Controller
+from Controller.keyboard import Keyboard
 # from Sniffer.Sniffer import Sniffer
 
 from time import sleep
 
 
-class Main:
+class Program:
     __CycleTime = 0.1  # 100 ms
     __isRunning = True
 
@@ -40,7 +40,7 @@ class Main:
                 print "Exception in 'main': {0}".format(exception)
 
     def stop(self):
-        print "Main stop method called."
+        print "Program stop method called."
         self.__join_threads(self.__Threads)
         self.__isRunning = False
 

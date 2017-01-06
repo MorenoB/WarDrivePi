@@ -3,9 +3,9 @@ from time import sleep
 
 from pubsub import pub
 
-from Keyboard import Keyboard
-from Movement.CarControl import CarControl
-from Util.Enums import MovementType
+from keyboard import Keyboard
+from Movement.car_control import CarControl
+from Util.enums import MovementType
 
 
 class Controller(Thread):
@@ -39,7 +39,7 @@ class Controller(Thread):
 
         self.__isRunning = True
 
-        # Main Loop
+        # Program Loop
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
 

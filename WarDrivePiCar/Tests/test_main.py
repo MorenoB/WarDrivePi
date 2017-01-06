@@ -1,12 +1,12 @@
 from unittest import TestCase
-from WarDrivePiCar.Main import Main
-from WarDrivePiCar.Util.TestingUtils import TestThread
+from program import Program
+from Util.testing import TestThread
 import sys
 import time
 
 class TestMain(TestCase):
     def test_movement(self):
-        program = Main()
+        program = Program()
 
         new_thread = TestThread(program)
         new_thread.start()
