@@ -1,11 +1,12 @@
-from Movement.CarControl import CarControl
-from threading import Thread
-from Enums import MovementType, TurnModeType
-from pubsub import pub
-import sys
 import os
+import sys
 import time
+from threading import Thread
 
+from pubsub import pub
+
+from Movement.CarControl import CarControl
+from Util.Enums import MovementType, TurnModeType
 
 # Make sure we only use this component in a LINUX os. Otherwise shut down..
 importError = False
