@@ -1,8 +1,16 @@
+# Test files need to re register themselves for when using shell
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                "../")))
+
 from unittest import TestCase
 from program import Program
 from Util.testing import TestThread
 import sys
 import time
+import os
+
 
 class TestMain(TestCase):
     def test_movement(self):
@@ -11,24 +19,18 @@ class TestMain(TestCase):
         new_thread = TestThread(program)
         new_thread.start()
 
-        stdin = sys.stdin
+        current_dir = os.path.abspath(os.path.dirname(__file__))
+        file_path = os.path.join(current_dir, 'simulatedInput.txt')
 
-        try:
-            # Simulate keyboard presses to test our keyboard listeners inside our Controller module.
-            # os.write(0, "\x1b[A")
+        sys.stdin = open(file_path, 'r')
 
-            sys.stdin = open('simulatedInput.txt', 'r')
+        time.sleep(1)
 
-            time.sleep(1)
+        print "Simulating Keyboard Interrupt..."
+        program.stop()
 
-            print "Simulating Keyboard Interrupt..."
-            program.stop()
-
-        except IOError:
-            pass
-
+        time.sleep(1)
         print "Checking if program is done..."
 
-        # sys.stdin = stdin
         self.assertEquals(program.is_running(), False)
 

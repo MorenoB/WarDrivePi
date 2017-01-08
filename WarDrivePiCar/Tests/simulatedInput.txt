@@ -2,4 +2,3 @@ M
 \x1b[A
 \x1b[C
 \x1b[D
-W
