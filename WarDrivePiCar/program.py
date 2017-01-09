@@ -1,22 +1,24 @@
 from threading import Thread
-from Controller.Controller import Controller
+from Controller.controller import Controller
+from Controller.keyboard import Keyboard
 # from Sniffer.Sniffer import Sniffer
 
 from time import sleep
 
 
-class Main:
+class Program:
     __CycleTime = 0.1  # 100 ms
     __isRunning = True
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
         # Sniffer()
+        Controller(),
+        Keyboard()
     ]
 
     def __init__(self):
-        # Controller class need to have a reference to the main class in order to quit the application with keyboard
-        self.__Threads.append(Controller(self))
+        return
 
     def start(self):
 
@@ -38,7 +40,7 @@ class Main:
                 print "Exception in 'main': {0}".format(exception)
 
     def stop(self):
-        print "Main stop method called."
+        print "Program stop method called."
         self.__join_threads(self.__Threads)
         self.__isRunning = False
 
@@ -49,6 +51,9 @@ class Main:
     def __start_threads(threads):
         for thread_instance in threads:
             if not isinstance(thread_instance, Thread):
+                continue
+
+            if thread_instance.name.endswith("--"):
                 continue
 
             thread_instance.setName(type(thread_instance).__name__)

@@ -1,56 +1,35 @@
+# Test files need to re register themselves for when using shell
+import sys
+import os
+sys.path.insert(1, os.path.abspath(os.path.dirname(__file__)))
+
 from unittest import TestCase
-from pynput.keyboard import Controller, Key
-from WarDrivePiCar import Main
-from threading import Thread
+from program import Program
+from Util.testing import TestThread
+import sys
 import time
+import os
 
 
 class TestMain(TestCase):
     def test_movement(self):
-        program = Main.Main()
+        program = Program()
 
         new_thread = TestThread(program)
         new_thread.start()
 
-        # Wait a some time until we simulate key presses
+        current_dir = os.path.abspath(os.path.dirname(__file__))
+        file_path = os.path.join(current_dir, 'simulatedInput.txt')
+
+        sys.stdin = open(file_path, 'r')
+
         time.sleep(1)
 
-        # Simulate keyboard presses to test our keyboard listeners inside our Controller module.
-        simulated_keyboard = Controller()
+        print "Simulating Keyboard Interrupt..."
+        program.stop()
 
-        simulated_keyboard.press(Key.up)
-        simulated_keyboard.release(Key.up)
-
-        simulated_keyboard.press(Key.down)
-        simulated_keyboard.release(Key.down)
-
-        simulated_keyboard.press(Key.left)
-        simulated_keyboard.release(Key.left)
-
-        simulated_keyboard.press(Key.right)
-        simulated_keyboard.release(Key.right)
-
-        print "Simulating shutdown keyboard event..."
-        simulated_keyboard.press(Key.esc)
-        simulated_keyboard.release(Key.esc)
-
-        # Wait for program to terminate.
         time.sleep(1)
-
         print "Checking if program is done..."
+
         self.assertEquals(program.is_running(), False)
 
-        program.stop()
-        new_thread.join()
-
-
-class TestThread(Thread):
-    __thread_obj = None
-
-    def __init__(self, thread_obj):
-        Thread.__init__(self)
-        Thread.name = "Test thread"
-        self.__thread_obj = thread_obj
-
-    def run(self):
-        self.__thread_obj.start()

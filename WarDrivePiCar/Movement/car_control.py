@@ -67,7 +67,7 @@ class CarControl:
     SPEED_ENCODER_RIGHT_DIRECTION = 6  # Right direction speed encoder value
 
     # Values from the wheel speed encoders.
-    direction = ""
+    __lastPulseTickDirection = ""
     __numberOfRightPulses = 0
     __numberOfLeftPulses = 0
 
@@ -80,10 +80,13 @@ class CarControl:
     __COUNTER_ROTATING_WHEELS_SPEED = 5
 
     __lastWheelEncoderPinUsed = -1
+    __currentOperation = "NONE"
 
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
+        return
 
+    def setup_pins(self):
         gpio.setwarnings(False)
 
         # use BCM pin numbering
@@ -117,18 +120,35 @@ class CarControl:
         gpio.add_event_detect(self.SPEED_ENCODER_RIGHT_INTERRUPT, gpio.FALLING,
                               self.__right_encoder_callback)
 
-        # cleanup(). Sets all motors off and sets GPIO to standard values
+    # cleanup(). Sets all motors off and sets GPIO to standard values
     def cleanup(self):
+
+        if self.__currentOperation == "CLEANUP":
+            return
+
         self.stop()
         gpio.cleanup()
+        self.__currentOperation = "CLEANUP"
+
+    def get_current_operation(self):
+        return self.__currentOperation
 
     # stop(): Stops both motors
     def stop(self):
+
+        if self.__currentOperation == "STOP":
+            return
+
         self.pin_ena.ChangeDutyCycle(0)
         self.pin_enb.ChangeDutyCycle(0)
+        self.__currentOperation = "STOP"
 
     # forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
     def forward(self, speed):
+
+        if self.__currentOperation == "FORWARD " + str(speed):
+            return
+
         self.__set_pins_to_forward_mode()
 
         self.pin_ena.ChangeDutyCycle(speed)
@@ -137,8 +157,14 @@ class CarControl:
         self.pin_ena.ChangeFrequency(speed + 5)
         self.pin_enb.ChangeFrequency(speed + 5)
 
+        self.__currentOperation = "FORWARD " + str(speed)
+
     # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
     def reverse(self, speed):
+
+        if self.__currentOperation == "REVERSE " + str(speed):
+            return
+
         self.__set_pins_to_reverse_mode()
 
         self.pin_ena.ChangeDutyCycle(speed)
@@ -147,8 +173,14 @@ class CarControl:
         self.pin_ena.ChangeFrequency(speed + 5)
         self.pin_enb.ChangeFrequency(speed + 5)
 
+        self.__currentOperation = "REVERSE " + str(speed)
+
     # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_left(self, speed):
+
+        if self.__currentOperation == "SPINLEFT " + str(speed):
+            return
+
         gpio.output(self.IN1, gpio.LOW)
         gpio.output(self.IN2, gpio.HIGH)
 
@@ -161,8 +193,14 @@ class CarControl:
         self.pin_ena.ChangeFrequency(speed + 5)
         self.pin_enb.ChangeFrequency(speed + 5)
 
+        self.__currentOperation = "SPINLEFT " + str(speed)
+
     # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_right(self, speed):
+
+        if self.__currentOperation == "SPINRIGHT " + str(speed):
+            return
+
         gpio.output(self.IN1, gpio.HIGH)
         gpio.output(self.IN2, gpio.LOW)
 
@@ -175,17 +213,31 @@ class CarControl:
         self.pin_ena.ChangeFrequency(speed + 5)
         self.pin_enb.ChangeFrequency(speed + 5)
 
+        self.__currentOperation = "SPINRIGHT " + str(speed)
+
     def turn_left(self, reverse=False):
+
+        if self.__currentOperation == "TURNLEFT " + str(reverse):
+            return
+
         if reverse:
             self.__turn_reverse(self.__ROTATING_WHEELS_SPEED, self.__COUNTER_ROTATING_WHEELS_SPEED)
         else:
             self.__turn_forward(self.__ROTATING_WHEELS_SPEED, self.__COUNTER_ROTATING_WHEELS_SPEED)
 
+        self.__currentOperation = "TURNLEFT " + str(reverse)
+
     def turn_right(self, reverse=False):
+
+        if self.__currentOperation == "TURNRIGHT " + str(reverse):
+            return
+
         if reverse:
             self.__turn_reverse(self.__COUNTER_ROTATING_WHEELS_SPEED, self.__ROTATING_WHEELS_SPEED)
         else:
             self.__turn_forward(self.__COUNTER_ROTATING_WHEELS_SPEED, self.__ROTATING_WHEELS_SPEED)
+
+        self.__currentOperation = "TURNRIGHT " + str(reverse)
 
     # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
     # rightSpeed <= 100
@@ -231,7 +283,7 @@ class CarControl:
         else:
             self.__numberOfLeftPulses -= 1
 
-        self.direction = "LEFT"
+        self.__lastPulseTickDirection = "LEFT"
         pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
 
     def __right_encoder_callback(self, channel):
@@ -244,5 +296,5 @@ class CarControl:
         else:
             self.__numberOfRightPulses -= 1
 
-        self.direction = "RIGHT"
+        self.__lastPulseTickDirection = "RIGHT"
         pub.sendMessage(self.EVENT_ON_RIGHT_ENCODER, right_pulses=self.__numberOfRightPulses)

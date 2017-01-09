@@ -1,13 +1,13 @@
 import os
 import sys
 import pydevd
-import SysArgv
-import Main
+import sys_argv
+import program
 
 if __name__ == "__main__":
     print "\nPython {0}\n".format(sys.version)
 
-    SysArgv = SysArgv.SysArgv()
+    SysArgv = sys_argv.SysArgv()
 
     if not SysArgv.validate():
         SysArgv.print_argv()
@@ -28,7 +28,7 @@ if __name__ == "__main__":
             os.system("ping -c 1 {0}".format(SysArgv.items['trace']))
 
     # Boot up program
-    program = Main.Main()
+    program = program.Program()
     program.start()
 
     if pydevd.connected:

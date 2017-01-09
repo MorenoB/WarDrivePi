@@ -1,5 +1,10 @@
+# Test files need to re register themselves for when using shell
+import sys
+import os
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
+
 from unittest import TestCase
-from Movement.CarControl import CarControl
+from Movement.car_control import CarControl
 
 # Import GPIO library and support mock-up fallback
 try:
@@ -20,6 +25,7 @@ class Test__carMovement(TestCase):
 
     def test_init(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
 
         self.assertEquals(GPIO.getmode(), GPIO.BCM)
 
@@ -27,6 +33,7 @@ class Test__carMovement(TestCase):
 
     def test_stop(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
 
         __carMovement.stop()
 
@@ -35,12 +42,14 @@ class Test__carMovement(TestCase):
 
     def test_cleanup(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
 
         __carMovement.cleanup()
         self.skipTest("Due to unexposed functions/variables.")
 
     def test_forward(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
         __carMovement.forward(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
@@ -53,6 +62,7 @@ class Test__carMovement(TestCase):
 
     def test_turn_lef_forward(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
         __carMovement.turn_left()
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
@@ -65,6 +75,8 @@ class Test__carMovement(TestCase):
 
     def test_turn_right_reverse(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
+
         __carMovement.turn_right(True)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
@@ -77,6 +89,8 @@ class Test__carMovement(TestCase):
 
     def test_reverse(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
+
         __carMovement.reverse(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
@@ -89,6 +103,8 @@ class Test__carMovement(TestCase):
 
     def test_spin_left(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
+
         __carMovement.spin_left(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.LOW)
@@ -101,6 +117,8 @@ class Test__carMovement(TestCase):
 
     def test_spin_right(self):
         __carMovement = CarControl()
+        __carMovement.setup_pins()
+
         __carMovement.spin_right(15)
 
         self.assertEquals(GPIO.input(__carMovement.IN1), GPIO.HIGH)
