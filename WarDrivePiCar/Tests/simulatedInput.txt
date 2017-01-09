@@ -1,4 +1,7 @@
-M
 \x1b[A
+\x1b[B
+\x1b[C
+\x1b[D
+M
 \x1b[C
 \x1b[D
