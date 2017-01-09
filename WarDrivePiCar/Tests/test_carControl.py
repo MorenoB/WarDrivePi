@@ -1,8 +1,7 @@
 # Test files need to re register themselves for when using shell
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                                "../")))
+sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
 from unittest import TestCase
 from Movement.car_control import CarControl
