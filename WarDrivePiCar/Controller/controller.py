@@ -120,6 +120,11 @@ class Controller(Thread):
         pub.unsubscribe(self.__on_left_pulse_update, self.__carMovement.EVENT_ON_LEFT_ENCODER)
         pub.unsubscribe(self.__on_right_pulse_update, self.__carMovement.EVENT_ON_RIGHT_ENCODER)
 
+        pub.unsubscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
+
+        pub.unsubscribe(self.__on_latitude_changed, GPS.EVENT_ON_LATITUDE_CHANGED)
+        pub.unsubscribe(self.__on_longitude_changed, GPS.EVENT_ON_LONGITUDE_CHANGED)
+
         print "Cleaning up GPIO"
         self.__carMovement.cleanup()
         print "Shutting down controller..."
