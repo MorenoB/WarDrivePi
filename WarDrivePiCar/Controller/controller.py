@@ -16,13 +16,23 @@ class Controller(Thread):
     # much cm's is between a hole.
 
     __carMovement = None
-    __isRunning = False
 
-    __lastMoveCommand = "NONE"
+    __isRunning = False
     __moveType = MovementType.Idle
 
     __cm_driven_right = 0
     __cm_driven_left = 0
+
+    # Coordinates tweaking
+    __coordinateSensitivity = 0.0001
+
+    # Current coordinates
+    __latitude = 0
+    __longitude = 0
+
+    # Target coordinates
+    __targetLatitude = 0
+    __targetLongitude = 0
 
     def __init__(self):
         Thread.__init__(self)
@@ -57,16 +67,61 @@ class Controller(Thread):
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
 
+            if self.__needs_to_move_to_target_coordinates:
+                self.__go_to_target_coordinates()
+
+    def __needs_to_move_to_target_coordinates(self):
+
+        if self.__targetLatitude == 0 or self.__targetLongitude == 0:
+            return False
+
+        # If our longitude or our latitude is not within a valid range of the target, then we need to move
+        if not self.__targetLatitude - self.__coordinateSensitivity <= self.__latitude <= self.__targetLatitude + \
+                self.__coordinateSensitivity:
+            return True
+
+        if not self.__targetLongitude - self.__coordinateSensitivity <= self.__longitude <= self.__targetLongitude + \
+                self.__coordinateSensitivity:
+            return True
+
+        return False
+
+    def __go_to_target_coordinates(self):
+        difference_latitude = self.__targetLatitude - self.__latitude
+        difference_longitude = self.__targetLongitude - self.__longitude
+
+        # If we are out of range on longitude, do something
+        if not -self.__coordinateSensitivity <= difference_longitude <= self.__coordinateSensitivity:
+            # TODO : Move towards longitude point by moving the car
+            return
+
+        # If we are out of range on latitude, do something
+        if not -self.__coordinateSensitivity <= difference_latitude <= self.__coordinateSensitivity:
+            # TODO : Move towards latitude point by moving the car
+            return
+
+        return
+
     def print_distance_driven(self):
         print "Left cm's driven : " + str(self.__cm_driven_left)
         print "Right cm's driven : " + str(self.__cm_driven_right)
         print "Average distance travelled : ", self.__get_average_distance_driven()
 
     def __on_longitude_changed(self, longitude):
+
+        if self.__longitude == longitude:
+            return
+
         print "Average longitude is now ", longitude
+        self.__longitude = longitude
 
     def __on_latitude_changed(self, latitude):
+
+        if self.__latitude == latitude:
+            return
+
         print "Average latitude is now ", latitude
+        self.__latitude = latitude
 
     def __on_keyboard_movetype_changed(self, move_type):
 
