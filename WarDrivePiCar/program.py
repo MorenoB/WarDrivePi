@@ -1,6 +1,7 @@
 from threading import Thread
 from Controller.controller import Controller
 from Controller.keyboard import Keyboard
+from Communication.gps import GPS
 # from Sniffer.Sniffer import Sniffer
 
 from time import sleep
@@ -14,7 +15,8 @@ class Program:
     __Threads = [
         # Sniffer()
         Controller(),
-        Keyboard()
+        Keyboard(),
+        GPS()
     ]
 
     def __init__(self):
