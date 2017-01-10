@@ -8,6 +8,9 @@ class GPS(Thread):
     __longitudes = []
     __latitudes = []
 
+    # Used in Unit-Tests
+    testing_input = ""
+
     def __init__(self):
         # adb usb
         try:
@@ -25,6 +28,12 @@ class GPS(Thread):
 
             # adb dumpsys location > Dumps/location.txt
             try:
+
+                # Used in Unit-Tests
+                if self.testing_input != "":
+                    self.__retrieve_location_information(self.testing_input)
+                    self.testing_input = ""
+
                 raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
                 self.__retrieve_location_information(raw_location_output)
             except OSError:
@@ -32,13 +41,18 @@ class GPS(Thread):
                 break
             except CalledProcessError:
                 print "Device was not found! Retrying on next loop update..."
-                pass # In case the device was not found, retry again!
+                pass  # In case the device was not found, retry again!
 
         print "Thread '{0}' stopped.".format(self.getName())
 
     def __retrieve_location_information(self, raw_location_output):
         location_providers = []
         for item in raw_location_output.split("\n"):
+
+            # Sometimes the android log will also display a coordinate which is a duplicate.
+            if "LOG" in item:
+                continue
+
             if "mLatitude=" in item:
                 location_providers.append(item.strip())
 

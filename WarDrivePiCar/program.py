@@ -49,6 +49,14 @@ class Program:
     def is_running(self):
         return self.__isRunning
 
+    # Used for testing purposes. This will force the GPS thread to use mock-up location input data.
+    def force_gps_input(self, location_data):
+        for thread_instance in self.__Threads:
+            if not isinstance(thread_instance, GPS):
+                continue
+
+            thread_instance.testing_input = location_data
+
     @staticmethod
     def __start_threads(threads):
         for thread_instance in threads:
