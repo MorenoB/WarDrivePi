@@ -84,8 +84,6 @@ class Controller(Thread):
 
         self.__moveType = move_type
 
-        print "Move-type changed to " + str(move_type)
-
     def __on_left_pulse_update(self, left_pulses):
         self.__cm_driven_left = int(left_pulses) * float(self.__CM_PER_PULSE)
 
