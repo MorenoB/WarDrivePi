@@ -1,6 +1,6 @@
 from threading import Thread
 from time import sleep
-from subprocess import call
+from subprocess import check_output, call
 
 
 class GPS(Thread):
@@ -18,14 +18,36 @@ class GPS(Thread):
 
     def run(self):
 
-        # Program Loop
         while not self.name.endswith("--"):
+            sleep(self.__GPS_POLL_TIME)
+
             # adb dumpsys location > Dumps/location.txt
             try:
-                call(["adb", "shell", "dumpsys", "location"])
+                raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
+                self.__reformat_location_output(raw_location_output)
             except OSError:
                 print "'adb' Command not properly installed on this machine! Shutting down GPS module..."
                 break
-            sleep(self.__GPS_POLL_TIME)
 
         print "Thread '{0}' stopped.".format(self.getName())
+
+    @staticmethod
+    def __reformat_location_output(raw_location_output):
+        location_providers = []
+        for item in raw_location_output.split("\n"):
+            if "mLatitude=" in item:
+                location_providers.append(item.strip())
+
+        print location_providers
+
+        for location_provider in location_providers:
+            suffix = location_provider.split(" ")
+            for item in suffix:
+                if "mLatitude=" in item:
+                    item.replace("mLatitude=", "")
+                    print item
+
+                if "mLongitude=" in item:
+                    item.replace("mLongitude=", "")
+                    print item
+
