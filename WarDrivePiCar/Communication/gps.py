@@ -1,12 +1,20 @@
 from threading import Thread
 from time import sleep
 from subprocess import check_output, call, CalledProcessError
+from pubsub import pub
 
 
 class GPS(Thread):
     __GPS_POLL_TIME = 1  # second
     __longitudes = []
     __latitudes = []
+
+    __average_longitude = 0
+    __average_latitude = 0
+
+    # Event names
+    EVENT_ON_LATITUDE_CHANGED = "OnLatitudeChanged"
+    EVENT_ON_LONGITUDE_CHANGED = "OnLongitudeChanged"
 
     # Used in Unit-Tests
     testing_input = ""
@@ -88,5 +96,10 @@ class GPS(Thread):
         average_longitude /= len(self.__longitudes)
         average_latitude /= len(self.__latitudes)
 
-        print "Average latitude : ", average_latitude
-        print "Average longitude : ", average_longitude
+        if average_latitude != self.__average_latitude:
+            self.__average_latitude = average_latitude
+            pub.sendMessage(self.EVENT_ON_LATITUDE_CHANGED, latitude=self.__average_latitude)
+
+        if average_longitude != self.__average_longitude:
+            self.__average_longitude = average_longitude
+            pub.sendMessage(self.EVENT_ON_LONGITUDE_CHANGED, longitude=self.__average_longitude)
