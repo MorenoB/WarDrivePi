@@ -30,6 +30,7 @@
 
 # Import GPIO library and support mock-up fallback
 from pubsub import pub
+from Util.exensions import clamp
 
 try:
     import RPi.GPIO as gpio
@@ -151,6 +152,8 @@ class CarControl:
     # forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
     def forward(self, speed):
 
+        speed = clamp(speed, 0, 100)
+
         if self.__currentOperation == "FORWARD " + str(speed):
             return
 
@@ -167,6 +170,8 @@ class CarControl:
     # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
     def reverse(self, speed):
 
+        speed = clamp(speed, 0, 100)
+
         if self.__currentOperation == "REVERSE " + str(speed):
             return
 
@@ -182,6 +187,8 @@ class CarControl:
 
     # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_left(self, speed):
+
+        speed = clamp(speed, 0, 100)
 
         if self.__currentOperation == "SPINLEFT " + str(speed):
             return
@@ -202,6 +209,8 @@ class CarControl:
 
     # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_right(self, speed):
+
+        speed = clamp(speed, 0, 100)
 
         if self.__currentOperation == "SPINRIGHT " + str(speed):
             return
@@ -247,6 +256,10 @@ class CarControl:
     # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
     # rightSpeed <= 100
     def __turn_forward(self, left_speed, right_speed):
+
+        left_speed = clamp(left_speed, 0, 100)
+        right_speed = clamp(right_speed, 0, 100)
+
         self.__set_pins_to_forward_mode()
 
         self.pin_ena.ChangeDutyCycle(left_speed)
@@ -258,6 +271,9 @@ class CarControl:
     # <= leftSpeed,rightSpeed <= 100
     def __turn_reverse(self, left_speed, right_speed):
         self.__set_pins_to_reverse_mode()
+
+        left_speed = clamp(left_speed, 0, 100)
+        right_speed = clamp(right_speed, 0, 100)
 
         self.pin_ena.ChangeDutyCycle(left_speed)
         self.pin_enb.ChangeDutyCycle(right_speed)
