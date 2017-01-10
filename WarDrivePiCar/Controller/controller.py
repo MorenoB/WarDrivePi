@@ -11,7 +11,7 @@ from Util.enums import MovementType
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
     __CAR_SPEED = 50  # 50% of the motor speed.
-    __CM_PER_PULSE = 0.5  # TODO : Need to verify in Real-Life, will need to bring a ruler to the car and check how
+    __CM_PER_PULSE = 0.2  # TODO : Need to verify in Real-Life, will need to bring a ruler to the car and check how
     # much cm's is between a hole.
 
     __carMovement = None
@@ -87,7 +87,7 @@ class Controller(Thread):
         print "Move-type changed to " + str(move_type)
 
     def __on_left_pulse_update(self, left_pulses):
-        self.__cm_driven_left = int(left_pulses) * int(self.__CM_PER_PULSE)
+        self.__cm_driven_left = int(left_pulses) * float(self.__CM_PER_PULSE)
 
         print "Left pulses: ", left_pulses
 
@@ -96,7 +96,7 @@ class Controller(Thread):
         self.print_distance_driven()
 
     def __on_right_pulse_update(self, right_pulses):
-        self.__cm_driven_right = int(right_pulses) * int(self.__CM_PER_PULSE)
+        self.__cm_driven_right = int(right_pulses) * float(self.__CM_PER_PULSE)
 
         print "Right pulses: ", right_pulses
 
