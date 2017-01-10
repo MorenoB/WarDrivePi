@@ -1,10 +1,12 @@
 from threading import Thread
 from time import sleep
-from subprocess import check_output, call
+from subprocess import check_output, call, CalledProcessError
 
 
 class GPS(Thread):
     __GPS_POLL_TIME = 1  # second
+    __longitudes = []
+    __latitudes = []
 
     def __init__(self):
         # adb usb
@@ -24,30 +26,53 @@ class GPS(Thread):
             # adb dumpsys location > Dumps/location.txt
             try:
                 raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
-                self.__reformat_location_output(raw_location_output)
+                self.__retrieve_location_information(raw_location_output)
             except OSError:
                 print "'adb' Command not properly installed on this machine! Shutting down GPS module..."
                 break
+            except CalledProcessError:
+                print "Device was not found! Retrying on next loop update..."
+                pass # In case the device was not found, retry again!
 
         print "Thread '{0}' stopped.".format(self.getName())
 
-    @staticmethod
-    def __reformat_location_output(raw_location_output):
+    def __retrieve_location_information(self, raw_location_output):
         location_providers = []
         for item in raw_location_output.split("\n"):
             if "mLatitude=" in item:
                 location_providers.append(item.strip())
 
-        print location_providers
+        if len(location_providers) < 1:
+            return
+
+        self.__latitudes = []
+        self.__longitudes = []
 
         for location_provider in location_providers:
             suffix = location_provider.split(" ")
             for item in suffix:
                 if "mLatitude=" in item:
                     item.replace("mLatitude=", "")
-                    print item
+                    self.__latitudes.append(item)
 
                 if "mLongitude=" in item:
                     item.replace("mLongitude=", "")
-                    print item
+                    self.__longitudes.append(item)
 
+        self.__print_average_coordinates()
+
+    def __print_average_coordinates(self):
+        average_longitude = 0
+        average_latitude = 0
+
+        for longitude in self.__longitudes:
+            average_longitude += float(longitude)
+
+        for latitude in self.__latitudes:
+            average_latitude += float(latitude)
+
+        average_longitude /= len(self.__longitudes)
+        average_latitude /= len(self.__latitudes)
+
+        print "Average latitude : ", average_latitude
+        print "Average longitude : ", average_longitude
