@@ -1,0 +1,286 @@
+Current Location Manager state:
+  sProvidersLoaded=true
+  Listeners:
+    null
+    null
+    null
+    null
+  Location Listeners:
+    Receiver{409d9338 Listener android.os.BinderProxy@408a3628}mUpdateRecords: {gps=UpdateRecd{40980df0 mProvider: gps mUid: 10078}}:
+      gps:
+        UpdateRecord{40980df0 mProvider: gps mUid: 10078}
+        mProvider=gps mReceiver=Receiver{409d9338 Listener android.os.BinderProxy@408a3628}mUateRecords: {gps=UpdateRecord{40980df0 mProvider: gps mUid: 10078}}
+        mMinTime=0 mMinDistance=0.0
+        mSingleShot=false
+        mUid=10078
+        mLastFixBroadcast:
+        mLastStatusBroadcast=0
+    Receiver{4070b2f0 Listener android.location.LocationManager$ListenerTransport@40561900}mUateRecords: {passive=UpdateRecord{406c3360 mProvider: passive mUid: 1000}}:
+      passive:
+        UpdateRecord{406c3360 mProvider: passive mUid: 1000}
+        mProvider=passive mReceiver=Receiver{4070b2f0 Listener android.location.LocationManag$ListenerTransport@40561900}mUpdateRecords: {passive=UpdateRecord{406c3360 mProvider: passiveUid: 1000}}
+        mMinTime=0 mMinDistance=20000.0
+        mSingleShot=false
+        mUid=1000
+        mLastFixBroadcast:
+          mProvider=network mTime=1484049639376
+          mLatitude=53.2120247 mLongitude=5.7978966
+          mHasAltitude=false mAltitude=0.0
+          mHasSpeed=false mSpeed=0.0
+          mHasBearing=false mBearing=0.0
+          mHasAccuracy=true mAccuracy=36.0
+          mExtras=Bundle[mParcelledData.dataSize=148]
+        mLastStatusBroadcast=0
+    Receiver{40818640 Listener android.location.LocationManager$ListenerTransport@40885228}mUateRecords: {network=UpdateRecord{4079f630 mProvider: network mUid: 1000}}:
+      network:
+        UpdateRecord{4079f630 mProvider: network mUid: 1000}
+        mProvider=network mReceiver=Receiver{40818640 Listener android.location.LocationManag$ListenerTransport@40885228}mUpdateRecords: {network=UpdateRecord{4079f630 mProvider: networkUid: 1000}}
+        mMinTime=86400000 mMinDistance=0.0
+        mSingleShot=false
+        mUid=1000
+        mLastFixBroadcast:
+          mProvider=network mTime=1484049639376
+          mLatitude=53.2120247 mLongitude=5.7978966
+          mHasAltitude=false mAltitude=0.0
+          mHasSpeed=false mSpeed=0.0
+          mHasBearing=false mBearing=0.0
+          mHasAccuracy=true mAccuracy=36.0
+          mExtras=Bundle[mParcelledData.dataSize=148]
+        mLastStatusBroadcast=0
+    Receiver{40826948 Listener android.os.BinderProxy@40826910}mUpdateRecords: {passive=Updatecord{408269f0 mProvider: passive mUid: 10070}}:
+      passive:
+        UpdateRecord{408269f0 mProvider: passive mUid: 10070}
+        mProvider=passive mReceiver=Receiver{40826948 Listener android.os.BinderProxy@4082691mUpdateRecords: {passive=UpdateRecord{408269f0 mProvider: passive mUid: 10070}}
+        mMinTime=0 mMinDistance=0.0
+        mSingleShot=false
+        mUid=10070
+        mLastFixBroadcast:
+          mProvider=network mTime=1484049639376
+          mLatitude=53.2120247 mLongitude=5.7978966
+          mHasAltitude=false mAltitude=0.0
+          mHasSpeed=false mSpeed=0.0
+          mHasBearing=false mBearing=0.0
+          mHasAccuracy=true mAccuracy=36.0
+          mExtras=Bundle[mParcelledData.dataSize=148]
+        mLastStatusBroadcast=0
+  Records by Provider:
+    passive:
+      UpdateRecord{406c3360 mProvider: passive mUid: 1000}:
+        UpdateRecord{406c3360 mProvider: passive mUid: 1000}
+        mProvider=passive mReceiver=Receiver{4070b2f0 Listener android.location.LocationManag$ListenerTransport@40561900}mUpdateRecords: {passive=UpdateRecord{406c3360 mProvider: passiveUid: 1000}}
+        mMinTime=0 mMinDistance=20000.0
+        mSingleShot=false
+        mUid=1000
+        mLastFixBroadcast:
+          mProvider=network mTime=1484049639376
+          mLatitude=53.2120247 mLongitude=5.7978966
+          mHasAltitude=false mAltitude=0.0
+          mHasSpeed=false mSpeed=0.0
+          mHasBearing=false mBearing=0.0
+          mHasAccuracy=true mAccuracy=36.0
+          mExtras=Bundle[mParcelledData.dataSize=148]
+        mLastStatusBroadcast=0
+      UpdateRecord{408269f0 mProvider: passive mUid: 10070}:
+        UpdateRecord{408269f0 mProvider: passive mUid: 10070}
+        mProvider=passive mReceiver=Receiver{40826948 Listener android.os.BinderProxy@4082691mUpdateRecords: {passive=UpdateRecord{408269f0 mProvider: passive mUid: 10070}}
+        mMinTime=0 mMinDistance=0.0
+        mSingleShot=false
+        mUid=10070
+        mLastFixBroadcast:
+          mProvider=network mTime=1484049639376
+          mLatitude=53.2120247 mLongitude=5.7978966
+          mHasAltitude=false mAltitude=0.0
+          mHasSpeed=false mSpeed=0.0
+          mHasBearing=false mBearing=0.0
+          mHasAccuracy=true mAccuracy=36.0
+          mExtras=Bundle[mParcelledData.dataSize=148]
+        mLastStatusBroadcast=0
+    gps:
+      UpdateRecord{40980df0 mProvider: gps mUid: 10078}:
+        UpdateRecord{40980df0 mProvider: gps mUid: 10078}
+        mProvider=gps mReceiver=Receiver{409d9338 Listener android.os.BinderProxy@408a3628}mUateRecords: {gps=UpdateRecord{40980df0 mProvider: gps mUid: 10078}}
+        mMinTime=0 mMinDistance=0.0
+        mSingleShot=false
+        mUid=10078
+        mLastFixBroadcast:
+        mLastStatusBroadcast=0
+    network:
+      UpdateRecord{4079f630 mProvider: network mUid: 1000}:
+        UpdateRecord{4079f630 mProvider: network mUid: 1000}
+        mProvider=network mReceiver=Receiver{40818640 Listener android.location.LocationManag$ListenerTransport@40885228}mUpdateRecords: {network=UpdateRecord{4079f630 mProvider: networkUid: 1000}}
+        mMinTime=86400000 mMinDistance=0.0
+        mSingleShot=false
+        mUid=1000
+        mLastFixBroadcast:
+          mProvider=network mTime=1484049639376
+          mLatitude=53.2120247 mLongitude=5.7978966
+          mHasAltitude=false mAltitude=0.0
+          mHasSpeed=false mSpeed=0.0
+          mHasBearing=false mBearing=0.0
+          mHasAccuracy=true mAccuracy=36.0
+          mExtras=Bundle[mParcelledData.dataSize=148]
+        mLastStatusBroadcast=0
+  Last Known Locations:
+    passive:
+      mProvider=network mTime=1484049639376
+      mLatitude=53.2120247 mLongitude=5.7978966
+      mHasAltitude=false mAltitude=0.0
+      mHasSpeed=false mSpeed=0.0
+      mHasBearing=false mBearing=0.0
+      mHasAccuracy=true mAccuracy=36.0
+      mExtras=Bundle[mParcelledData.dataSize=148]
+    network:
+      mProvider=network mTime=1484049639376
+      mLatitude=53.2120247 mLongitude=5.7978966
+      mHasAltitude=false mAltitude=0.0
+      mHasSpeed=false mSpeed=0.0
+      mHasBearing=false mBearing=0.0
+      mHasAccuracy=true mAccuracy=36.0
+      mExtras=Bundle[mParcelledData.dataSize=148]
+  mProximityReceiver=null
+  mProximityListener=null
+  Enabled Providers:
+    passive
+gps Internal State:
+GPS SiRF Debug Textnetwork Internal State:
+ANDROID minProtocolVersion 1 maxProtocolVersion 1 releaseVersion -1
+elapsedRealtime 2985765 is time 01-10 13:03:49.606
+
+01-10 12:54:04.789 @2400948 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2400916, devices=[[00-508-32-FF-6E, rssi=-45, ssid=SweexWireless], [58-AC-78-0F-9C-D0, rssi=-69, ssid=eduroam], [E4-A5D-9F-95-40, rssi=-81, ssid=eduroam], [58-AC-78-43-89-D0, rssi=-85, ssid=eduroam], [58-AC-78--21-F0, rssi=-85, ssid=eduroam], [E4-AA-5D-BD-09-E0, rssi=-87, ssid=eduroam], [58-AC-78-0F-9C1, rssi=-68, ssid=NHL-GAST], [E4-AA-5D-9F-95-41, rssi=-81, ssid=NHL-GAST], [E4-AA-5D-C3-3D-61rssi=-85, ssid=NHL-GAST], [58-AC-78-43-89-D1, rssi=-85, ssid=NHL-GAST], [58-AC-78-43-21-F1, ri=-85, ssid=NHL-GAST], [E4-AA-5D-BF-89-41, rssi=-88, ssid=NHL-GAST], ]]
+01-10 12:54:04.789 @2400948 MILLIS_SINCE_BOOT
+01-10 12:54:04.789 @2400948 ALARM_RESET 0 86906025
+
+01-10 12:54:07.848 @2404007 ALARM_RING 0
+01-10 12:54:07.848 @2404007 MILLIS_SINCE_BOOT
+01-10 12:54:07.848 @2404007 ALARM_RESET 0 86906025
+
+01-10 12:54:09.730 @2405889 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2405787, devices=[[00-508-32-FF-6E, rssi=-44, ssid=SweexWireless], [58-AC-78-0F-9C-D0, rssi=-71, ssid=eduroam], [E4-A5D-9F-95-40, rssi=-74, ssid=eduroam], [58-AC-78-43-89-D0, rssi=-84, ssid=eduroam], [58-AC-78--21-F0, rssi=-86, ssid=eduroam], [E4-AA-5D-BF-89-40, rssi=-87, ssid=eduroam], [E4-AA-5D-BD-090, rssi=-90, ssid=eduroam], [E4-AA-5D-C3-3D-60, rssi=-90, ssid=eduroam], [58-AC-78-0F-9C-D1, si=-70, ssid=NHL-GAST], [E4-AA-5D-9F-95-41, rssi=-74, ssid=NHL-GAST], [58-AC-78-43-21-F1, rss-86, ssid=NHL-GAST], [58-AC-78-43-89-D1, rssi=-87, ssid=NHL-GAST], [E4-AA-5D-BD-09-E1, rssi=-, ssid=NHL-GAST], ]]
+01-10 12:54:09.730 @2405889 MILLIS_SINCE_BOOT
+01-10 12:54:09.730 @2405889 ALARM_RESET 0 86906025
+
+01-10 12:54:53.519 @2449678 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2449591, devices=[[58-AC8-0F-9C-D0, rssi=-72, ssid=eduroam], [E4-AA-5D-9F-95-40, rssi=-75, ssid=eduroam], [58-AC-78-489-D0, rssi=-83, ssid=eduroam], [58-AC-78-43-21-F0, rssi=-85, ssid=eduroam], [E4-AA-5D-C3-3D-, rssi=-85, ssid=eduroam], [E4-AA-5D-BD-09-E0, rssi=-89, ssid=eduroam], [E4-AA-5D-B0-17-90, ri=-90, ssid=eduroam], ]]
+01-10 12:54:53.520 @2449679 MILLIS_SINCE_BOOT
+01-10 12:54:53.520 @2449679 ALARM_RESET 0 86906025
+
+01-10 12:56:30.441 @2546600 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2546527, devices=[[58-AC8-0F-9C-D0, rssi=-62, ssid=eduroam], [E4-AA-5D-9F-95-40, rssi=-76, ssid=eduroam], [58-AC-78-489-D0, rssi=-83, ssid=eduroam], [E4-AA-5D-C3-3D-60, rssi=-86, ssid=eduroam], [58-AC-78-10-CE-, rssi=-86, ssid=eduroam], [58-AC-78-43-21-F0, rssi=-86, ssid=eduroam], [E4-AA-5D-BD-09-E0, ri=-88, ssid=eduroam], [E4-AA-5D-BF-89-40, rssi=-89, ssid=eduroam], ]]
+01-10 12:56:30.441 @2546600 MILLIS_SINCE_BOOT
+01-10 12:56:30.441 @2546600 ALARM_RESET 0 86906025
+
+01-10 12:58:51.326 @2687485 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2687419, devices=[[00-508-32-FF-6E, rssi=-59, ssid=SweexWireless], [58-AC-78-0F-9C-D0, rssi=-74, ssid=eduroam], [E4-A5D-9F-95-40, rssi=-84, ssid=eduroam], [58-AC-78-0F-9C-D1, rssi=-74, ssid=NHL-GAST], [E4-AA-5DF-95-41, rssi=-84, ssid=NHL-GAST], ]]
+01-10 12:58:51.327 @2687486 MILLIS_SINCE_BOOT
+01-10 12:58:51.327 @2687486 ALARM_RESET 0 86906025
+
+01-10 12:58:54.468 @2690627 ALARM_RING 0
+01-10 12:58:54.468 @2690627 MILLIS_SINCE_BOOT
+01-10 12:58:54.468 @2690627 ALARM_RESET 0 86906025
+
+01-10 12:58:56.287 @2692446 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2692435, devices=[[58-AC8-0F-9C-D0, rssi=-75, ssid=eduroam], [E4-AA-5D-9F-95-40, rssi=-90, ssid=eduroam], [58-AC-78-09C-D1, rssi=-75, ssid=NHL-GAST], ]]
+01-10 12:58:56.287 @2692446 MILLIS_SINCE_BOOT
+01-10 12:58:56.287 @2692446 ALARM_RESET 0 86906025
+
+01-10 12:59:11.799 @2707958 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2707888, devices=[[58-AC8-0F-9C-D0, rssi=-70, ssid=eduroam], [58-AC-78-43-21-F0, rssi=-83, ssid=eduroam], [E4-AA-5D-995-40, rssi=-84, ssid=eduroam], [58-AC-78-10-CE-90, rssi=-84, ssid=eduroam], [58-AC-78-43-89-, rssi=-87, ssid=eduroam], [E4-AA-5D-BD-09-E0, rssi=-88, ssid=eduroam], [E4-AA-5D-BF-89-40, ri=-91, ssid=eduroam], [E4-AA-5D-C3-3D-60, rssi=-91, ssid=eduroam], ]]
+01-10 12:59:11.799 @2707958 MILLIS_SINCE_BOOT
+01-10 12:59:11.799 @2707958 ALARM_RESET 0 86906025
+
+01-10 13:00:17.023 @2773182 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2773131, devices=[[58-AC8-0F-9C-D0, rssi=-60, ssid=eduroam], [E4-AA-5D-9F-95-40, rssi=-83, ssid=eduroam], [E4-AA-5D-C3D-60, rssi=-85, ssid=eduroam], [58-AC-78-43-89-D0, rssi=-85, ssid=eduroam], [E4-AA-5D-D2-C3-, rssi=-90, ssid=eduroam], ]]
+01-10 13:00:17.023 @2773182 MILLIS_SINCE_BOOT
+01-10 13:00:17.023 @2773182 ALARM_RESET 0 86906025
+01-10 13:00:33.838 @2789997 LOG androidNlpServiceThread adding listener com.google.android.lotion.internal.client.NetworkLocationClient$1@40555580 with period 2147483647
+01-10 13:00:33.838 @2789997 LOG androidNetworkLocationListeners Still have listener com.googlandroid.location.internal.client.NetworkLocationClient$1@40555580
+
+01-10 13:00:33.838 @2789997 SET_PERIOD 2147483647 trigger true
+01-10 13:00:33.838 @2789997 MILLIS_SINCE_BOOT
+01-10 13:00:33.838 @2789997 WAKELOCK_ACQUIRE 0
+01-10 13:00:33.842 @2790001 MILLIS_SINCE_BOOT
+01-10 13:00:33.843 @2790002 CELL_REQUEST_SCAN
+01-10 13:00:33.843 @2790002 ALARM_RESET 0 2795002
+
+01-10 13:00:34.006 @2790165 CELL_SCAN_RESULTS [cid: 0 lac: 0 mcc: 204 mnc: 16 radioType: 3 sialStrength: -9999 neighbors[]]
+01-10 13:00:34.006 @2790165 MILLIS_SINCE_BOOT
+01-10 13:00:34.019 @2790178 LOG WifiLocator Too many cache  misses. Need server request. hasLation=0 noLocation=0 cacheMiss=5
+01-10 13:00:34.019 @2790178 MILLIS_SINCE_BOOT
+01-10 13:00:34.019 @2790178 MILLIS_SINCE_BOOT
+01-10 13:00:34.019 @2790178 LOG CellLocator Primary cell is in cache with no location.
+01-10 13:00:34.019 @2790178 MILLIS_SINCE_BOOT
+01-10 13:00:34.024 @2790183 MILLIS_SINCE_BOOT
+01-10 13:00:34.024 @2790183 GLS_QUERY
+01-10 13:00:34.036 @2790195 ALARM_RESET 0 2795002
+01-10 13:00:34.056 @2790215 LOG androidNlpServiceThread updateState: shouldBeEnabled false shldBeRunning false
+01-10 13:00:34.056 @2790215 LOG androidNlpServiceThread Destroying RealOs
+01-10 13:00:34.056 @2790215 LOG NetworkLocationCallbackRunner quit
+01-10 13:00:34.060 @2790219 ALARM_CANCEL
+01-10 13:00:34.060 @2790219 WAKELOCK_RELEASE 0
+01-10 13:00:34.586 @2790745 LOG androidNlpServiceThread adding listener com.google.android.lotion.internal.client.NetworkLocationClient$1@40555580 with period 86400
+01-10 13:00:34.586 @2790745 LOG androidNetworkLocationListeners Still have listener com.googlandroid.location.internal.client.NetworkLocationClient$1@40555580
+01-10 13:00:34.674 @2790833 LOG androidNlpServiceThread adding listener com.google.android.lotion.internal.client.NetworkLocationClient$1@40555580 with period 86400
+01-10 13:00:34.674 @2790833 LOG androidNetworkLocationListeners Still have listener com.googlandroid.location.internal.client.NetworkLocationClient$1@40555580
+01-10 13:00:36.253 @2792412 LOG androidNlpServiceThread updateState: shouldBeEnabled true shodBeRunning true
+01-10 13:00:36.254 @2792413 LOG NetworkLocationRealOs No existing nlp persistent state.
+01-10 13:00:36.254 @2792413 LOG androidNlpServiceThread Creating RealOs
+01-10 13:00:36.940 @2793099 MILLIS_SINCE_BOOT
+01-10 13:00:36.949 @2793108 MILLIS_SINCE_BOOT
+01-10 13:00:36.949 @2793108 WAKELOCK_ACQUIRE 0
+01-10 13:00:36.952 @2793111 MILLIS_SINCE_BOOT
+01-10 13:00:36.952 @2793111 WIFI_REQUEST_SCAN
+01-10 13:00:36.954 @2793113 ALARM_RESET 0 2798111
+01-10 13:00:36.955 @2793114 MILLIS_SINCE_BOOT
+01-10 13:00:36.955 @2793114 ALARM_RESET 0 2798111
+
+01-10 13:00:36.956 @2793115 SET_PERIOD 86400 trigger true
+01-10 13:00:36.956 @2793115 MILLIS_SINCE_BOOT
+01-10 13:00:36.956 @2793115 CELL_REQUEST_SCAN
+01-10 13:00:36.956 @2793115 WIFI_REQUEST_SCAN
+01-10 13:00:36.957 @2793116 ALARM_RESET 0 2798115
+
+01-10 13:00:37.059 @2793218 CELL_SCAN_RESULTS [cid: 0 lac: 0 mcc: 204 mnc: 16 radioType: 3 sialStrength: -9999 neighbors[]]
+01-10 13:00:37.059 @2793218 MILLIS_SINCE_BOOT
+01-10 13:00:37.059 @2793218 ALARM_RESET 0 2798115
+
+01-10 13:00:37.341 @2793500 CELL_SCAN_RESULTS [cid: 0 lac: 0 mcc: 204 mnc: 16 radioType: 3 sialStrength: 12 neighbors[]]
+01-10 13:00:37.341 @2793500 MILLIS_SINCE_BOOT
+01-10 13:00:37.341 @2793500 ALARM_RESET 0 2798115
+
+01-10 13:00:37.342 @2793501 CELL_SIGNAL_STRENGTH 12
+
+01-10 13:00:37.532 @2793691 CELL_SCAN_RESULTS [cid: 0 lac: 0 mcc: 204 mnc: 16 radioType: 3 sialStrength: 12 neighbors[]]
+01-10 13:00:37.532 @2793691 MILLIS_SINCE_BOOT
+01-10 13:00:37.532 @2793691 ALARM_RESET 0 2798115
+
+01-10 13:00:37.533 @2793692 WIFI_STATE_CHANGED enabled
+01-10 13:00:37.533 @2793692 MILLIS_SINCE_BOOT
+01-10 13:00:37.533 @2793692 ALARM_RESET 0 2798115
+
+01-10 13:00:38.796 @2794955 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2794873, devices=[[00-508-32-FF-6E, rssi=-60, ssid=SweexWireless], [58-AC-78-0F-9C-D0, rssi=-61, ssid=eduroam], [E4-A5D-9F-95-40, rssi=-84, ssid=eduroam], [58-AC-78-0F-9C-D1, rssi=-61, ssid=NHL-GAST], [58-AC-780-CE-91, rssi=-90, ssid=NHL-GAST], ]]
+01-10 13:00:38.796 @2794955 MILLIS_SINCE_BOOT
+01-10 13:00:38.797 @2794956 LOG WifiLocator Too many cache  misses. Need server request. hasLation=0 noLocation=0 cacheMiss=5
+01-10 13:00:38.797 @2794956 MILLIS_SINCE_BOOT
+01-10 13:00:38.797 @2794956 MILLIS_SINCE_BOOT
+01-10 13:00:38.798 @2794957 LOG CellLocator Primary cell miss in cache. Need server request.
+01-10 13:00:38.798 @2794957 MILLIS_SINCE_BOOT
+01-10 13:00:38.806 @2794965 MILLIS_SINCE_BOOT
+01-10 13:00:38.806 @2794965 GLS_QUERY
+01-10 13:00:38.832 @2794991 ALARM_RESET 0 2798115
+
+01-10 13:00:38.878 @2795037 GLS_QUERY_RESPONSE
+01-10 13:00:38.878 @2795037 MILLIS_SINCE_BOOT
+01-10 13:00:38.878 @2795037 MILLIS_SINCE_EPOCH
+01-10 13:00:38.936 @2795095 LOG WifiLocator Good cache hits. Computing WiFi location locally sLocation=5 noLocation=0 cacheMiss=0
+01-10 13:00:38.937 @2795096 LOG WifiLocator Computing location using MaxLre.
+01-10 13:00:39.376 @2795535 LOG WifiLocator Finished computing WiFi location: WifiLocationRest [position=Position [redacted], confidence=80, outliers=[]]
+01-10 13:00:39.376 @2795535 MILLIS_SINCE_BOOT
+01-10 13:00:39.376 @2795535 MILLIS_SINCE_BOOT
+01-10 13:00:39.386 @2795545 LOG CellLocator Primary cell is in cache with no location.
+01-10 13:00:39.386 @2795545 MILLIS_SINCE_BOOT
+01-10 13:00:39.387 @2795546 LOCATION_REPORT NetworkLocation [
+ bestResult=WIFI
+ wifiResult=WifiLocatorResult [wifiScan=WifiScan [deliveryTime=2794873, devices=[[00-50-18-32F-6E, rssi=-60, ssid=SweexWireless], [58-AC-78-0F-9C-D0, rssi=-61, ssid=eduroam], [E4-AA-5D-995-40, rssi=-84, ssid=eduroam], [58-AC-78-0F-9C-D1, rssi=-61, ssid=NHL-GAST], [58-AC-78-10-CE1, rssi=-90, ssid=NHL-GAST], ]], Cache={00-50-18-32-FF-6E=[[latE7=532122163, lngE7=57984843, c=149000mm, conf=92, levelId=null, levelNumberE3=unknown], Uncert=109000mm, HIGH_CONFIDENCE],4-AA-5D-9F-95-40=[[latE7=532120933, lngE7=57975414, acc=49000mm, conf=92, levelId=null, levelmberE3=unknown], Uncert=9000mm, HIGH_CONFIDENCE], 58-AC-78-0F-9C-D0=[[latE7=532119906, lngE7=977481, acc=50000mm, conf=92, levelId=null, levelNumberE3=unknown], Uncert=10000mm, HIGH_CONFENCE], 58-AC-78-10-CE-91=[[latE7=532120660, lngE7=57984029, acc=65000mm, conf=92, levelId=nul levelNumberE3=unknown], Uncert=25000mm, HIGH_CONFIDENCE], 58-AC-78-0F-9C-D1=[[latE7=53211983 lngE7=57978391, acc=50000mm, conf=92, levelId=null, levelNumberE3=unknown], Uncert=10000mm, GH_CONFIDENCE]}, LocatorResult [position=[latE7=532120247, lngE7=57978966, acc=36000mm, conf=, levelId=null, levelNumberE3=unknown], status=OK, reportTime=2795535]]
+ cellResult=CellLocatorResult [primary=[cid: 0 lac: 0 mcc: 204 mnc: 16 radioType: 3 signalStrgth: 12 neighbors[]], History=[], Cache={204:16:0:0=[latE7=0, lngE7=0, acc=-1mm, conf=-1, levId=null, levelNumberE3=unknown]}, LocatorResult [position=null, status=NO_LOCATION, reportTim2795546]]
+ glsResult=null
+]
+01-10 13:00:39.388 @2795547 LOG androidNlpServiceThread reporting Location[mProvider=network,ime=1484049639376,mLatitude=53.2120247,mLongitude=5.7978966,mHasAltitude=false,mAltitude=0.0,asSpeed=false,mSpeed=0.0,mHasBearing=false,mBearing=0.0,mHasAccuracy=true,mAccuracy=36.0,mExts=Bundle[{networkLocationSource=cached, networkLocationType=wifi}]]
+01-10 13:00:39.388 @2795547 ALARM_RESET 0 89193115
+01-10 13:00:39.391 @2795550 WAKELOCK_RELEASE 0
+
+01-10 13:02:25.293 @2901452 WIFI_SCAN_RESULTS WifiScan [deliveryTime=2901388, devices=[[58-AC8-0F-9C-D0, rssi=-61, ssid=eduroam], [E4-AA-5D-9F-95-40, rssi=-79, ssid=eduroam], [58-AC-78-421-F0, rssi=-83, ssid=eduroam], [58-AC-78-43-89-D0, rssi=-87, ssid=eduroam], [E4-AA-5D-C3-3D-, rssi=-89, ssid=eduroam], ]]
+01-10 13:02:25.293 @2901452 MILLIS_SINCE_BOOT
+01-10 13:02:25.294 @2901453 ALARM_RESET 0 89193115

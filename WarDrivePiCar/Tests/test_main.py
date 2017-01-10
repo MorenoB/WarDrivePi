@@ -15,12 +15,17 @@ class TestMain(TestCase):
     def test_movement(self):
         program = Program()
 
+        # Force in some mock-up location data for the GPS module
+        current_dir = os.path.abspath(os.path.dirname(__file__))
+        file_path = os.path.join(current_dir, 'simulated_location_input.txt')
+        program.force_gps_input(open(file_path, 'r').read())
+
+        # Start the main program
         new_thread = TestThread(program)
         new_thread.start()
 
-        current_dir = os.path.abspath(os.path.dirname(__file__))
+        print "Simulating Keyboard Input..."
         file_path = os.path.join(current_dir, 'simulatedInput.txt')
-
         sys.stdin = open(file_path, 'r')
 
         time.sleep(1)

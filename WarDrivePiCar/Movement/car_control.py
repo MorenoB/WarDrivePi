@@ -67,7 +67,6 @@ class CarControl:
     SPEED_ENCODER_RIGHT_DIRECTION = 6  # Right direction speed encoder value
 
     # Values from the wheel speed encoders.
-    __lastPulseTickDirection = ""
     __numberOfRightPulses = 0
     __numberOfLeftPulses = 0
 
@@ -81,6 +80,12 @@ class CarControl:
 
     __lastWheelEncoderPinUsed = -1
     __currentOperation = "NONE"
+
+    # Housekeeping variables
+    IsSpinning = False
+
+    # User configurable variables.
+    DontPulseUpdateWhenSpinning = False
 
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
@@ -278,12 +283,14 @@ class CarControl:
         # Channel is not used but is being given by the GPIO library
         self.__lastWheelEncoderPinUsed = channel
 
-        if gpio.input(self.SPEED_ENCODER_LEFT_DIRECTION) == gpio.HIGH:
+        if self.DontPulseUpdateWhenSpinning and self.IsSpinning:
+            return
+
+        if gpio.input(self.SPEED_ENCODER_LEFT_DIRECTION) == gpio.HIGH:  # HIGH == Forwards
             self.__numberOfLeftPulses += 1
         else:
             self.__numberOfLeftPulses -= 1
 
-        self.__lastPulseTickDirection = "LEFT"
         pub.sendMessage(self.EVENT_ON_LEFT_ENCODER, left_pulses=self.__numberOfLeftPulses)
 
     def __right_encoder_callback(self, channel):
@@ -291,10 +298,12 @@ class CarControl:
         # Channel is not used but is being given by the GPIO library
         self.__lastWheelEncoderPinUsed = channel
 
-        if gpio.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == gpio.HIGH:
-            self.__numberOfRightPulses += 1
-        else:
-            self.__numberOfRightPulses -= 1
+        if self.DontPulseUpdateWhenSpinning and self.IsSpinning:
+            return
 
-        self.__lastPulseTickDirection = "RIGHT"
+        if gpio.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == gpio.HIGH:  # HIGH == Backwards
+            self.__numberOfRightPulses -= 1
+        else:
+            self.__numberOfRightPulses += 1
+
         pub.sendMessage(self.EVENT_ON_RIGHT_ENCODER, right_pulses=self.__numberOfRightPulses)
