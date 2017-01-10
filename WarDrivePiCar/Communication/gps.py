@@ -52,12 +52,12 @@ class GPS(Thread):
             suffix = location_provider.split(" ")
             for item in suffix:
                 if "mLatitude=" in item:
-                    item.replace("mLatitude=", "")
-                    self.__latitudes.append(item)
+                    latitude_string_value = item.replace("mLatitude=", "")
+                    self.__latitudes.append(latitude_string_value)
 
                 if "mLongitude=" in item:
-                    item.replace("mLongitude=", "")
-                    self.__longitudes.append(item)
+                    longitude_string_value = item.replace("mLongitude=", "")
+                    self.__longitudes.append(longitude_string_value)
 
         self.__print_average_coordinates()
 
