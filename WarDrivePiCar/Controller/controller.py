@@ -89,12 +89,16 @@ class Controller(Thread):
     def __on_left_pulse_update(self, left_pulses):
         self.__cm_driven_left = int(left_pulses) * int(self.__CM_PER_PULSE)
 
+        print "Left pulses: ", left_pulses
+
         # Will print distance driven for now
         # TODO : Make a better use of this 'Print distance travelled' function call, not on every left pulse update.
         self.print_distance_driven()
 
     def __on_right_pulse_update(self, right_pulses):
         self.__cm_driven_right = int(right_pulses) * int(self.__CM_PER_PULSE)
+
+        print "Right pulses: ", right_pulses
 
     def __get_average_distance_driven(self):
         return (self.__cm_driven_left + self.__cm_driven_right) / 2
