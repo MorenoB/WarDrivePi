@@ -7,35 +7,34 @@ def clamp(number, minimum_number, max_number):
 
 
 def convert_compass_direction_to_angle(direction):
-    if isinstance(direction, CompassDirections):
-
-        if direction == CompassDirections.North:
-            return 0
-        elif direction == CompassDirections.South:
-            return 180
-        elif direction == CompassDirections.East:
-            return 90
-        elif direction == CompassDirections.West:
-            return 270
+    if direction == CompassDirections.North:
+        return 0
+    elif direction == CompassDirections.South:
+        return 180
+    elif direction == CompassDirections.East:
+        return 90
+    elif direction == CompassDirections.West:
+        return 270
+    else:
+        return 0
 
 
 def convert_angle_to_compass_direction(angle):
-    if isinstance(angle, int):
-        rounded_angle = round(angle)
+    rounded_angle = round(angle)
 
-        if rounded_angle == 0 or rounded_angle == 360:
-            return CompassDirections.North
+    if rounded_angle == 0 or rounded_angle == 360:
+        return CompassDirections.North
 
-        elif rounded_angle == 180:
-            return CompassDirections.South
+    elif rounded_angle == 180:
+        return CompassDirections.South
 
-        elif rounded_angle == 90:
-            return CompassDirections.East
+    elif rounded_angle == 90:
+        return CompassDirections.East
 
-        elif rounded_angle == 270:
-            return CompassDirections.West
-
-    return None
+    elif rounded_angle == 270:
+        return CompassDirections.West
+    else:
+        return None
 
 
 # Will find a given string string between two other strings

@@ -6,7 +6,7 @@ from Util.extensions import find_between, clamp
 
 
 class Phone(Thread):
-    __GPS_POLL_TIME = 1  # second
+    __CPU_CYCLE_TIME = 0.25  # 250 ms
     __longitudes = []
     __latitudes = []
 
@@ -40,7 +40,7 @@ class Phone(Thread):
     def run(self):
 
         while not self.name.endswith("--"):
-            sleep(self.__GPS_POLL_TIME)
+            sleep(self.__CPU_CYCLE_TIME)
 
             try:
 

@@ -75,13 +75,6 @@ class Controller(Thread):
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
 
-            if not self.__is_in_target_angle():
-                self.__go_to_target_angle()
-                continue
-
-            if self.__needs_to_move_to_target_coordinates:
-                self.__go_to_target_coordinates()
-
     def __needs_to_move_to_target_coordinates(self):
 
         if self.__targetLatitude == 0 or self.__targetLongitude == 0:
@@ -158,6 +151,9 @@ class Controller(Thread):
         print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
+        if not self.__is_in_target_angle():
+            self.__go_to_target_angle()
+
     def __on_longitude_changed(self, longitude):
 
         if self.__longitude == longitude:
@@ -166,6 +162,9 @@ class Controller(Thread):
         print "Average longitude is now ", longitude
         self.__longitude = longitude
 
+        if self.__needs_to_move_to_target_coordinates:
+            self.__go_to_target_coordinates()
+
     def __on_latitude_changed(self, latitude):
 
         if self.__latitude == latitude:
@@ -173,6 +172,8 @@ class Controller(Thread):
 
         print "Average latitude is now ", latitude
         self.__latitude = latitude
+
+
 
     def __on_keyboard_movetype_changed(self, move_type):
 
