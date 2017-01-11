@@ -23,7 +23,8 @@ class Phone(Thread):
     EVENT_ON_COMPASS_CHANGED = "OnCompassChanged"
 
     # Used in Unit-Tests
-    testing_input = ""
+    testing_input_location = ""
+    testing_input_sensor = ""
 
     def __init__(self):
         try:
@@ -56,15 +57,24 @@ class Phone(Thread):
         print "Thread '{0}' stopped.".format(self.getName())
 
     def __get_compass_data(self):
+
+        # Used in Unit-Tests
+        if self.testing_input_sensor != "":
+            self.__retrieve_compass_information_from_sensor_service(self.testing_input_sensor)
+            self.testing_input_sensor = ""
+            return
+
         # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
         raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
         self.__retrieve_compass_information_from_sensor_service(raw_sensor_output)
 
     def __get_gps_data(self):
+
         # Used in Unit-Tests
-        if self.testing_input != "":
-            self.__retrieve_location_information(self.testing_input)
-            self.testing_input = ""
+        if self.testing_input_location != "":
+            self.__retrieve_location_information(self.testing_input_location)
+            self.testing_input_location = ""
+            return
 
         # Execute command 'adb dumpsys location' and redirect output to our methods.
         raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])

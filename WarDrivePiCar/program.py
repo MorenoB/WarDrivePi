@@ -50,12 +50,12 @@ class Program:
         return self.__isRunning
 
     # Used for testing purposes. This will force the Phone thread to use mock-up location input data.
-    def force_gps_input(self, location_data):
+    def force_phone_handler_input(self, location_data, sensor_data):
         for thread_instance in self.__Threads:
             if not isinstance(thread_instance, Phone):
                 continue
 
-            thread_instance.testing_input = location_data
+            thread_instance.testing_input_location = location_data
 
     @staticmethod
     def __start_threads(threads):

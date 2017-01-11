@@ -18,7 +18,12 @@ class TestMain(TestCase):
         # Force in some mock-up location data for the Phone module
         current_dir = os.path.abspath(os.path.dirname(__file__))
         file_path = os.path.join(current_dir, 'simulated_location_input.txt')
-        program.force_gps_input(open(file_path, 'r').read())
+        location_mockup_data = open(file_path, 'r').read()
+
+        file_path = os.path.join(current_dir, 'simulated_sensor_input.txt')
+        sensor_mockup_data = open(file_path, 'r').read()
+
+        program.force_phone_handler_input(location_data=location_mockup_data, sensor_data=sensor_mockup_data)
 
         # Start the main program
         new_thread = TestThread(program)
