@@ -5,3 +5,7 @@ class MovementType:
 
 class TurnModeType:
     Turning, Spinning = range(2)
+
+
+class CompassDirections:
+    North, South, East, West = range(4)

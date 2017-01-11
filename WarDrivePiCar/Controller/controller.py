@@ -6,7 +6,8 @@ from pubsub import pub
 from keyboard import Keyboard
 from Communication.phone_handler import Phone
 from Movement.car_control import CarControl
-from Util.enums import MovementType
+from Util.enums import MovementType, CompassDirections
+from Util.extensions import convert_compass_direction_to_angle
 
 
 class Controller(Thread):
@@ -24,7 +25,7 @@ class Controller(Thread):
     __cm_driven_left = 0
 
     # Coordinates tweaking
-    __coordinateSensitivity = 0.0001
+    __coordinateMargin = 0.0001
 
     # Current coordinates
     __latitude = 0
@@ -33,6 +34,12 @@ class Controller(Thread):
     # Target coordinates
     __targetLatitude = 0
     __targetLongitude = 0
+
+    # Compass variables
+    __angleInDegrees = -999
+    __compassDirection = None
+    __angleMargin = 1
+    __targetAngle = -999
 
     def __init__(self):
         Thread.__init__(self)
@@ -68,6 +75,10 @@ class Controller(Thread):
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
 
+            if not self.__is_in_target_angle():
+                self.__go_to_target_angle()
+                continue
+
             if self.__needs_to_move_to_target_coordinates:
                 self.__go_to_target_coordinates()
 
@@ -77,28 +88,59 @@ class Controller(Thread):
             return False
 
         # If our longitude or our latitude is not within a valid range of the target, then we need to move
-        if not self.__targetLatitude - self.__coordinateSensitivity <= self.__latitude <= self.__targetLatitude + \
-                self.__coordinateSensitivity:
+        if not self.__targetLatitude - self.__coordinateMargin <= self.__latitude <= self.__targetLatitude + \
+                self.__coordinateMargin:
             return True
 
-        if not self.__targetLongitude - self.__coordinateSensitivity <= self.__longitude <= self.__targetLongitude + \
-                self.__coordinateSensitivity:
+        if not self.__targetLongitude - self.__coordinateMargin <= self.__longitude <= self.__targetLongitude + \
+                self.__coordinateMargin:
             return True
 
         return False
+
+    def __is_in_target_angle(self):
+
+        # Haven't got target angle
+        if self.__angleInDegrees == -999 or self.__targetAngle == -999:
+            return True
+
+        # If our current angle is within a valid range of the target angle, return True
+        if self.__targetAngle - self.__angleInDegrees <= self.__angleMargin <= self.__targetAngle + \
+                self.__angleInDegrees:
+            return True
+
+        return False
+
+    def __go_to_target_angle(self):
+        if self.__targetAngle - self.__angleInDegrees < 180:
+            self.__carMovement.spin_right(self.__CAR_SPEED)
+        else:
+            self.__carMovement.spin_left(self.__CAR_SPEED)
 
     def __go_to_target_coordinates(self):
         difference_latitude = self.__targetLatitude - self.__latitude
         difference_longitude = self.__targetLongitude - self.__longitude
 
         # If we are out of range on longitude, do something
-        if not -self.__coordinateSensitivity <= difference_longitude <= self.__coordinateSensitivity:
+        if not -self.__coordinateMargin <= difference_longitude <= self.__coordinateMargin:
             # TODO : Move towards longitude point by moving the car
+            if difference_longitude > 0:
+                self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.North)
+            elif difference_longitude < 0:
+                self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.South)
+            else:
+                self.__targetAngle = 0
             return
 
         # If we are out of range on latitude, do something
-        if not -self.__coordinateSensitivity <= difference_latitude <= self.__coordinateSensitivity:
+        if not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
             # TODO : Move towards latitude point by moving the car
+            if difference_latitude > 0:
+                self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.East)
+            elif difference_latitude < 0:
+                self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.West)
+            else:
+                self.__targetAngle = 0
             return
 
         return
@@ -109,7 +151,12 @@ class Controller(Thread):
         print "Average distance travelled : ", self.__get_average_distance_driven()
 
     def __on_compass_changed(self, compass):
+
+        if compass == self.__angleInDegrees:
+            return
+
         print "New compass value (degrees) ", compass
+        self.__angleInDegrees = compass
 
     def __on_longitude_changed(self, longitude):
 

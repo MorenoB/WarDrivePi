@@ -30,7 +30,7 @@
 
 # Import GPIO library and support mock-up fallback
 from pubsub import pub
-from Util.exensions import clamp
+from Util.extensions import clamp
 
 try:
     import RPi.GPIO as gpio

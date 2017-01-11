@@ -2,7 +2,7 @@ from threading import Thread
 from time import sleep
 from subprocess import check_output, call, CalledProcessError
 from pubsub import pub
-from Util.exensions import find_between
+from Util.extensions import find_between, clamp
 
 
 class Phone(Thread):
@@ -89,9 +89,14 @@ class Phone(Thread):
                 continue
 
             if "Mag & Acc" in line:
-                # Retrieve the compass value and send message to all compass event listeners.
+                # Retrieve the compass value and send message to all compass event listeners with a rounded int value
                 non_spaced_line = line.replace(" ", "")
                 compass_value = find_between(non_spaced_line, "last=<", ",")
+                compass_value = round(float(compass_value))
+
+                # Make sure we work with numbers between 0 and 359 ( both inclusive )
+                compass_value = clamp(compass_value, 0, 359)
+
                 pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
 
     def __retrieve_location_information(self, raw_location_data):
