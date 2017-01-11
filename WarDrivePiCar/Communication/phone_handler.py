@@ -72,23 +72,17 @@ class Phone(Thread):
 
     def __retrieve_compass_information_from_sensor_service(self, raw_sensor_data):
 
-        is_on_correct_line = False
         for line in raw_sensor_data.split("\n"):
 
-            if is_on_correct_line:
-
-                # Retrieve the compass value and send message to all compass event listeners.
-                non_spaced_line = line.replace(" ", "")
-                compass_value = find_between(non_spaced_line, "last=<", ",")
-                pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
-
-                is_on_correct_line = False
-
+            # Prevent us from picking the wrong line, android tends to display the outdated logs as wel.
             if "Mag & Acc Combo Orientation sensor (handle" in line:
                 continue
 
             if "Mag & Acc Combo Orientation sensor" in line:
-                is_on_correct_line = True
+                # Retrieve the compass value and send message to all compass event listeners.
+                non_spaced_line = line.replace(" ", "")
+                compass_value = find_between(non_spaced_line, "last=<", ",")
+                pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
 
     def __retrieve_location_information(self, raw_location_data):
         location_providers = []
