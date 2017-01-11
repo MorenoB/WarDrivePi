@@ -10,4 +10,4 @@ class TestThread(Thread):
         self.__thread_obj = thread_obj
 
     def run(self):
-        self.__thread_obj.start()
+        self.__thread_obj.start(True)

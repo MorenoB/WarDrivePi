@@ -10,6 +10,7 @@ from time import sleep
 class Program:
     __CycleTime = 0.1  # 100 ms
     __isRunning = True
+    __KeyboardEnabled = True
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
@@ -22,10 +23,17 @@ class Program:
     def __init__(self):
         return
 
-    def start(self):
+    def start(self, testing_mode=False):
 
         # print "Application started... {0}".format("(w/ REMOTE DEBUGGING [{0}])".format(SysArgv.items['trace'])
         #                                          if pydevd.connected else str())
+
+        if not testing_mode:
+            yes_or_no = raw_input("Allow keyboard? ( Y/N )")
+            if yes_or_no.capitalize() == "Y":
+                self.__KeyboardEnabled = True
+            else:
+                self.__KeyboardEnabled = False
 
         self.__start_threads(self.__Threads)
 
@@ -58,13 +66,16 @@ class Program:
             thread_instance.testing_input_location = location_data
             thread_instance.testing_input_sensor = sensor_data
 
-    @staticmethod
-    def __start_threads(threads):
+    def __start_threads(self, threads):
         for thread_instance in threads:
             if not isinstance(thread_instance, Thread):
                 continue
 
             if thread_instance.name.endswith("--"):
+                continue
+
+            if isinstance(thread_instance, Keyboard) and not self.__KeyboardEnabled:
+                print "Skipping keyboard thread..."
                 continue
 
             thread_instance.setName(type(thread_instance).__name__)
