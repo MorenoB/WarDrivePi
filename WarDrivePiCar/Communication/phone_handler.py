@@ -2,9 +2,10 @@ from threading import Thread
 from time import sleep
 from subprocess import check_output, call, CalledProcessError
 from pubsub import pub
+from Util.exensions import find_between
 
 
-class GPS(Thread):
+class Phone(Thread):
     __GPS_POLL_TIME = 1  # second
     __longitudes = []
     __latitudes = []
@@ -19,6 +20,7 @@ class GPS(Thread):
     # Event names
     EVENT_ON_LATITUDE_CHANGED = "OnLatitudeChanged"
     EVENT_ON_LONGITUDE_CHANGED = "OnLongitudeChanged"
+    EVENT_ON_COMPASS_CHANGED = "OnCompassChanged"
 
     # Used in Unit-Tests
     testing_input = ""
@@ -41,17 +43,11 @@ class GPS(Thread):
 
             try:
 
-                # Used in Unit-Tests
-                if self.testing_input != "":
-                    self.__retrieve_location_information(self.testing_input)
-                    self.testing_input = ""
-
-                # Execute command 'adb dumpsys location' and redirect output to our methods.
-                raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
-                self.__retrieve_location_information(raw_location_output)
+                self.__get_gps_data()
+                self.__get_compass_data()
 
             except OSError:
-                print "'adb' Command not properly installed on this machine! Shutting down GPS module..."
+                print "'adb' Command not properly installed on this machine! Shutting down Phone module..."
                 break
             except CalledProcessError:
                 print "Device was not found! Retrying on next loop update..."
@@ -59,12 +55,47 @@ class GPS(Thread):
 
         print "Thread '{0}' stopped.".format(self.getName())
 
-    def __retrieve_location_information(self, raw_location_output):
+    def __get_compass_data(self):
+        # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
+        raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
+        self.__retrieve_compass_information_from_sensor_service(raw_sensor_output)
+
+    def __get_gps_data(self):
+        # Used in Unit-Tests
+        if self.testing_input != "":
+            self.__retrieve_location_information(self.testing_input)
+            self.testing_input = ""
+
+        # Execute command 'adb dumpsys location' and redirect output to our methods.
+        raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
+        self.__retrieve_location_information(raw_location_output)
+
+    def __retrieve_compass_information_from_sensor_service(self, raw_sensor_data):
+
+        is_on_correct_line = False
+        for line in raw_sensor_data.split("\n"):
+
+            if is_on_correct_line:
+
+                # Retrieve the compass value and send message to all compass event listeners.
+                non_spaced_line = line.replace(" ", "")
+                compass_value = find_between(non_spaced_line, "last=<", ",")
+                pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
+
+                is_on_correct_line = False
+
+            if "Mag & Acc Combo Orientation sensor (handle" in line:
+                continue
+
+            if "Mag & Acc Combo Orientation sensor" in line:
+                is_on_correct_line = True
+
+    def __retrieve_location_information(self, raw_location_data):
         location_providers = []
 
         # First retrieve all location providers.
-        # Location provider examples : GPS, Network, Cellular etc...
-        for item in raw_location_output.split("\n"):
+        # Location provider examples : Phone, Network, Cellular etc...
+        for item in raw_location_data.split("\n"):
 
             # Sometimes the android log will also display a coordinate which is a duplicate.
             if "LOG" in item:

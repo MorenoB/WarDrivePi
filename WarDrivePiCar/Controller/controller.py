@@ -4,7 +4,7 @@ from time import sleep
 from pubsub import pub
 
 from keyboard import Keyboard
-from Communication.gps import GPS
+from Communication.phone_handler import Phone
 from Movement.car_control import CarControl
 from Util.enums import MovementType
 
@@ -51,9 +51,10 @@ class Controller(Thread):
         # Register keyboard events
         pub.subscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
 
-        # Register gps events
-        pub.subscribe(self.__on_longitude_changed, GPS.EVENT_ON_LONGITUDE_CHANGED)
-        pub.subscribe(self.__on_latitude_changed, GPS.EVENT_ON_LATITUDE_CHANGED)
+        # Register phone events
+        pub.subscribe(self.__on_longitude_changed, Phone.EVENT_ON_LONGITUDE_CHANGED)
+        pub.subscribe(self.__on_latitude_changed, Phone.EVENT_ON_LATITUDE_CHANGED)
+        pub.subscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
     def join(self, timeout=None):
         self.__shutdown_controller()
@@ -106,6 +107,9 @@ class Controller(Thread):
         print "Left cm's driven : " + str(self.__cm_driven_left)
         print "Right cm's driven : " + str(self.__cm_driven_right)
         print "Average distance travelled : ", self.__get_average_distance_driven()
+
+    def __on_compass_changed(self, compass):
+        print "New compass value (degrees) ", compass
 
     def __on_longitude_changed(self, longitude):
 
@@ -177,8 +181,9 @@ class Controller(Thread):
 
         pub.unsubscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
 
-        pub.unsubscribe(self.__on_latitude_changed, GPS.EVENT_ON_LATITUDE_CHANGED)
-        pub.unsubscribe(self.__on_longitude_changed, GPS.EVENT_ON_LONGITUDE_CHANGED)
+        pub.unsubscribe(self.__on_latitude_changed, Phone.EVENT_ON_LATITUDE_CHANGED)
+        pub.unsubscribe(self.__on_longitude_changed, Phone.EVENT_ON_LONGITUDE_CHANGED)
+        pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
         print "Cleaning up GPIO"
         self.__carMovement.cleanup()

@@ -1,7 +1,7 @@
 from threading import Thread
 from Controller.controller import Controller
 from Controller.keyboard import Keyboard
-from Communication.gps import GPS
+from Communication.phone_handler import Phone
 # from Sniffer.Sniffer import Sniffer
 
 from time import sleep
@@ -16,7 +16,7 @@ class Program:
         # Sniffer()
         Controller(),
         Keyboard(),
-        GPS()
+        Phone()
     ]
 
     def __init__(self):
@@ -49,10 +49,10 @@ class Program:
     def is_running(self):
         return self.__isRunning
 
-    # Used for testing purposes. This will force the GPS thread to use mock-up location input data.
+    # Used for testing purposes. This will force the Phone thread to use mock-up location input data.
     def force_gps_input(self, location_data):
         for thread_instance in self.__Threads:
-            if not isinstance(thread_instance, GPS):
+            if not isinstance(thread_instance, Phone):
                 continue
 
             thread_instance.testing_input = location_data

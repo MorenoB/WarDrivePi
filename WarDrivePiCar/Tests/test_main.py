@@ -15,7 +15,7 @@ class TestMain(TestCase):
     def test_movement(self):
         program = Program()
 
-        # Force in some mock-up location data for the GPS module
+        # Force in some mock-up location data for the Phone module
         current_dir = os.path.abspath(os.path.dirname(__file__))
         file_path = os.path.join(current_dir, 'simulated_location_input.txt')
         program.force_gps_input(open(file_path, 'r').read())
