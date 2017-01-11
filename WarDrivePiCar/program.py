@@ -56,6 +56,7 @@ class Program:
                 continue
 
             thread_instance.testing_input_location = location_data
+            thread_instance.testing_input_sensor = sensor_data
 
     @staticmethod
     def __start_threads(threads):
