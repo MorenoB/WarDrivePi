@@ -75,10 +75,10 @@ class Phone(Thread):
         for line in raw_sensor_data.split("\n"):
 
             # Prevent us from picking the wrong line, android tends to display the outdated logs as wel.
-            if "Mag & Acc Combo Orientation sensor (handle" in line:
+            if "handle" in line:
                 continue
 
-            if "Mag & Acc Combo Orientation sensor" in line:
+            if "Mag & Acc" in line:
                 # Retrieve the compass value and send message to all compass event listeners.
                 non_spaced_line = line.replace(" ", "")
                 compass_value = find_between(non_spaced_line, "last=<", ",")
