@@ -18,13 +18,14 @@ class Phone(Thread):
     __term_latitude = "mLatitude="
 
     # Event names
-    EVENT_ON_LATITUDE_CHANGED = "OnLatitudeChanged"
-    EVENT_ON_LONGITUDE_CHANGED = "OnLongitudeChanged"
+    EVENT_ON_LOCATION_CHANGED = "OnLocationChanged"
     EVENT_ON_COMPASS_CHANGED = "OnCompassChanged"
 
     # Used in Unit-Tests
     testing_input_location = ""
     testing_input_sensor = ""
+
+    # TODO : Also capture the 'Accuracy average' when collecting location info.
 
     def __init__(self):
         try:
@@ -149,11 +150,9 @@ class Phone(Thread):
         average_latitude /= len(self.__latitudes)
 
         # When a change in average latitude/longitude is detected, notify all registered event handlers.
-
-        if average_latitude != self.__average_latitude:
+        if average_latitude != self.__average_latitude or average_longitude != self.__average_longitude:
             self.__average_latitude = average_latitude
-            pub.sendMessage(self.EVENT_ON_LATITUDE_CHANGED, latitude=self.__average_latitude)
-
-        if average_longitude != self.__average_longitude:
             self.__average_longitude = average_longitude
-            pub.sendMessage(self.EVENT_ON_LONGITUDE_CHANGED, longitude=self.__average_longitude)
+
+            pub.sendMessage(self.EVENT_ON_LOCATION_CHANGED, longitude=self.__average_longitude,
+                            latitude=self.__average_latitude)

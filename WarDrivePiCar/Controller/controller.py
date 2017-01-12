@@ -62,8 +62,7 @@ class Controller(Thread):
         pub.subscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
 
         # Register phone events
-        pub.subscribe(self.__on_longitude_changed, Phone.EVENT_ON_LONGITUDE_CHANGED)
-        pub.subscribe(self.__on_latitude_changed, Phone.EVENT_ON_LATITUDE_CHANGED)
+        pub.subscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.subscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
     def join(self, timeout=None):
@@ -155,9 +154,8 @@ class Controller(Thread):
             self.__carMovement.stop()
             return
 
-        # TODO : Move towards point by moving the car forward when in correct direction
-        # self.__carMovement.forward(self.__CAR_SPEED)
-
+            # TODO : Move towards point by moving the car forward when in correct direction
+            # self.__carMovement.forward(self.__CAR_SPEED)
 
     def print_distance_driven(self):
         print "Left cm's driven : " + str(self.__cm_driven_left)
@@ -172,20 +170,11 @@ class Controller(Thread):
         print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
-    def __on_longitude_changed(self, longitude):
-
-        if self.__longitude == longitude:
-            return
+    def __on_location_changed(self, longitude, latitude):
 
         print "Average longitude is now ", longitude
-        self.__longitude = longitude
-
-    def __on_latitude_changed(self, latitude):
-
-        if self.__latitude == latitude:
-            return
-
         print "Average latitude is now ", latitude
+        self.__longitude = longitude
         self.__latitude = latitude
 
     def __on_keyboard_movetype_changed(self, move_type):
@@ -242,8 +231,7 @@ class Controller(Thread):
 
         pub.unsubscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
 
-        pub.unsubscribe(self.__on_latitude_changed, Phone.EVENT_ON_LATITUDE_CHANGED)
-        pub.unsubscribe(self.__on_longitude_changed, Phone.EVENT_ON_LONGITUDE_CHANGED)
+        pub.unsubscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
         print "Cleaning up GPIO"
