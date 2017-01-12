@@ -1,7 +1,7 @@
 from threading import Thread
 from Controller.controller import Controller
 from Controller.keyboard import Keyboard
-from Communication.gps import GPS
+from Communication.phone_handler import Phone
 # from Sniffer.Sniffer import Sniffer
 
 from time import sleep
@@ -10,22 +10,33 @@ from time import sleep
 class Program:
     __CycleTime = 0.1  # 100 ms
     __isRunning = True
+    __KeyboardEnabled = True
+    __TestingMode = False
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
         # Sniffer()
         Controller(),
         Keyboard(),
-        GPS()
+        Phone()
     ]
 
     def __init__(self):
         return
 
-    def start(self):
+    def start(self, testing_mode=False):
 
         # print "Application started... {0}".format("(w/ REMOTE DEBUGGING [{0}])".format(SysArgv.items['trace'])
         #                                          if pydevd.connected else str())
+
+        self.__TestingMode = testing_mode
+
+        if not self.__TestingMode:
+            yes_or_no = raw_input("Allow keyboard? This will disable the GPS way-point system. ( Y/N )")
+            if yes_or_no.capitalize() == "Y":
+                self.__KeyboardEnabled = True
+            else:
+                self.__KeyboardEnabled = False
 
         self.__start_threads(self.__Threads)
 
@@ -49,22 +60,31 @@ class Program:
     def is_running(self):
         return self.__isRunning
 
-    # Used for testing purposes. This will force the GPS thread to use mock-up location input data.
-    def force_gps_input(self, location_data):
+    # Used for testing purposes. This will force the Phone thread to use mock-up location input data.
+    def force_phone_handler_input(self, location_data, sensor_data):
         for thread_instance in self.__Threads:
-            if not isinstance(thread_instance, GPS):
+            if not isinstance(thread_instance, Phone):
                 continue
 
-            thread_instance.testing_input = location_data
+            thread_instance.testing_input_location = location_data
+            thread_instance.testing_input_sensor = sensor_data
 
-    @staticmethod
-    def __start_threads(threads):
+    def __start_threads(self, threads):
         for thread_instance in threads:
             if not isinstance(thread_instance, Thread):
                 continue
 
             if thread_instance.name.endswith("--"):
                 continue
+
+            if isinstance(thread_instance, Keyboard) and not self.__KeyboardEnabled:
+                print "Skipping keyboard thread..."
+                continue
+
+            if isinstance(thread_instance, Controller):
+                waypoint_system_activated = not self.__KeyboardEnabled or self.__TestingMode
+                thread_instance.EnableGPSWaypointSystem = waypoint_system_activated
+                print "Setting GPS way-point system to : ", waypoint_system_activated
 
             thread_instance.setName(type(thread_instance).__name__)
 

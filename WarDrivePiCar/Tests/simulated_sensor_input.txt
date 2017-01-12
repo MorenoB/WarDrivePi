@@ -1,0 +1,18 @@
+Sensor List:
+BMA222                                          | BOSCH                            | 0x00000000 | maxRate=   0.00Hz | last=<  0.2,  0.6, 10.0>
+MMC328X                                         | MEMSIC                           | 0x00000001 | maxRate=   0.00Hz | last=<-26.8, 17.4,-37.9>
+Mag & Acc Combo Orientation Sensor              | MEMSIC                           | 0x00000002 | maxRate=   0.00Hz | last=< 53.4, -2.7,  0.9>
+GP2A_PROX                                       | SHARP Corp.                      | 0x00000003 | maxRate=   0.00Hz | last=<  0.0,  0.0,  0.0>
+Gravity Sensor                                  | Google Inc.                      | 0x5f677276 | maxRate=   0.00Hz | last=<  0.0,  0.0,  0.0>
+Linear Acceleration Sensor                      | Google Inc.                      | 0x5f6c696e | maxRate=   0.00Hz | last=<  0.0,  0.0,  0.0>
+Rotation Vector Sensor                          | Google Inc.                      | 0x5f726f76 | maxRate=   0.00Hz | last=<  0.0,  0.0,  0.0>
+4 h/w sensors:
+handle=0x00000000, active-count=1
+handle=0x00000001, active-count=1
+handle=0x00000002, active-count=1
+handle=0x00000003, active-count=0
+1 active connections
+Active sensors:
+BMA222 (handle=0x00000000, connections=1)
+MMC328X (handle=0x00000001, connections=1)
+Mag & Acc Combo Orientation Sensor (handle=0x00000002, connections=1)
