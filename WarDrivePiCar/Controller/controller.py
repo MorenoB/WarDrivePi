@@ -30,6 +30,7 @@ class Controller(Thread):
     # Current coordinates
     __latitude = 0
     __longitude = 0
+    __accuracy = 0
 
     # Target coordinates
     __targetLatitude = 0
@@ -170,12 +171,14 @@ class Controller(Thread):
         print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
-    def __on_location_changed(self, longitude, latitude):
+    def __on_location_changed(self, longitude, latitude, accuracy):
 
         print "Average longitude is now ", longitude
         print "Average latitude is now ", latitude
+        print "Average accuracy is now ", accuracy
         self.__longitude = longitude
         self.__latitude = latitude
+        self.__accuracy = accuracy
 
     def __on_keyboard_movetype_changed(self, move_type):
 
