@@ -78,6 +78,18 @@ class Controller(Thread):
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
 
+            # If we have enabled the GPS way-point system, go to target angle if we get compass update.
+            if self.EnableGPSWaypointSystem:
+                if self.__needs_to_move_to_target_coordinates:
+
+                    if self.__is_in_target_angle():
+                        self.__go_to_target_coordinates()
+                    else:
+                        self.__go_to_target_angle()
+                        continue
+                # Reached coordinate, stop!
+                self.__carMovement.stop()
+
     def __needs_to_move_to_target_coordinates(self):
 
         if self.__targetLatitude == 0 or self.__targetLongitude == 0:
@@ -128,20 +140,24 @@ class Controller(Thread):
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.South)
             else:
                 self.__targetAngle = 0
-            return
 
         # If we are out of range on latitude, do something
-        if not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
-            # TODO : Move towards latitude point by moving the car
+        elif not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
             if difference_latitude > 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.East)
             elif difference_latitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.West)
             else:
                 self.__targetAngle = 0
+
+        # We have recalculated the target angle so we need to check if we are at our correct angle.
+        if not self.__is_in_target_angle():
+            self.__carMovement.stop()
             return
 
-        return
+        # TODO : Move towards point by moving the car forward when in correct direction
+        # self.__carMovement.forward(self.__CAR_SPEED)
+
 
     def print_distance_driven(self):
         print "Left cm's driven : " + str(self.__cm_driven_left)
@@ -156,13 +172,6 @@ class Controller(Thread):
         print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
-        # If we have enabled the GPS way-point system, go to target angle if we get compass update.
-        if not self.EnableGPSWaypointSystem:
-            return
-
-        if not self.__is_in_target_angle():
-            self.__go_to_target_angle()
-
     def __on_longitude_changed(self, longitude):
 
         if self.__longitude == longitude:
@@ -170,13 +179,6 @@ class Controller(Thread):
 
         print "Average longitude is now ", longitude
         self.__longitude = longitude
-
-        # If we have enabled the GPS way-point system, go to target angle if we get compass update.
-        if not self.EnableGPSWaypointSystem:
-            return
-
-        if self.__needs_to_move_to_target_coordinates:
-            self.__go_to_target_coordinates()
 
     def __on_latitude_changed(self, latitude):
 
