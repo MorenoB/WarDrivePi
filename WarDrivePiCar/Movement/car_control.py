@@ -81,6 +81,7 @@ class CarControl:
 
     __lastWheelEncoderPinUsed = -1
     __currentOperation = "NONE"
+    __lastNonStopOperation = "NONE"  # Last operation that is not a STOP operation
 
     # User configurable variables.
     DontPulseUpdateWhenGoingLeftOrRight = False
@@ -132,6 +133,7 @@ class CarControl:
         self.stop()
         gpio.cleanup()
         self.__currentOperation = "CLEANUP"
+        self.__lastNonStopOperation = self.__currentOperation
 
     def get_current_operation(self):
         return self.__currentOperation
@@ -163,6 +165,7 @@ class CarControl:
         self.pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "FORWARD " + str(speed)
+        self.__lastNonStopOperation = self.__currentOperation
 
     # reverse(speed): Sets both motors to reverse at speed. 0 <= speed <= 100
     def reverse(self, speed):
@@ -181,6 +184,7 @@ class CarControl:
         self.pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "REVERSE " + str(speed)
+        self.__lastNonStopOperation = self.__currentOperation
 
     # spinLeft(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_left(self, speed):
@@ -203,6 +207,7 @@ class CarControl:
         self.pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "SPINLEFT " + str(speed)
+        self.__lastNonStopOperation = self.__currentOperation
 
     # spinRight(speed): Sets motors to turn opposite directions at speed. 0 <= speed <= 100
     def spin_right(self, speed):
@@ -225,6 +230,7 @@ class CarControl:
         self.pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "SPINRIGHT " + str(speed)
+        self.__lastNonStopOperation = self.__currentOperation
 
     def turn_left(self, reverse=False):
 
@@ -237,6 +243,7 @@ class CarControl:
             self.__turn_forward(self.__ROTATING_WHEELS_SPEED, self.__COUNTER_ROTATING_WHEELS_SPEED)
 
         self.__currentOperation = "TURNLEFT " + str(reverse)
+        self.__lastNonStopOperation = self.__currentOperation
 
     def turn_right(self, reverse=False):
 
@@ -249,6 +256,7 @@ class CarControl:
             self.__turn_forward(self.__COUNTER_ROTATING_WHEELS_SPEED, self.__ROTATING_WHEELS_SPEED)
 
         self.__currentOperation = "TURNRIGHT " + str(reverse)
+        self.__lastNonStopOperation = self.__currentOperation
 
     # turnForward(leftSpeed, rightSpeed): Moves forwards in an arc by setting different speeds. 0 <= leftSpeed,
     # rightSpeed <= 100
@@ -297,7 +305,7 @@ class CarControl:
         self.__lastWheelEncoderPinUsed = channel
 
         if self.DontPulseUpdateWhenGoingLeftOrRight and\
-                (self.__currentOperation.__contains__("LEFT") or self.__currentOperation.__contains__("RIGHT")):
+                ("LEFT" in self.__lastNonStopOperation or "RIGHT" in self.__lastNonStopOperation):
             return
 
         if gpio.input(self.SPEED_ENCODER_LEFT_DIRECTION) == gpio.HIGH:  # HIGH == Forwards
@@ -312,8 +320,8 @@ class CarControl:
         # Channel is not used but is being given by the GPIO library
         self.__lastWheelEncoderPinUsed = channel
 
-        if self.DontPulseUpdateWhenGoingLeftOrRight and\
-                (self.__currentOperation.__contains__("LEFT") or self.__currentOperation.__contains__("RIGHT")):
+        if self.DontPulseUpdateWhenGoingLeftOrRight and \
+                ("LEFT" in self.__lastNonStopOperation or "RIGHT" in self.__lastNonStopOperation):
             return
 
         if gpio.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == gpio.HIGH:  # HIGH == Backwards
