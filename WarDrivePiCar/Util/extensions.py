@@ -19,6 +19,14 @@ def convert_compass_direction_to_angle(direction):
         return 0
 
 
+def convert_int_to_degrees(value):
+    if value >= 360:
+        return convert_int_to_degrees(value - 360)
+    elif value < 0:
+        return convert_int_to_degrees(360 + value)
+    return value
+
+
 def convert_angle_to_compass_direction(angle):
     rounded_angle = round(angle)
 

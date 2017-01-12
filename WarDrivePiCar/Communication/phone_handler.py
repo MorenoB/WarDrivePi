@@ -2,7 +2,7 @@ from threading import Thread
 from time import sleep
 from subprocess import check_output, call, CalledProcessError
 from pubsub import pub
-from Util.extensions import find_between, clamp
+from Util.extensions import find_between, clamp, convert_int_to_degrees
 
 
 class Phone(Thread):
@@ -27,8 +27,6 @@ class Phone(Thread):
     # Used in Unit-Tests
     testing_input_location = ""
     testing_input_sensor = ""
-
-    # TODO : Also capture the 'Accuracy average' when collecting location info.
 
     def __init__(self):
         try:
@@ -98,8 +96,8 @@ class Phone(Thread):
                 compass_value = find_between(non_spaced_line, "last=<", ",")
                 compass_value = round(float(compass_value))
 
-                # Make sure we work with numbers between 0 and 359 ( both inclusive )
-                compass_value = clamp(compass_value, 0, 359)
+                # Make sure we work with correct degree numbers. Between 0 and 359, both inclusive.
+                compass_value = convert_int_to_degrees(compass_value)
 
                 pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
 
