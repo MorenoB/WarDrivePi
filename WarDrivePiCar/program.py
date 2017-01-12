@@ -11,6 +11,7 @@ class Program:
     __CycleTime = 0.1  # 100 ms
     __isRunning = True
     __KeyboardEnabled = True
+    __TestingMode = False
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
@@ -28,8 +29,10 @@ class Program:
         # print "Application started... {0}".format("(w/ REMOTE DEBUGGING [{0}])".format(SysArgv.items['trace'])
         #                                          if pydevd.connected else str())
 
-        if not testing_mode:
-            yes_or_no = raw_input("Allow keyboard? ( Y/N )")
+        self.__TestingMode = testing_mode
+
+        if not self.__TestingMode:
+            yes_or_no = raw_input("Allow keyboard? This will disable the GPS way-point system. ( Y/N )")
             if yes_or_no.capitalize() == "Y":
                 self.__KeyboardEnabled = True
             else:
@@ -77,6 +80,11 @@ class Program:
             if isinstance(thread_instance, Keyboard) and not self.__KeyboardEnabled:
                 print "Skipping keyboard thread..."
                 continue
+
+            if isinstance(thread_instance, Controller):
+                waypoint_system_activated = not self.__KeyboardEnabled or self.__TestingMode
+                thread_instance.EnableGPSWaypointSystem = waypoint_system_activated
+                print "Setting GPS way-point system to : ", waypoint_system_activated
 
             thread_instance.setName(type(thread_instance).__name__)
 

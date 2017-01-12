@@ -41,6 +41,9 @@ class Controller(Thread):
     __angleMargin = 1
     __targetAngle = -999
 
+    # Public bools
+    EnableGPSWaypointSystem = True
+
     def __init__(self):
         Thread.__init__(self)
 
@@ -151,6 +154,10 @@ class Controller(Thread):
         print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
+        # If we have enabled the GPS way-point system, go to target angle if we get compass update.
+        if not self.EnableGPSWaypointSystem:
+            return
+
         if not self.__is_in_target_angle():
             self.__go_to_target_angle()
 
@@ -162,6 +169,10 @@ class Controller(Thread):
         print "Average longitude is now ", longitude
         self.__longitude = longitude
 
+        # If we have enabled the GPS way-point system, go to target angle if we get compass update.
+        if not self.EnableGPSWaypointSystem:
+            return
+
         if self.__needs_to_move_to_target_coordinates:
             self.__go_to_target_coordinates()
 
@@ -172,8 +183,6 @@ class Controller(Thread):
 
         print "Average latitude is now ", latitude
         self.__latitude = latitude
-
-
 
     def __on_keyboard_movetype_changed(self, move_type):
 
