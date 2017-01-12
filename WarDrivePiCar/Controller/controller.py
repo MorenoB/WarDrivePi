@@ -101,13 +101,10 @@ class Controller(Thread):
             return True
 
         diff_angle = self.__targetAngle - self.__angleInDegrees
-        if diff_angle < 0:
-            diff_angle += 360
-        elif diff_angle > 360:
-            diff_angle -= 360
+        diff_angle = abs(diff_angle)
 
         # If our current angle is within a valid range of the target angle, return True
-        if -self.__angleMargin <= diff_angle <= self.__angleMargin:
+        if diff_angle < self.__angleMargin:
             return True
 
         return False
