@@ -52,7 +52,7 @@ class Controller(Thread):
         self.__carMovement.setup_pins()
 
         # We will disable pulse updates when in spinning mode for now.
-        self.__carMovement.DontPulseUpdateWhenSpinning = True
+        self.__carMovement.DontPulseUpdateWhenGoingLeftOrRight = True
 
         # Register car events
         pub.subscribe(self.__on_left_pulse_update, self.__carMovement.EVENT_ON_LEFT_ENCODER)

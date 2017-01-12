@@ -82,11 +82,8 @@ class CarControl:
     __lastWheelEncoderPinUsed = -1
     __currentOperation = "NONE"
 
-    # Housekeeping variables
-    IsSpinning = False
-
     # User configurable variables.
-    DontPulseUpdateWhenSpinning = False
+    DontPulseUpdateWhenGoingLeftOrRight = False
 
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
@@ -299,7 +296,8 @@ class CarControl:
         # Channel is not used but is being given by the GPIO library
         self.__lastWheelEncoderPinUsed = channel
 
-        if self.DontPulseUpdateWhenSpinning and self.IsSpinning:
+        if self.DontPulseUpdateWhenGoingLeftOrRight and\
+                (self.__currentOperation.__contains__("LEFT") or self.__currentOperation.__contains__("RIGHT")):
             return
 
         if gpio.input(self.SPEED_ENCODER_LEFT_DIRECTION) == gpio.HIGH:  # HIGH == Forwards
@@ -314,7 +312,8 @@ class CarControl:
         # Channel is not used but is being given by the GPIO library
         self.__lastWheelEncoderPinUsed = channel
 
-        if self.DontPulseUpdateWhenSpinning and self.IsSpinning:
+        if self.DontPulseUpdateWhenGoingLeftOrRight and\
+                (self.__currentOperation.__contains__("LEFT") or self.__currentOperation.__contains__("RIGHT")):
             return
 
         if gpio.input(self.SPEED_ENCODER_RIGHT_DIRECTION) == gpio.HIGH:  # HIGH == Backwards
