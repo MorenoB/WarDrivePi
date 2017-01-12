@@ -2,8 +2,9 @@ import os
 import sys
 import pydevd
 
-from SysArgv import SysArgv
-from Main import Main
+from program import Program
+from sys_argv import SysArgv
+
 
 if __name__ == "__main__":
     print "\nPython {0}\n".format(sys.version)
@@ -28,9 +29,9 @@ if __name__ == "__main__":
             print "Couldn't not reach REMOTE DEBUGGER on '{0}'!".format(sys_argv.items['trace'])
             os.system("ping -c 1 {0}".format(sys_argv.items['trace']))
 
-    # Boot
-    main = Main()
-    main.start()
+    # Boot up program
+    program = Program()
+    program.start()
 
     if pydevd.connected:
         pydevd.stoptrace()

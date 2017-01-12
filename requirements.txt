@@ -1,9 +1,9 @@
 coveralls
-pytest>=2.9.1
+pytest
 pytest-cov
-pytest-timeout==1.0.0
 pydevd
 scapy
-pypubsub
+pypubsub==3.3.0
 pynput
 python-xlib
+pytest-pythonpath
