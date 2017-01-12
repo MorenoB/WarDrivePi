@@ -38,7 +38,7 @@ class Controller(Thread):
     # Compass variables
     __angleInDegrees = -999
     __compassDirection = None
-    __angleMargin = 1
+    __angleMargin = 20
     __targetAngle = -999
 
     # Public bools
