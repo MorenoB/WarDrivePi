@@ -53,9 +53,14 @@ class Sniffer(Thread):
 
         # Get all sniffer interfaces en set them to monitor mode
         sniffer_interfaces = list()
-        for sniffer_interface in self.__grep_sniffer_interfaces():
-            if self.__set_monitor_mode_for_interface(sniffer_interface):
-                sniffer_interfaces.append(sniffer_interface)
+
+        try:
+            for sniffer_interface in self.__grep_sniffer_interfaces():
+                if self.__set_monitor_mode_for_interface(sniffer_interface):
+                    sniffer_interfaces.append(sniffer_interface)
+        except OSError:
+            print "{0} -> Not supported on this OS, shutting down {0}...".format(self.name)
+            return
 
         if len(sniffer_interfaces) == 0:
             print "{0} -> No (valid) sniffer interfaces detected... Joining thread '{0}'.".format(self.name)
