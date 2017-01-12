@@ -1,22 +1,24 @@
 import os
 import sys
 import pydevd
-import sys_argv
-import program
+
+from program import Program
+from sys_argv import SysArgv
+
 
 if __name__ == "__main__":
     print "\nPython {0}\n".format(sys.version)
 
-    SysArgv = sys_argv.SysArgv()
+    sys_argv = SysArgv()
 
-    if not SysArgv.validate():
-        SysArgv.print_argv()
+    if not sys_argv.validate():
+        sys_argv.print_argv()
         print "Invalid arguments! Exited."
         exit()
 
-    if "trace" in SysArgv.items:
+    if "trace" in sys_argv.items:
         pydevd.settrace(
-            host=SysArgv.items['trace'],
+            host=sys_argv.items['trace'],
             stdoutToServer=True,
             stderrToServer=True,
             suspend=False,
@@ -24,11 +26,11 @@ if __name__ == "__main__":
         )
 
         if not pydevd.connected:
-            print "Couldn't not reach REMOTE DEBUGGER on '{0}'!".format(SysArgv.items['trace'])
-            os.system("ping -c 1 {0}".format(SysArgv.items['trace']))
+            print "Couldn't not reach REMOTE DEBUGGER on '{0}'!".format(sys_argv.items['trace'])
+            os.system("ping -c 1 {0}".format(sys_argv.items['trace']))
 
     # Boot up program
-    program = program.Program()
+    program = Program()
     program.start()
 
     if pydevd.connected:

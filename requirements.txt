@@ -7,3 +7,4 @@ pypubsub==3.3.0
 pynput
 python-xlib
 pytest-pythonpath
+psycopg2
