@@ -22,5 +22,10 @@ namespace WarDrivePiServer.Controllers
         {
             return View();
         }
+
+        public ActionResult Database()
+        {
+            return View();
+        }
     }
 }
