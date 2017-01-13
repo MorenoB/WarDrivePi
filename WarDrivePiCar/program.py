@@ -3,6 +3,7 @@ from Controller.controller import Controller
 from Controller.keyboard import Keyboard
 from Communication.phone_handler import Phone
 from Sniffer.sniffer import Sniffer
+from Communication.internet_connection_checker import InternetConnectionChecker
 
 from time import sleep
 
@@ -18,7 +19,8 @@ class Program:
         Sniffer(),
         Controller(),
         Keyboard(),
-        Phone()
+        Phone(),
+        InternetConnectionChecker()
     ]
 
     def __init__(self):
