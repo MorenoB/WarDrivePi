@@ -21,6 +21,7 @@ class Phone(Thread):
     __average_longitude = 0
     __average_altitude = 0
     __average_accuracy = 0
+    __averages_updated = datetime.min
 
     # dumpsys terminology
     __term_latitude = "mLatitude="
@@ -207,6 +208,7 @@ class Phone(Thread):
             self.__average_longitude = average_longitude
             self.__average_altitude = average_altitude
             self.__average_accuracy = average_accuracy
+            self.__averages_updated = datetime.now()
 
             pub.sendMessage(self.EVENT_ON_LOCATION_CHANGED,
                             longitude=self.__average_longitude,
@@ -237,7 +239,7 @@ class Phone(Thread):
                 'longitude': self.__average_longitude,
                 'altitude': self.__average_altitude,
                 'accuracy': self.__average_accuracy,
-                'timestamp': datetime.now()
+                'timestamp': self.__averages_updated
             }
 
             # Execute
