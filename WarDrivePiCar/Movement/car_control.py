@@ -86,6 +86,9 @@ class CarControl:
     # User configurable variables.
     DontPulseUpdateWhenGoingLeftOrRight = False
 
+    __pin_ena = None
+    __pin_enb = None
+
     # init(). Initialises GPIO pins, switches motors and LEDs Off, etc
     def __init__(self):
         return
@@ -106,12 +109,12 @@ class CarControl:
         gpio.setup(self.IN4, gpio.OUT)
 
         gpio.setup(self.ENA, gpio.OUT)
-        self.pin_ena = gpio.PWM(self.ENA, 20)
-        self.pin_ena.start(0)
+        self.__pin_ena = gpio.PWM(self.ENA, 20)
+        self.__pin_ena.start(0)
 
         gpio.setup(self.ENB, gpio.OUT)
-        self.pin_enb = gpio.PWM(self.ENB, 20)
-        self.pin_enb.start(0)
+        self.__pin_enb = gpio.PWM(self.ENB, 20)
+        self.__pin_enb.start(0)
 
         gpio.setup(self.SPEED_ENCODER_LEFT_INTERRUPT, gpio.IN)
         gpio.setup(self.SPEED_ENCODER_RIGHT_INTERRUPT, gpio.IN)
@@ -144,8 +147,8 @@ class CarControl:
         if self.__currentOperation == "STOP":
             return
 
-        self.pin_ena.ChangeDutyCycle(0)
-        self.pin_enb.ChangeDutyCycle(0)
+        self.__pin_ena.ChangeDutyCycle(0)
+        self.__pin_enb.ChangeDutyCycle(0)
         self.__currentOperation = "STOP"
 
     # forward(speed): Sets both motors to move forward at speed. 0 <= speed <= 100
@@ -158,11 +161,11 @@ class CarControl:
 
         self.__set_pins_to_forward_mode()
 
-        self.pin_ena.ChangeDutyCycle(speed)
-        self.pin_enb.ChangeDutyCycle(speed)
+        self.__pin_ena.ChangeDutyCycle(speed)
+        self.__pin_enb.ChangeDutyCycle(speed)
 
-        self.pin_ena.ChangeFrequency(speed + 5)
-        self.pin_enb.ChangeFrequency(speed + 5)
+        self.__pin_ena.ChangeFrequency(speed + 5)
+        self.__pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "FORWARD " + str(speed)
         self.__lastNonStopOperation = self.__currentOperation
@@ -177,11 +180,11 @@ class CarControl:
 
         self.__set_pins_to_reverse_mode()
 
-        self.pin_ena.ChangeDutyCycle(speed)
-        self.pin_enb.ChangeDutyCycle(speed)
+        self.__pin_ena.ChangeDutyCycle(speed)
+        self.__pin_enb.ChangeDutyCycle(speed)
 
-        self.pin_ena.ChangeFrequency(speed + 5)
-        self.pin_enb.ChangeFrequency(speed + 5)
+        self.__pin_ena.ChangeFrequency(speed + 5)
+        self.__pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "REVERSE " + str(speed)
         self.__lastNonStopOperation = self.__currentOperation
@@ -200,11 +203,11 @@ class CarControl:
         gpio.output(self.IN3, gpio.HIGH)
         gpio.output(self.IN4, gpio.LOW)
 
-        self.pin_ena.ChangeDutyCycle(speed)
-        self.pin_enb.ChangeDutyCycle(speed)
+        self.__pin_ena.ChangeDutyCycle(speed)
+        self.__pin_enb.ChangeDutyCycle(speed)
 
-        self.pin_ena.ChangeFrequency(speed + 5)
-        self.pin_enb.ChangeFrequency(speed + 5)
+        self.__pin_ena.ChangeFrequency(speed + 5)
+        self.__pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "SPINLEFT " + str(speed)
         self.__lastNonStopOperation = self.__currentOperation
@@ -223,11 +226,11 @@ class CarControl:
         gpio.output(self.IN3, gpio.LOW)
         gpio.output(self.IN4, gpio.HIGH)
 
-        self.pin_ena.ChangeDutyCycle(speed)
-        self.pin_enb.ChangeDutyCycle(speed)
+        self.__pin_ena.ChangeDutyCycle(speed)
+        self.__pin_enb.ChangeDutyCycle(speed)
 
-        self.pin_ena.ChangeFrequency(speed + 5)
-        self.pin_enb.ChangeFrequency(speed + 5)
+        self.__pin_ena.ChangeFrequency(speed + 5)
+        self.__pin_enb.ChangeFrequency(speed + 5)
 
         self.__currentOperation = "SPINRIGHT " + str(speed)
         self.__lastNonStopOperation = self.__currentOperation
@@ -267,10 +270,10 @@ class CarControl:
 
         self.__set_pins_to_forward_mode()
 
-        self.pin_ena.ChangeDutyCycle(left_speed)
-        self.pin_enb.ChangeDutyCycle(right_speed)
-        self.pin_ena.ChangeFrequency(left_speed + 5)
-        self.pin_enb.ChangeFrequency(right_speed + 5)
+        self.__pin_ena.ChangeDutyCycle(left_speed)
+        self.__pin_enb.ChangeDutyCycle(right_speed)
+        self.__pin_ena.ChangeFrequency(left_speed + 5)
+        self.__pin_enb.ChangeFrequency(right_speed + 5)
 
     # turnReverse(leftSpeed, rightSpeed): Moves backwards in an arc by setting different speeds. 0
     # <= leftSpeed,rightSpeed <= 100
@@ -280,10 +283,10 @@ class CarControl:
         left_speed = clamp(left_speed, 0, 100)
         right_speed = clamp(right_speed, 0, 100)
 
-        self.pin_ena.ChangeDutyCycle(left_speed)
-        self.pin_enb.ChangeDutyCycle(right_speed)
-        self.pin_ena.ChangeFrequency(left_speed + 5)
-        self.pin_enb.ChangeFrequency(right_speed + 5)
+        self.__pin_ena.ChangeDutyCycle(left_speed)
+        self.__pin_enb.ChangeDutyCycle(right_speed)
+        self.__pin_ena.ChangeFrequency(left_speed + 5)
+        self.__pin_enb.ChangeFrequency(right_speed + 5)
 
     def __set_pins_to_forward_mode(self):
         gpio.output(self.IN1, gpio.HIGH)

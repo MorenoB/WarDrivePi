@@ -2,45 +2,38 @@ from threading import Thread
 from Controller.controller import Controller
 from Controller.keyboard import Keyboard
 from Communication.phone_handler import Phone
-# from Sniffer.Sniffer import Sniffer
+from Sniffer.sniffer import Sniffer
 
 from time import sleep
 
 
 class Program:
     __CycleTime = 0.1  # 100 ms
-    __isRunning = True
+    __Running = True
     __KeyboardEnabled = True
     __TestingMode = False
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
-        # Sniffer()
+        Sniffer(),
         Controller(),
         Keyboard(),
         Phone()
     ]
 
     def __init__(self):
-        return
+        pass
 
     def start(self, testing_mode=False):
-
-        # print "Application started... {0}".format("(w/ REMOTE DEBUGGING [{0}])".format(SysArgv.items['trace'])
-        #                                          if pydevd.connected else str())
-
         self.__TestingMode = testing_mode
 
         if not self.__TestingMode:
-            yes_or_no = raw_input("Allow keyboard? This will disable the GPS way-point system. ( Y/N )")
-            if yes_or_no.capitalize() == "Y":
-                self.__KeyboardEnabled = True
-            else:
-                self.__KeyboardEnabled = False
+            yes_or_no = raw_input("Allow keyboard? This will disable the GPS way-point system! (y/N):")
+            self.__KeyboardEnabled = yes_or_no.capitalize() == "Y"
 
         self.__start_threads(self.__Threads)
 
-        while self.__isRunning:
+        while self.__Running:
             try:
                 sleep(self.__CycleTime)
 
@@ -55,10 +48,10 @@ class Program:
     def stop(self):
         print "Program stop method called."
         self.__join_threads(self.__Threads)
-        self.__isRunning = False
+        self.__Running = False
 
     def is_running(self):
-        return self.__isRunning
+        return self.__Running
 
     # Used for testing purposes. This will force the Phone thread to use mock-up location input data.
     def force_phone_handler_input(self, location_data, sensor_data):

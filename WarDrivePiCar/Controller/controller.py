@@ -7,7 +7,7 @@ from keyboard import Keyboard
 from Communication.phone_handler import Phone
 from Movement.car_control import CarControl
 from Util.enums import MovementType, CompassDirections
-from Util.extensions import convert_compass_direction_to_angle
+from Util.extensions import convert_compass_direction_to_angle, convert_int_to_degrees
 
 
 class Controller(Thread):
@@ -30,6 +30,8 @@ class Controller(Thread):
     # Current coordinates
     __latitude = 0
     __longitude = 0
+    __altitude = 0
+    __accuracy = 0
 
     # Target coordinates
     __targetLatitude = 0
@@ -62,8 +64,7 @@ class Controller(Thread):
         pub.subscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
 
         # Register phone events
-        pub.subscribe(self.__on_longitude_changed, Phone.EVENT_ON_LONGITUDE_CHANGED)
-        pub.subscribe(self.__on_latitude_changed, Phone.EVENT_ON_LATITUDE_CHANGED)
+        pub.subscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.subscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
     def join(self, timeout=None):
@@ -77,6 +78,18 @@ class Controller(Thread):
         # Program Loop
         while not self.name.endswith("--"):
             sleep(self.__CPU_CYCLE_TIME)
+
+            # If we have enabled the GPS way-point system, go to target angle if we get compass update.
+            if self.EnableGPSWaypointSystem:
+                if self.__needs_to_move_to_target_coordinates:
+
+                    if self.__is_in_target_angle():
+                        self.__go_to_target_coordinates()
+                    else:
+                        self.__go_to_target_angle()
+                        continue
+                # Reached coordinate, stop!
+                self.__carMovement.stop()
 
     def __needs_to_move_to_target_coordinates(self):
 
@@ -100,15 +113,20 @@ class Controller(Thread):
         if self.__angleInDegrees == -999 or self.__targetAngle == -999:
             return True
 
+        diff_angle = self.__targetAngle - self.__angleInDegrees
+        diff_angle = abs(diff_angle)
+
         # If our current angle is within a valid range of the target angle, return True
-        if self.__targetAngle - self.__angleInDegrees <= self.__angleMargin <= self.__targetAngle + \
-                self.__angleInDegrees:
+        if diff_angle < self.__angleMargin:
             return True
 
         return False
 
     def __go_to_target_angle(self):
-        if self.__targetAngle - self.__angleInDegrees < 180:
+
+        target_difference = convert_int_to_degrees(self.__targetAngle - self.__angleInDegrees)
+
+        if target_difference < 180:
             self.__carMovement.spin_right(self.__CAR_SPEED)
         else:
             self.__carMovement.spin_left(self.__CAR_SPEED)
@@ -119,27 +137,29 @@ class Controller(Thread):
 
         # If we are out of range on longitude, do something
         if not -self.__coordinateMargin <= difference_longitude <= self.__coordinateMargin:
-            # TODO : Move towards longitude point by moving the car
             if difference_longitude > 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.North)
             elif difference_longitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.South)
             else:
                 self.__targetAngle = 0
-            return
 
         # If we are out of range on latitude, do something
-        if not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
-            # TODO : Move towards latitude point by moving the car
+        elif not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
             if difference_latitude > 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.East)
             elif difference_latitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.West)
             else:
                 self.__targetAngle = 0
+
+        # We have recalculated the target angle so we need to check if we are at our correct angle.
+        if not self.__is_in_target_angle():
+            self.__carMovement.stop()
             return
 
-        return
+        # TODO : Move towards point by moving the car forward when in correct direction
+        # self.__carMovement.forward(self.__CAR_SPEED)
 
     def print_distance_driven(self):
         print "Left cm's driven : " + str(self.__cm_driven_left)
@@ -154,35 +174,16 @@ class Controller(Thread):
         print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
-        # If we have enabled the GPS way-point system, go to target angle if we get compass update.
-        if not self.EnableGPSWaypointSystem:
-            return
-
-        if not self.__is_in_target_angle():
-            self.__go_to_target_angle()
-
-    def __on_longitude_changed(self, longitude):
-
-        if self.__longitude == longitude:
-            return
+    def __on_location_changed(self, longitude, latitude, altitude, accuracy):
 
         print "Average longitude is now ", longitude
-        self.__longitude = longitude
-
-        # If we have enabled the GPS way-point system, go to target angle if we get compass update.
-        if not self.EnableGPSWaypointSystem:
-            return
-
-        if self.__needs_to_move_to_target_coordinates:
-            self.__go_to_target_coordinates()
-
-    def __on_latitude_changed(self, latitude):
-
-        if self.__latitude == latitude:
-            return
-
         print "Average latitude is now ", latitude
+        print "Average altitude is now ", altitude
+        print "Average accuracy is now ", accuracy
+        self.__longitude = longitude
         self.__latitude = latitude
+        self.__altutyde = altitude
+        self.__accuracy = accuracy
 
     def __on_keyboard_movetype_changed(self, move_type):
 
@@ -238,8 +239,7 @@ class Controller(Thread):
 
         pub.unsubscribe(self.__on_keyboard_movetype_changed, Keyboard.EVENT_ON_MOVETYPE_CHANGED)
 
-        pub.unsubscribe(self.__on_latitude_changed, Phone.EVENT_ON_LATITUDE_CHANGED)
-        pub.unsubscribe(self.__on_longitude_changed, Phone.EVENT_ON_LONGITUDE_CHANGED)
+        pub.unsubscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
         print "Cleaning up GPIO"
