@@ -8,22 +8,18 @@ namespace WarDrivePiServer.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Dashboard()
         {
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult Map()
         {
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult Drive()
         {
-            ViewBag.Message = "Your contact page.";
-
             return View();
         }
     }
