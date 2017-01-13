@@ -2,20 +2,23 @@ from threading import Thread
 from time import sleep
 from subprocess import check_output, call, CalledProcessError
 from pubsub import pub
-from Util.extensions import find_between, clamp
+from Util.extensions import find_between, clamp, convert_int_to_degrees
 
 
 class Phone(Thread):
     __CPU_CYCLE_TIME = 0.25  # 250 ms
     __longitudes = []
     __latitudes = []
+    __accuracies = []
 
     __average_longitude = 0
     __average_latitude = 0
+    __average_accuracy = 0
 
     # dumpsys terminology
     __term_longitude = "mLongitude="
     __term_latitude = "mLatitude="
+    __term_accuracy = "mAccuracy="
 
     # Event names
     EVENT_ON_LOCATION_CHANGED = "OnLocationChanged"
@@ -24,8 +27,6 @@ class Phone(Thread):
     # Used in Unit-Tests
     testing_input_location = ""
     testing_input_sensor = ""
-
-    # TODO : Also capture the 'Accuracy average' when collecting location info.
 
     def __init__(self):
         try:
@@ -95,13 +96,13 @@ class Phone(Thread):
                 compass_value = find_between(non_spaced_line, "last=<", ",")
                 compass_value = round(float(compass_value))
 
-                # Make sure we work with numbers between 0 and 359 ( both inclusive )
-                compass_value = clamp(compass_value, 0, 359)
+                # Make sure we work with correct degree numbers. Between 0 and 359, both inclusive.
+                compass_value = convert_int_to_degrees(compass_value)
 
                 pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
 
     def __retrieve_location_information(self, raw_location_data):
-        location_providers = []
+        multi_value_lines = []
 
         # First retrieve all location providers.
         # Location provider examples : Phone, Network, Cellular etc...
@@ -111,19 +112,25 @@ class Phone(Thread):
             if "LOG" in item:
                 continue
 
+            # Longitude and latitude values are on the same line. This is considered a 'multi-value line' which will be
+            # stripped later on.
             if self.__term_latitude in item:
-                location_providers.append(item.strip())
+                multi_value_lines.append(item.strip())
 
-        if len(location_providers) < 1:
+            if self.__term_accuracy in item:
+                multi_value_lines.append(item.strip())
+
+        if len(multi_value_lines) < 1:
             return
 
         # Seems like we have got fresh new data, delete the old first.
+        self.__accuracies = []
         self.__latitudes = []
         self.__longitudes = []
 
-        # Go through every location provider and only get the longitude and latitude values and store them.
-        for location_provider in location_providers:
-            suffix = location_provider.split(" ")
+        # Go through every multi-value line and only get the longitude and latitude values and store them.
+        for line in multi_value_lines:
+            suffix = line.split(" ")
             for item in suffix:
                 if self.__term_latitude in item:
                     latitude_string_value = item.replace(self.__term_latitude, "")
@@ -133,26 +140,40 @@ class Phone(Thread):
                     longitude_string_value = item.replace(self.__term_longitude, "")
                     self.__longitudes.append(longitude_string_value)
 
+                if self.__term_accuracy in item:
+                    accuracy_string_value = item.replace(self.__term_accuracy, "")
+                    self.__accuracies.append(accuracy_string_value)
+
         # Now we just have to update our average coordinates
-        self.__calculate_and_update_average_coordinates()
+        self.__calculate_and_update_average_values()
 
-    def __calculate_and_update_average_coordinates(self):
-        average_longitude = 0
-        average_latitude = 0
+    def __calculate_and_update_average_values(self):
+        average_longitude = self.__average_longitude
+        average_latitude = self.__average_latitude
+        average_accuracy = self.__average_accuracy
 
-        for longitude in self.__longitudes:
-            average_longitude += float(longitude)
+        if len(self.__longitudes) > 0:
+            for longitude in self.__longitudes:
+                average_longitude += float(longitude)
+            average_longitude /= len(self.__longitudes)
 
-        for latitude in self.__latitudes:
-            average_latitude += float(latitude)
+        if len(self.__latitudes) > 0:
+            for latitude in self.__latitudes:
+                average_latitude += float(latitude)
+            average_latitude /= len(self.__latitudes)
 
-        average_longitude /= len(self.__longitudes)
-        average_latitude /= len(self.__latitudes)
+        if len(self.__accuracies) > 0:
+            for accuracy in self.__accuracies:
+                average_accuracy += float(accuracy)
+            average_accuracy /= len(self.__accuracies)
 
-        # When a change in average latitude/longitude is detected, notify all registered event handlers.
-        if average_latitude != self.__average_latitude or average_longitude != self.__average_longitude:
+        # When a change in average values is detected, notify all registered event listeners.
+        if average_latitude != self.__average_latitude \
+                or average_longitude != self.__average_longitude \
+                or average_accuracy != self.__average_accuracy:
             self.__average_latitude = average_latitude
             self.__average_longitude = average_longitude
+            self.__average_accuracy = average_accuracy
 
             pub.sendMessage(self.EVENT_ON_LOCATION_CHANGED, longitude=self.__average_longitude,
-                            latitude=self.__average_latitude)
+                            latitude=self.__average_latitude, accuracy=self.__average_accuracy)
