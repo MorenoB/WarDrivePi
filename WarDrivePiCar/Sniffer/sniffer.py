@@ -21,7 +21,7 @@ class Sniffer(Thread):
 
     __INTERFACE_STARTS_WITH = "sniffer"
 
-    __CONNECTION_STRING = "dbname=Packets user=postgres password=__Raspi2DB host=localhost port=5432"
+    __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
     """
     PARAMETER:      DESCRIPTION:
     dbname          The database name (only in the dsn string)
