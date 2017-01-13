@@ -56,7 +56,20 @@ class Phone(Thread):
                 print "Device was not found! Retrying on next loop update..."
                 pass  # In case the device was not found, retry again!
 
+        self.__shutdown_phone_connection()
         print "Thread '{0}' stopped.".format(self.getName())
+
+    @staticmethod
+    def __shutdown_phone_connection():
+        try:
+            # 'adb shell stop' to stop all current emulators
+            call(["adb", "shell", "stop"])
+            # 'adb shell exit' to make sure we exit all emulating processes
+            call(["adb", "shell", "exit"])
+
+        # If this OS does not support adb calls, just return
+        except OSError:
+            return
 
     def __get_compass_data(self):
 
