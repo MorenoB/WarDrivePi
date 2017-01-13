@@ -10,7 +10,7 @@ from Util.extensions import *
 
 class Phone(Thread):
     __CPU_CYCLE_TIME = 0.25  # 250 ms
-    __CONNECTION_STRING = "dbname=Packets user=postgres password=__Raspi2DB host=localhost port=5432"
+    __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
 
     __latitudes = []
     __longitudes = []
@@ -21,6 +21,7 @@ class Phone(Thread):
     __average_longitude = 0
     __average_altitude = 0
     __average_accuracy = 0
+    __averages_updated = datetime.min
 
     # dumpsys terminology
     __term_latitude = "mLatitude="
@@ -62,7 +63,20 @@ class Phone(Thread):
                 print "Device was not found! Retrying on next loop update..."
                 pass  # In case the device was not found, retry again!
 
+        self.__shutdown_phone_connection()
         print "Thread '{0}' stopped.".format(self.getName())
+
+    @staticmethod
+    def __shutdown_phone_connection():
+        try:
+            # 'adb shell stop' to stop all current emulators
+            call(["adb", "shell", "stop"])
+            # 'adb shell exit' to make sure we exit all emulating processes
+            call(["adb", "shell", "exit"])
+
+        # If this OS does not support adb calls, just return
+        except OSError:
+            return
 
     def __get_compass_data(self):
 
@@ -194,6 +208,7 @@ class Phone(Thread):
             self.__average_longitude = average_longitude
             self.__average_altitude = average_altitude
             self.__average_accuracy = average_accuracy
+            self.__averages_updated = datetime.now()
 
             pub.sendMessage(self.EVENT_ON_LOCATION_CHANGED,
                             longitude=self.__average_longitude,
@@ -224,7 +239,7 @@ class Phone(Thread):
                 'longitude': self.__average_longitude,
                 'altitude': self.__average_altitude,
                 'accuracy': self.__average_accuracy,
-                'timestamp': datetime.now()
+                'timestamp': self.__averages_updated
             }
 
             # Execute
@@ -238,7 +253,8 @@ class Phone(Thread):
             print "Exception in thread '{0}': {1}".format(self.name, exception)
 
             # Rollback on ANY exception
-            connection.rollback()
+            if connection is not None:
+                connection.rollback()
         finally:
             # Close the connections
             if cursor is not None:
