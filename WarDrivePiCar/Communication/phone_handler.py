@@ -253,7 +253,8 @@ class Phone(Thread):
             print "Exception in thread '{0}': {1}".format(self.name, exception)
 
             # Rollback on ANY exception
-            connection.rollback()
+            if connection is not None:
+                connection.rollback()
         finally:
             # Close the connections
             if cursor is not None:
