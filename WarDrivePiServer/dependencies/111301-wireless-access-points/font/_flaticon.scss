@@ -1,0 +1,79 @@
+    /*
+    Flaticon icon font: Flaticon
+    Creation date: 22/06/2016 15:12
+    */
+
+    @font-face {
+  font-family: "Flaticon";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+    .fi:before{
+        display: inline-block;
+  font-family: "Flaticon";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+    }
+
+    .flaticon-bus-and-wifi-signal:before { content: "\f100"; }
+.flaticon-coffee-cup-with-wireless-symbol:before { content: "\f101"; }
+.flaticon-plane-and-wifi-signal:before { content: "\f102"; }
+.flaticon-protected-wireless-network:before { content: "\f103"; }
+.flaticon-protected-wireless-network-1:before { content: "\f104"; }
+.flaticon-screen-with-wifi-signal:before { content: "\f105"; }
+.flaticon-search-wireless-net:before { content: "\f106"; }
+.flaticon-smartphone-with-wifi-signal:before { content: "\f107"; }
+.flaticon-tablet-with-wireless-signal:before { content: "\f108"; }
+.flaticon-tv-with-wifi-signal:before { content: "\f109"; }
+.flaticon-wifi-access-marker:before { content: "\f10a"; }
+.flaticon-wifi-off:before { content: "\f10b"; }
+.flaticon-wifi-signal-with-exclamation-mark:before { content: "\f10c"; }
+.flaticon-wifi-with-dollar-symbol:before { content: "\f10d"; }
+.flaticon-wireless-access:before { content: "\f10e"; }
+.flaticon-wireless-antenna:before { content: "\f10f"; }
+.flaticon-wireless-error:before { content: "\f110"; }
+.flaticon-wireless-protected-net:before { content: "\f111"; }
+.flaticon-wireless-router:before { content: "\f112"; }
+.flaticon-wireless-signal:before { content: "\f113"; }
+    
+    $font-Flaticon-bus-and-wifi-signal: "\f100";
+    $font-Flaticon-coffee-cup-with-wireless-symbol: "\f101";
+    $font-Flaticon-plane-and-wifi-signal: "\f102";
+    $font-Flaticon-protected-wireless-network: "\f103";
+    $font-Flaticon-protected-wireless-network-1: "\f104";
+    $font-Flaticon-screen-with-wifi-signal: "\f105";
+    $font-Flaticon-search-wireless-net: "\f106";
+    $font-Flaticon-smartphone-with-wifi-signal: "\f107";
+    $font-Flaticon-tablet-with-wireless-signal: "\f108";
+    $font-Flaticon-tv-with-wifi-signal: "\f109";
+    $font-Flaticon-wifi-access-marker: "\f10a";
+    $font-Flaticon-wifi-off: "\f10b";
+    $font-Flaticon-wifi-signal-with-exclamation-mark: "\f10c";
+    $font-Flaticon-wifi-with-dollar-symbol: "\f10d";
+    $font-Flaticon-wireless-access: "\f10e";
+    $font-Flaticon-wireless-antenna: "\f10f";
+    $font-Flaticon-wireless-error: "\f110";
+    $font-Flaticon-wireless-protected-net: "\f111";
+    $font-Flaticon-wireless-router: "\f112";
+    $font-Flaticon-wireless-signal: "\f113";
