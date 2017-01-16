@@ -186,7 +186,7 @@ class Controller(Thread):
         print "Average accuracy is now ", accuracy
         self.__longitude = longitude
         self.__latitude = latitude
-        self.__altutyde = altitude
+        self.__altitude = altitude
         self.__accuracy = accuracy
 
     def __on_keyboard_movetype_changed(self, move_type):
