@@ -16,11 +16,11 @@ class Program:
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
+        InternetConnectionChecker(),
         Sniffer(),
         Controller(),
         Keyboard(),
-        Phone(),
-        InternetConnectionChecker()
+        Phone()
     ]
 
     def __init__(self):
