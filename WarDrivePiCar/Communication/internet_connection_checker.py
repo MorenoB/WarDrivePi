@@ -10,8 +10,7 @@ class InternetConnectionChecker(Thread):
     __url = 'http://google.com/'
     __url_response_starts_with = 'http://www.google'
 
-    EVENT_ON_LOST_INTERNET_CONNECTION = "OnLostInternetConnection"
-    EVENT_ON_HAS_INTERNET_CONNECTION = "OnHasInternetConnection"
+    EVENT_ON_INTERNET_CONNECTION_CHANGED = "OnInternetConnectionChanged"
 
     def __init__(self):
         Thread.__init__(self)
@@ -25,24 +24,19 @@ class InternetConnectionChecker(Thread):
             try:
                 response = urlopen(self.__url)
             except HTTPError:
-                self.__on_lost_internet_connection()
+                self.__changed_internet_connection(False)
             except URLError:
-                self.__on_lost_internet_connection()
+                self.__changed_internet_connection(False)
 
             # Received response:
             else:
                 if response.url.startswith(self.__url_response_starts_with):
-                    self.__on_has_internet_connection()
+                    self.__changed_internet_connection(True)
                     continue  # Internet is up
                 else:
-                    self.__on_lost_internet_connection()
+                    self.__changed_internet_connection(False)
 
         print "Thread '{0}' stopped.".format(self.getName())
 
-    def __on_lost_internet_connection(self):
-        pub.sendMessage(self.EVENT_ON_LOST_INTERNET_CONNECTION)
-        print "Lost internet!"
-
-    def __on_has_internet_connection(self):
-        pub.sendMessage(self.EVENT_ON_HAS_INTERNET_CONNECTION)
-        print "Has internet!"
+    def __changed_internet_connection(self, has_internet_connection):
+        pub.sendMessage(self.EVENT_ON_INTERNET_CONNECTION_CHANGED, has_internet_connection=has_internet_connection)

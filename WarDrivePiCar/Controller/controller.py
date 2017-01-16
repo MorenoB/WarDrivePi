@@ -5,6 +5,7 @@ from pubsub import pub
 
 from keyboard import Keyboard
 from Communication.phone_handler import Phone
+from Communication.internet_connection_checker import InternetConnectionChecker
 from Movement.car_control import CarControl
 from Util.enums import MovementType, CompassDirections
 from Util.extensions import convert_compass_direction_to_angle, convert_int_to_degrees
@@ -66,6 +67,9 @@ class Controller(Thread):
         # Register phone events
         pub.subscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.subscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
+
+        # Register internet connection checker events
+        pub.subscribe(self.__on_internet_connection_changed, InternetConnectionChecker.EVENT_ON_INTERNET_CONNECTION_CHANGED)
 
     def join(self, timeout=None):
         self.__shutdown_controller()
@@ -246,3 +250,8 @@ class Controller(Thread):
         self.__carMovement.cleanup()
         print "Shutting down controller..."
         self.__isRunning = False
+
+    def __on_internet_connection_changed(self, has_internet_connection):
+        if not has_internet_connection:
+            self.__carMovement.stop()
+            print "Lost internet connection! Car will stop."
