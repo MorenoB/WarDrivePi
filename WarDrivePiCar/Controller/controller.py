@@ -246,7 +246,6 @@ class Controller(Thread):
         pub.unsubscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
-        print "Cleaning up GPIO"
         self.__carMovement.cleanup()
         print "Shutting down controller..."
         self.__isRunning = False
