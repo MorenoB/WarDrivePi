@@ -11,6 +11,9 @@ from Util.extensions import *
 class Phone(Thread):
     __CPU_CYCLE_TIME = 0.25  # 250 ms
     __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
+    __GPS_DIFFERENCE = -30  # Calibrated difference
+
+    __USING_LG4 = False
 
     __latitudes = []
     __longitudes = []
@@ -87,7 +90,11 @@ class Phone(Thread):
             return
 
         # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
-        raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
+        if self.__USING_LG4:
+            raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice", "|", "grep",
+                                              "'LGE Orientation'"])
+        else:
+            raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
         self.__retrieve_compass_information_from_sensor_service(raw_sensor_output)
 
     def __get_gps_data(self):
@@ -99,10 +106,28 @@ class Phone(Thread):
             return
 
         # Execute command 'adb dumpsys location' and redirect output to our methods.
-        raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
+        if self.__USING_LG4:
+            raw_location_output = check_output(["adb", "shell", "dumpsys", "location", "|", "grep", "fused:"])
+        else:
+            raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
         self.__retrieve_location_information(raw_location_output)
 
     def __retrieve_compass_information_from_sensor_service(self, raw_sensor_data):
+        if self.__USING_LG4:
+            self.__retrieve_compass_information_lg4(raw_sensor_data)
+        else:
+            self.__retrieve_compass_information_samsung(raw_sensor_data)
+
+    def __retrieve_compass_information_lg4(self, raw_sensor_data):
+        for line in raw_sensor_data:
+            if "QTI" in line:
+                found_compass_value = find_between(line, " < 1) ", ",")
+                compass_value = round(float(found_compass_value) + float(self.__GPS_DIFFERENCE))
+
+                compass_value = convert_int_to_degrees(compass_value)
+                pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
+
+    def __retrieve_compass_information_samsung(self, raw_sensor_data):
 
         for line in raw_sensor_data.split("\n"):
 
@@ -121,7 +146,7 @@ class Phone(Thread):
 
                 pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
 
-    def __retrieve_location_information(self, raw_location_data):
+    def __retrieve_location_information_samsung_phone(self, raw_location_data):
         multi_value_lines = []
 
         # First retrieve all location providers.
@@ -168,6 +193,25 @@ class Phone(Thread):
                 if self.__term_accuracy in item:
                     accuracy_string_value = item.replace(self.__term_accuracy, "")
                     self.__accuracies.append(accuracy_string_value)
+
+    def __retrieve_location_information_lg4(self, raw_location_data):
+        for line in raw_location_data:
+            if "Location" in line:
+                found_longitude = find_between(line, "fused " , ",")
+                found_latitude = find_between(line, ",", " acc")
+                found_altitude = find_between(line, "alt=" , " vel=")
+                found_accuracy = find_between(line, "acc=" , " et=")
+
+                self.__longitudes.append(found_longitude)
+                self.__latitudes.append(found_latitude)
+                self.__altitudes.append(found_altitude)
+                self.__accuracies.append(found_accuracy)
+
+    def __retrieve_location_information(self, raw_location_data):
+        if self.__USING_LG4:
+            self.__retrieve_location_information_lg4(raw_location_data)
+        else:
+            self.__retrieve_location_information_samsung_phone(raw_location_data)
 
         # Now we just have to update our average coordinates
         self.__calculate_and_update_average_values()
