@@ -120,12 +120,17 @@ class Phone(Thread):
             self.__retrieve_compass_information_samsung(raw_sensor_data)
 
     def __retrieve_compass_information_lg4(self, raw_sensor_data):
-        for line in raw_sensor_data:
-            if "QTI" in line:
-                found_compass_value = find_between(line, "last 10 events < 1) ", ",")
-                compass_value = round(float(found_compass_value) + float(self.__COMPASS_DIFFERENCE))
+        for line in raw_sensor_data.split("\n"):
+            # There's also a secondary sensor available but is deactivated so it won't register data.
+            if "<>" in line:
+                continue
 
+            if "QTI" in line:
+                # Find the value and use calibrated values stated in "__COMPASS_DIFFERENCE"
+                found_compass_value = find_between(line, "1) ", ", ")
+                compass_value = round(float(found_compass_value) + float(self.__COMPASS_DIFFERENCE))
                 compass_value = convert_int_to_degrees(compass_value)
+
                 pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
 
     def __retrieve_compass_information_samsung(self, raw_sensor_data):
