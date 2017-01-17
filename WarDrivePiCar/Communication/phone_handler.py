@@ -11,7 +11,8 @@ from Util.extensions import *
 class Phone(Thread):
     __CPU_CYCLE_TIME = 0.25  # 250 ms
     __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
-    __GPS_DIFFERENCE = -30  # Calibrated difference
+    __COMPASS_DIFFERENCE = -45  # Calibrated difference, how is the phone attached to the car?
+    # Right now it is faced west relative to the position of the car itself so all the input need to be -45
 
     __USING_LG4 = False
 
@@ -92,7 +93,7 @@ class Phone(Thread):
         # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
         if self.__USING_LG4:
             raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice", "|", "grep",
-                                              "'LGE Orientation'"])
+                                              "android.sensor.orientation"])
         else:
             raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
         self.__retrieve_compass_information_from_sensor_service(raw_sensor_output)
@@ -107,7 +108,7 @@ class Phone(Thread):
 
         # Execute command 'adb dumpsys location' and redirect output to our methods.
         if self.__USING_LG4:
-            raw_location_output = check_output(["adb", "shell", "dumpsys", "location", "|", "grep", "fused:"])
+            raw_location_output = check_output(["adb", "shell", "dumpsys", "location", "|", "grep", "ready=true"])
         else:
             raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
         self.__retrieve_location_information(raw_location_output)
@@ -121,8 +122,8 @@ class Phone(Thread):
     def __retrieve_compass_information_lg4(self, raw_sensor_data):
         for line in raw_sensor_data:
             if "QTI" in line:
-                found_compass_value = find_between(line, " < 1) ", ",")
-                compass_value = round(float(found_compass_value) + float(self.__GPS_DIFFERENCE))
+                found_compass_value = find_between(line, "last 10 events < 1) ", ",")
+                compass_value = round(float(found_compass_value) + float(self.__COMPASS_DIFFERENCE))
 
                 compass_value = convert_int_to_degrees(compass_value)
                 pub.sendMessage(self.EVENT_ON_COMPASS_CHANGED, compass=compass_value)
@@ -195,12 +196,12 @@ class Phone(Thread):
                     self.__accuracies.append(accuracy_string_value)
 
     def __retrieve_location_information_lg4(self, raw_location_data):
-        for line in raw_location_data:
+        for line in raw_location_data.split("\n"):
             if "Location" in line:
-                found_longitude = find_between(line, "fused " , ",")
+                found_longitude = find_between(line, "fused ", ",")
                 found_latitude = find_between(line, ",", " acc")
-                found_altitude = find_between(line, "alt=" , " vel=")
-                found_accuracy = find_between(line, "acc=" , " et=")
+                found_altitude = find_between(line, "alt=", " vel=")
+                found_accuracy = find_between(line, "acc=", " et=")
 
                 self.__longitudes.append(found_longitude)
                 self.__latitudes.append(found_latitude)
