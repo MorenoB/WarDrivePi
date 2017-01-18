@@ -11,6 +11,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
 namespace WarDrivePiServer.Models
@@ -78,7 +79,10 @@ namespace WarDrivePiServer.Models
         public bool TransmitterIsAccessPoint { get; private set; }
         public string Ssid { get; private set; }
         public int Channel { get; private set; }
+
+        [JsonConverter(typeof(StringEnumConverter))]
         public WirelessSecurity Security { get; private set; }
+
         public int BeaconInterval { get; private set; }
         public Coordinates Coordinates { get; private set; }
 
