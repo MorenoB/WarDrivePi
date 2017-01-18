@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Newtonsoft.Json
+@model IEnumerable<WarDrivePiServer.Models.AccessPoint>
+@{
     ViewBag.Title = "Map";
 }
 
@@ -27,3 +29,14 @@
 </address>
 
 @Scripts.Render("~/bundles/Map")
+<script>
+    function autorun() {
+        var accessPoints = @Html.Raw(JsonConvert.SerializeObject(Model));
+        console.log(accessPoints);
+        var object = new Map();
+        object.getLocation();
+    }
+    if (window.addEventListener) window.addEventListener("load", autorun(), false);
+    else if (window.attachEvent) window.attachEvent("onload", autorun());
+    else window.onload = autorun;
+</script>

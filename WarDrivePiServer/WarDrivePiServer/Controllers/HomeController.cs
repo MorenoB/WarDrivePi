@@ -14,11 +14,11 @@ namespace WarDrivePiServer.Controllers
 {
     public class HomeController : Controller
     {
-        private const string NpgsqlConnectionString = "Server=localhost;" +
-                                                      "Port=5432;" +
-                                                      "Username=postgres;" +
-                                                      "Password=g4Kzri^akWWP^LEQ0&Z%QRfW;" +
-                                                      "Database=packets;";
+        private const string NpgsqlConnectionString =
+            @"Server=localhost;
+            Port=5432;
+            Username=postgres;
+            Password=g4Kzri^akWWP^LEQ0&Z%QRfW;Database=packets;";
 
         public ActionResult Dashboard()
         {
@@ -29,49 +29,44 @@ namespace WarDrivePiServer.Controllers
         {
             var baseTable = new DataTable();
 
+            // Select all base information for markers
             using (var npgsqlConnection = new NpgsqlConnection(NpgsqlConnectionString))
-            using (var npgsqlCommand = new NpgsqlCommand(Marker.BaseQuery, npgsqlConnection))
+            using (var npgsqlCommand = new NpgsqlCommand(AccessPoint.BaseQuery, npgsqlConnection))
             {
                 npgsqlConnection.Open();
 
                 using (var npgsqlDataReader = npgsqlCommand.ExecuteReader())
-                {
                     baseTable.Load(npgsqlDataReader);
-                }
+
 
                 npgsqlConnection.Close();
             }
 
-            var markers = new ArrayList();
-            foreach (DataRow baseTableRow in baseTable.Rows)
+            var accessPoints = new List<AccessPoint>();
+            foreach (DataRow baseDataRow in baseTable.Rows)
             {
-                var elementsTable = new DataTable();
+                var elementsDataTable = new DataTable();
 
+                // Select all elements information per marker
                 using (var npgsqlConnection = new NpgsqlConnection(NpgsqlConnectionString))
-                using (var npgsqlCommand = new NpgsqlCommand(Marker.ElementsQuery, npgsqlConnection))
+                using (var npgsqlCommand = new NpgsqlCommand(AccessPoint.ElementsQuery, npgsqlConnection))
                 {
                     npgsqlConnection.Open();
 
-                    npgsqlCommand.Parameters.AddWithValue("pointer", NpgsqlDbType.Bigint, (long)baseTableRow.ItemArray[0]);
+                    npgsqlCommand.Parameters.AddWithValue("pointer_dot11", NpgsqlDbType.Bigint, (long)baseDataRow.ItemArray[0]);
                     npgsqlCommand.Prepare();
 
                     using (var npgsqlDataReader = npgsqlCommand.ExecuteReader())
-                    {
-                        elementsTable.Load(npgsqlDataReader);
-                    }
+                        elementsDataTable.Load(npgsqlDataReader);
 
                     npgsqlConnection.Close();
                 }
 
-                markers.Add(new Marker(baseTableRow, elementsTable));
+                accessPoints.Add(new AccessPoint(baseDataRow, elementsDataTable));
             }
 
-            foreach (var marker in markers)
-            {
-                
-            }
-
-            return View(markers);
+            accessPoints.ForEach(accessPoint => accessPoint.Process());
+            return View(accessPoints);
         }
 
         public ActionResult Drive()

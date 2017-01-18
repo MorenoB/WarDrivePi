@@ -7,14 +7,14 @@
         popupAnchor: [0, -29] // Point from which the popup should open relative to the iconAnchor
     });
 
-    var map = L.map('map')
+    var map = L.map("map")
         .addLayer(
-            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-                attribution: 'The Wardrive Project',
-                id: 'zgl9hfnzmnet.2khh4b0p',
-                accessToken: 'pk.eyJ1IjoiemdsOWhmbnptbmV0IiwiYSI6ImNpeHVtaXI3aTAwMzEyeHFxZHYwb2g2ZWEifQ.WzA0GNxS1eNBFI595CPkJg'
+            L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
+                attribution: "The Wardrive Project",
+                id: "zgl9hfnzmnet.2khh4b0p",
+                accessToken: "pk.eyJ1IjoiemdsOWhmbnptbmV0IiwiYSI6ImNpeHVtaXI3aTAwMzEyeHFxZHYwb2g2ZWEifQ.WzA0GNxS1eNBFI595CPkJg"
             }))
-        .on('zoom', function () {
+        .on("zoom", function () {
             var factor = map.getZoom() - DefaultZoom;
             if (factor > 0) factor = Math.pow(2, factor);
             else if (factor < 0) factor = 1 / Math.pow(2, Math.abs(factor));
@@ -33,7 +33,7 @@
         });
 
     var userMarker;
-    var userIcon
+    var userIcon;
 
     var timeout;
     this.getLocation = function () {
@@ -84,11 +84,3 @@
         $("body").append(alertDiv);
     }
 }
-
-function autorun() {
-    var x = new Map();
-    x.getLocation();
-}
-if (window.addEventListener) window.addEventListener("load", autorun(), false);
-else if (window.attachEvent) window.attachEvent("onload", autorun());
-else window.onload = autorun;
