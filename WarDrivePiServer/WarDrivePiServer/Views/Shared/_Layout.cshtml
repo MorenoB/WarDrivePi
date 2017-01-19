@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TWP - @ViewBag.Title</title>
     @Styles.Render("~/Content/sb-admin-2-css")
+    @Scripts.Render("~/bundles/sb-admin-2-js")
+    @RenderSection("scripts", required: false)
 </head>
 <body>
     <div id="wrapper">
@@ -277,14 +279,17 @@
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
+            <div class="row">
+                <div id="dismissable-notifications" class="col-lg-12">
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
             @RenderBody()
         </div>
         <!-- /#page-wrapper -->
 
     </div>
     <!-- /#wrapper -->
-
-    @Scripts.Render("~/bundles/sb-admin-2-js")
-    @RenderSection("scripts", required: false)
 </body>
 </html>

@@ -25,10 +25,13 @@ namespace WarDrivePiServer
 
             bundles.Add(new ScriptBundle("~/bundles/Map").Include(
                 "~/Scripts/leaflet.js",
+                "~/Scripts/leaflet.markercluster.js",
                 "~/Scripts/Map.js"));
 
             bundles.Add(new StyleBundle("~/Content/Map").Include(
-                "~/Content/leaflet.css"));
+                "~/Content/leaflet.css",
+                "~/Content/MarkerCluster.css",
+                "~/Content/MarkerCluster.Default.css"));
         }
     }
 }

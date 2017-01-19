@@ -106,13 +106,13 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="WebGrease">
-      <Private>True</Private>
-      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
-    </Reference>
     <Reference Include="Antlr3.Runtime">
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +133,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\gps-dot.png" />
+    <Content Include="Content\Images\protected-wireless-network-3.png" />
+    <Content Include="Content\Images\protected-wireless-network-2.png" />
+    <Content Include="Content\MarkerCluster.css" />
+    <Content Include="Content\MarkerCluster.Default.css" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Fonts\fontawesome-webfont.svg" />
@@ -142,12 +147,10 @@
     <Content Include="Content\Images\marker-icon.png" />
     <Content Include="Content\Images\marker-shadow.png" />
     <Content Include="Content\Images\protected-wireless-network-1.png" />
-    <Content Include="Content\Images\protected-wireless-network.png" />
     <Content Include="Content\Images\search-wireless-net.png" />
     <Content Include="Content\Images\wifi-access-marker.png" />
     <Content Include="Content\Images\wifi-signal-with-exclamation-mark.png" />
     <Content Include="Content\Images\wireless-error.png" />
-    <Content Include="Content\Images\wireless-protected-net.png" />
     <Content Include="Content\Images\wireless-signal.png" />
     <Content Include="Content\leaflet.css" />
     <Content Include="Content\metisMenu.min.css" />
@@ -166,6 +169,7 @@
     <Content Include="Fonts\FontAwesome.otf" />
     <Content Include="Scripts\jquery.min.js" />
     <Content Include="Scripts\leaflet.js" />
+    <Content Include="Scripts\leaflet.markercluster.js" />
     <Content Include="Scripts\Map.js" />
     <Content Include="Scripts\metisMenu.min.js" />
     <Content Include="Scripts\sb-admin-2.min.js" />

@@ -77,7 +77,7 @@ namespace WarDrivePiServer.Models
         }
 
         public bool TransmitterIsAccessPoint { get; private set; }
-        public string Ssid { get; private set; }
+        public string SsId { get; private set; }
         public int Channel { get; private set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
@@ -140,7 +140,7 @@ namespace WarDrivePiServer.Models
                 switch (number)
                 {
                     case 0:
-                        Ssid = info;
+                        SsId = info;
                         break;
 
                     case 3:
