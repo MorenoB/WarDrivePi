@@ -13,7 +13,7 @@ from Util.extensions import convert_compass_direction_to_angle, convert_int_to_d
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
-    __CAR_SPEED = 50  # 50% of the motor speed.
+    __CAR_SPEED = 15  # 15% of the motor speed.
     __CM_PER_PULSE = 0.2  # TODO : Need to verify in Real-Life, will need to bring a ruler to the car and check how
     # much cm's is between a hole.
 
