@@ -1,3 +1,16 @@
+## ANDRDOID
+
+*.iml
+CompassLogger/.gradle
+CompassLogger/local.properties
+CompassLogger/.idea/workspace.xml
+CompassLogger/.idea/libraries
+CompassLogger/.DS_Store
+CompassLogger/build
+CompassLogger/captures
+CompassLogger/.externalNativeBuild
+
+
 ###################
 # compiled source #
 ###################
