@@ -11,7 +11,7 @@ from Util.extensions import *
 class Phone(Thread):
     __CPU_CYCLE_TIME = 0.25  # 250 ms
     __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
-    __COMPASS_DIFFERENCE = 45  # Calibrated difference, how is the phone attached to the car?
+    __COMPASS_DIFFERENCE = -45  # Calibrated difference, how is the phone attached to the car?
     # Right now it is faced west relative to the position of the car itself so all the input need to be 45
 
     __USING_LG4 = True
@@ -93,7 +93,7 @@ class Phone(Thread):
         # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
         if self.__USING_LG4:
             call(["adb", "logcat", "-c"])
-            raw_sensor_output = check_output(["adb", "logcat", "-d", "Compass:D", "*:S", "|", "grep", "AngleInDegrees"])
+            raw_sensor_output = check_output(["adb", "logcat", "-d", "Compass:D", "*:S"])
 
         else:
             raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
@@ -122,13 +122,10 @@ class Phone(Thread):
 
     def __retrieve_compass_information_lg4(self, raw_sensor_data):
         for line in raw_sensor_data.split("\n"):
-            # There's also a secondary sensor available but is deactivated so it won't register data.
-            if "<>" in line:
-                continue
 
-            if "QTI" in line:
+            if "AngleInDegrees" in line:
                 # Find the value and use calibrated values stated in "__COMPASS_DIFFERENCE"
-                found_compass_value = find_between(line, "1) ", ", ")
+                found_compass_value = find_between(line, "[", "]")
                 compass_value = round(float(found_compass_value) + float(self.__COMPASS_DIFFERENCE))
                 compass_value = convert_int_to_degrees(compass_value)
 
