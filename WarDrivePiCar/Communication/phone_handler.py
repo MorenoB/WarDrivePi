@@ -92,8 +92,9 @@ class Phone(Thread):
 
         # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
         if self.__USING_LG4:
-            raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice", "|", "grep",
-                                              "android.sensor.orientation"])
+            call(["adb", "logcat", "-c"])
+            raw_sensor_output = check_output(["adb", "logcat", "-d", "Compass:D", "*:S", "|", "grep", "AngleInDegrees"])
+
         else:
             raw_sensor_output = check_output(["adb", "shell", "dumpsys", "sensorservice"])
         self.__retrieve_compass_information_from_sensor_service(raw_sensor_output)
