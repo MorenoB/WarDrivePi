@@ -13,7 +13,7 @@ from Util.extensions import convert_compass_direction_to_angle, convert_int_to_d
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
-    __CAR_SPEED = 50  # 50% of the motor speed.
+    __CAR_SPEED = 15  # 15% of the motor speed.
     __CM_PER_PULSE = 0.2  # TODO : Need to verify in Real-Life, will need to bring a ruler to the car and check how
     # much cm's is between a hole.
 
@@ -86,9 +86,11 @@ class Controller(Thread):
             # If we have enabled the GPS way-point system, go to target angle if we get compass update.
             if self.EnableGPSWaypointSystem:
                 if self.__needs_to_move_to_target_coordinates:
+                    self.__calculate_target_angle()
 
                     if self.__is_in_target_angle():
-                        self.__go_to_target_coordinates()
+                        # TODO : Move towards point by moving the car forward when in correct direction
+                        self.__carMovement.forward(1)
                     else:
                         self.__go_to_target_angle()
                         continue
@@ -135,7 +137,10 @@ class Controller(Thread):
         else:
             self.__carMovement.spin_left(self.__CAR_SPEED)
 
-    def __go_to_target_coordinates(self):
+        print "{0} -> Car will rotate to {1} while its own angle is {2}"\
+            .format(self.name, self.__targetAngle, self.__angleInDegrees)
+
+    def __calculate_target_angle(self):
         difference_latitude = self.__targetLatitude - self.__latitude
         difference_longitude = self.__targetLongitude - self.__longitude
 
@@ -157,33 +162,17 @@ class Controller(Thread):
             else:
                 self.__targetAngle = 0
 
-        # We have recalculated the target angle so we need to check if we are at our correct angle.
-        if not self.__is_in_target_angle():
-            self.__carMovement.stop()
-            return
-
-        # TODO : Move towards point by moving the car forward when in correct direction
-        # self.__carMovement.forward(self.__CAR_SPEED)
-
     def print_distance_driven(self):
-        print "Left cm's driven : " + str(self.__cm_driven_left)
-        print "Right cm's driven : " + str(self.__cm_driven_right)
-        print "Average distance travelled : ", self.__get_average_distance_driven()
+        print "{0} -> Car average distance travelled = {1}".format(self.name, self.__get_average_distance_driven())
 
     def __on_compass_changed(self, compass):
 
         if compass == self.__angleInDegrees:
             return
 
-        print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
     def __on_location_changed(self, longitude, latitude, altitude, accuracy):
-
-        print "Average longitude is now ", longitude
-        print "Average latitude is now ", latitude
-        print "Average altitude is now ", altitude
-        print "Average accuracy is now ", accuracy
         self.__longitude = longitude
         self.__latitude = latitude
         self.__altitude = altitude
@@ -219,16 +208,12 @@ class Controller(Thread):
     def __on_left_pulse_update(self, left_pulses):
         self.__cm_driven_left = int(left_pulses) * float(self.__CM_PER_PULSE)
 
-        print "Left pulses: ", left_pulses
-
         # Will print distance driven for now
         # TODO : Make a better use of this 'Print distance travelled' function call, not on every left pulse update.
         self.print_distance_driven()
 
     def __on_right_pulse_update(self, right_pulses):
         self.__cm_driven_right = int(right_pulses) * float(self.__CM_PER_PULSE)
-
-        print "Right pulses: ", right_pulses
 
     def __get_average_distance_driven(self):
         return (self.__cm_driven_left + self.__cm_driven_right) / 2
@@ -247,10 +232,11 @@ class Controller(Thread):
         pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
         self.__carMovement.cleanup()
-        print "Shutting down controller..."
+
+        print "{0} -> Car controller will shut down...".format(self.name)
         self.__isRunning = False
 
     def __on_internet_connection_changed(self, has_internet_connection):
         if not has_internet_connection:
             self.__carMovement.stop()
-            print "Lost internet connection! Car will stop."
+            print "{0} -> Car has lost internet connection!".format(self.name)
