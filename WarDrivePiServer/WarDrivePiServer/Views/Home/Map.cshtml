@@ -14,29 +14,15 @@
 </div>
 <!-- /.row -->
 
-<div id="test"></div>
-
-<address>
-    One Microsoft Way<br />
-    Redmond, WA 98052-6399<br />
-    <abbr title="Phone">P:</abbr>
-    425.555.0100
-</address>
-
-<address>
-    <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-    <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-</address>
-
 @Scripts.Render("~/bundles/Map")
 <script>
-    function autorun() {
-        var accessPoints = @Html.Raw(JsonConvert.SerializeObject(Model));
-        console.log(accessPoints);
-        var object = new Map();
-        object.getLocation();
-    }
-    if (window.addEventListener) window.addEventListener("load", autorun(), false);
-    else if (window.attachEvent) window.attachEvent("onload", autorun());
-    else window.onload = autorun;
+    // Access points from the MVC model serialized into an array
+    var accessPoints = @Html.Raw(JsonConvert.SerializeObject(Model));
+    console.log(accessPoints);
+
+    // Create map and show user and access point markers
+    var object = new Map();
+    object.setGeoLocation();
+    object.addAccessPoints(accessPoints);
+    
 </script>

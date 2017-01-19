@@ -1,13 +1,32 @@
 ﻿function Map() {
-    var DefaultZoom = 16
-    var UserIcon = L.icon({
-        iconUrl: "../Content/Images/gps-dot.png",
-        iconSize: [56, 56], // Size of the icon
-        iconAnchor: [26, 26], // Point of the icon which will correspond to marker's location
-        popupAnchor: [0, -29] // Point from which the popup should open relative to the iconAnchor
+    //-- CLASSES
+    var TemplateIcon = L.Icon.extend({
+        options: {
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -19]
+        }
     });
 
-    var map = L.map("map")
+    //-- GLOBAL VARIABLES
+    var defaultZoom = 16;
+    var templateIconUrls = {
+        User: "../Content/Images/gps-dot.png",
+        ApOpen: "../Content/Images/wifi-signal-with-exclamation-mark.png",
+        ApWep: "../Content/Images/protected-wireless-network-1.png",
+        ApWpa: "../Content/Images/protected-wireless-network-2.png",
+        ApWpa2: "../Content/Images/protected-wireless-network-3.png",
+        ApUndefined: "../Content/Images/search-wireless-net.png"
+    }
+
+    //-- VARIABLES
+    var userMarker;
+    var accessPointMarkers;
+    var timeout;
+    var map;
+
+    //-- CONSTRUCTOR
+    map = L.map("map")
         .addLayer(
             L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
                 attribution: "The Wardrive Project",
@@ -15,49 +34,126 @@
                 accessToken: "pk.eyJ1IjoiemdsOWhmbnptbmV0IiwiYSI6ImNpeHVtaXI3aTAwMzEyeHFxZHYwb2g2ZWEifQ.WzA0GNxS1eNBFI595CPkJg"
             }))
         .on("zoom", function () {
-            var factor = map.getZoom() - DefaultZoom;
-            if (factor > 0) factor = Math.pow(2, factor);
-            else if (factor < 0) factor = 1 / Math.pow(2, Math.abs(factor));
-            else factor = 1;
-
-            var icon = jQuery.extend(true, {}, UserIcon)
-
-            for (var i = 0; i < 2; i++) {
-                icon.options.iconSize[i] *= factor;
-                icon.options.iconAnchor[i] *= factor;
-                icon.options.popupAnchor[i] *= factor;
+            console.log("getZoom() = " + map.getZoom());
+            if (map.getZoom() >= 13) {
+                if (userMarker) $(userMarker.icon).show();
+            } else {
+                if (userMarker) $(userMarker.icon).hide();
             }
-
-            userMarker.setIcon(icon);
-            userMarker.update();
         });
 
-    var userMarker;
-    var userIcon;
-
-    var timeout;
-    this.getLocation = function () {
-        if (navigator.geolocation) {
-            timeout = setTimeout(function () {
-                showError({ code: 3, TIMEOUT: 3 });
-            }, 5000);
-            navigator.geolocation.getCurrentPosition(showPosition, showError, { enableHighAccuracy: true });
-        } else {
-            showError(null);
-
-        }
+    //-- PRIVATE FUNCTIONS
+    var showAlert = function (message) {
+        $("#dismissable-notifications").append(
+            $('<div class="alert alert-danger alert-dismissable">\
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+                {0}\
+            </div>'
+        .format(message)));
     }
 
-    var showPosition = function (position) {
-        clearTimeout(timeout);
+    var showAccessPoints = function (accessPoints) {
 
-        userMarker = L.marker([position.coords.latitude, position.coords.longitude], { icon: UserIcon });
-        userMarker.addTo(map);
-        map.setView([position.coords.latitude, position.coords.longitude], DefaultZoom);
+        var markerClusters = L.markerClusterGroup({
+            maxClusterRadius: 100,
+            spiderfyOnMaxZoom: true,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: false,
+
+            spiderfyDistanceMultiplier: 1.5
+        });
+
+        accessPointMarkers = [];
+        accessPoints.forEach(function (accessPoint, index, array) {
+
+            var apIcon;
+            var apSecNice;
+            switch (accessPoint.Security) {
+                case "Open":
+                    apIcon = new TemplateIcon({ iconUrl: templateIconUrls.ApOpen });
+                    apSecNice = "Open";
+                    break;
+
+                case "WiredEquivalentPrivacy":
+                    apIcon = new TemplateIcon({ iconUrl: templateIconUrls.ApWep });
+                    apSecNice = "Wired Equivalent Privacy";
+                    break;
+
+                case "WiFiProtectedAccess":
+                    apIcon = new TemplateIcon({ iconUrl: templateIconUrls.ApWpa });
+                    apSecNice = "Wi-Fi Protected Access";
+                    break;
+
+                case "WiFiProtectedAccess2":
+                    apIcon = new TemplateIcon({ iconUrl: templateIconUrls.ApWpa2 });
+                    apSecNice = "Wi-Fi Protected Access II";
+                    break;
+
+                default:
+                    apIcon = new TemplateIcon({ iconUrl: templateIconUrls.ApUndefined });
+                    apSecNice = "&lt;unknown&gt;";
+            };
+            
+            if (!accessPoint.Vendor) {
+                accessPoint.Vendor = "&lt;unknown&gt;";
+                /*$.ajax({
+                    type: "GET",
+                    url: "https://macvendors.co/api/{0}"
+                        .format(accessPoint.BssId.match(/.{1,2}/g).join(":")),
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    async: false
+                });*/
+            }
+
+            if (!accessPoint.Location) {
+                accessPoint.Location = "&lt;unknown&gt;";
+                /*$.ajax({
+                    type: "GET",
+                    url: "https://nominatim.openstreetmap.org/reverse?format=xml&lat={0}&lon={1}&zoom=18"
+                        .format(accessPoint.Coordinates.Longitude, accessPoint.Coordinates.Latitude),
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    async: false
+                });*/
+            }
+            
+            var apNotes =
+                "<b>{0}</b><br\>\
+                MAC: {1}<br\>\
+                Vendor: {2}<br\>\
+                Channel: {3}<br\>\
+                Frequency: {4} GHz<br\>\
+                Security: {5}<br\>\
+                Location: {6}<br\>\
+                GPS: {7}, {8}"
+                .format(
+                    accessPoint.SsId.length > 0 ? accessPoint.SsId : "&lt;hidden&gt;",
+                    accessPoint.BssId.match(/.{1,2}/g).join(":"),
+                    accessPoint.Vendor,
+                    accessPoint.Channel,
+                    2.407 + (accessPoint.Channel * 0.005),
+                    apSecNice,
+                    accessPoint.Location,
+                    accessPoint.Coordinates.Latitude, accessPoint.Coordinates.Longitude
+                );
+
+            var apMarker = L.marker(
+                [accessPoint.Coordinates.Latitude, accessPoint.Coordinates.Longitude], { icon: apIcon })
+                .bindPopup(apNotes);
+
+            if (!accessPointMarkers)
+                accessPointMarkers.push(apMarker);
+            markerClusters.addLayer(apMarker);
+        });
+
+        map.addLayer(markerClusters);
     }
 
-    var showError = function (error) {
-        var errorMessage = "";
+    var showGeoLocationError = function (error) {
+        var errorMessage;
         switch (error.code) {
             case error.PERMISSION_DENIED:
                 errorMessage = "User denied the request for Geolocation.";
@@ -75,12 +171,33 @@
                 errorMessage = "Geolocation is not supported by this browser.";
                 break;
         }
+
         map.setView([0, 0], 0);
-        var alertDiv =
-            $('<div class="alert alert-danger alert-dismissable">\
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
-                {0}\
-            </div>'.format(errorMessage));
-        $("body").append(alertDiv);
+        showAlert(errorMessage);
+    }
+
+    var showGeoLocation = function (position) {
+        clearTimeout(timeout);
+
+        var userIcon = new TemplateIcon({ iconUrl: templateIconUrls.User });
+
+        userMarker = L.marker([position.coords.latitude, position.coords.longitude], { icon: userIcon })
+            .bindPopup("You are here!")
+            .addTo(map);
+
+        map.setView([position.coords.latitude, position.coords.longitude], defaultZoom);
+        userMarker.openPopup();
+    }
+
+    //-- PUBLIC FUNCTIONS
+    this.addAccessPoints = function (accessPoints) {
+        showAccessPoints(accessPoints);
+    }
+
+    this.setGeoLocation = function () {
+        if (navigator.geolocation) {
+            timeout = setTimeout(function () { showGeoLocationError({ code: 3, TIMEOUT: 3 }); }, 5000);
+            navigator.geolocation.getCurrentPosition(showGeoLocation, showGeoLocationError, { enableHighAccuracy: true });
+        } else { showGeoLocationError(null); }
     }
 }
