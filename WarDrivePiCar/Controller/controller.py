@@ -135,7 +135,7 @@ class Controller(Thread):
         else:
             self.__carMovement.spin_left(self.__CAR_SPEED)
 
-        print "{0} -> Car will rotate to {1} while its own angle is {2})!"\
+        print "{0} -> Car will rotate to {1} while its own angle is {2}"\
             .format(self.name, self.__targetAngle, self.__angleInDegrees)
 
     def __go_to_target_coordinates(self):
@@ -180,11 +180,6 @@ class Controller(Thread):
         self.__angleInDegrees = compass
 
     def __on_location_changed(self, longitude, latitude, altitude, accuracy):
-
-        print "Average longitude is now ", longitude
-        print "Average latitude is now ", latitude
-        print "Average altitude is now ", altitude
-        print "Average accuracy is now ", accuracy
         self.__longitude = longitude
         self.__latitude = latitude
         self.__altitude = altitude
