@@ -169,14 +169,13 @@ class Controller(Thread):
         # self.__carMovement.forward(self.__CAR_SPEED)
 
     def print_distance_driven(self):
-        print "Average distance travelled : ", self.__get_average_distance_driven()
+        print "{0} -> Car average distance travelled = {1}".format(self.name, self.__get_average_distance_driven())
 
     def __on_compass_changed(self, compass):
 
         if compass == self.__angleInDegrees:
             return
 
-        print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
     def __on_location_changed(self, longitude, latitude, altitude, accuracy):
@@ -239,10 +238,11 @@ class Controller(Thread):
         pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
         self.__carMovement.cleanup()
-        print "Shutting down controller..."
+
+        print "{0} -> Car controller will shut down...".format(self.name)
         self.__isRunning = False
 
     def __on_internet_connection_changed(self, has_internet_connection):
         if not has_internet_connection:
             self.__carMovement.stop()
-            print "Lost internet connection! Car will stop."
+            print "{0} -> Car has lost internet connection!".format(self.name)

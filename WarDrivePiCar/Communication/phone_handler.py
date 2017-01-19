@@ -61,10 +61,11 @@ class Phone(Thread):
                 self.__get_gps_data()
                 self.__get_compass_data()
             except OSError:
-                print "'adb' Command not properly installed on this machine! Shutting down Phone module..."
+                print "{0} -> 'adb' Command not properly installed on this machine! Shutting down Phone module...".\
+                    format(self.name)
                 break
             except CalledProcessError:
-                print "Device was not found! Retrying on next loop update..."
+                print "{0} -> Device was not found! Retrying on next loop update...".format(self.name)
                 pass  # In case the device was not found, retry again!
 
         self.__shutdown_phone_connection()
