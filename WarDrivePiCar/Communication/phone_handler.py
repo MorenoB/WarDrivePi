@@ -11,7 +11,7 @@ from Util.extensions import *
 class Phone(Thread):
     __CPU_CYCLE_TIME = 0.25  # 250 ms
     __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
-    __COMPASS_DIFFERENCE = -45  # Calibrated difference, how is the phone attached to the car?
+    __COMPASS_DIFFERENCE = 45  # Calibrated difference, how is the phone attached to the car?
     # Right now it is faced west relative to the position of the car itself so all the input need to be 45
 
     __USING_LG4 = True

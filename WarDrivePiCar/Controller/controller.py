@@ -135,6 +135,9 @@ class Controller(Thread):
         else:
             self.__carMovement.spin_left(self.__CAR_SPEED)
 
+        print "{0} -> Car will rotate to {1} while its own angle is {2})!"\
+            .format(self.name, self.__targetAngle, self.__angleInDegrees)
+
     def __go_to_target_coordinates(self):
         difference_latitude = self.__targetLatitude - self.__latitude
         difference_longitude = self.__targetLongitude - self.__longitude
@@ -166,8 +169,6 @@ class Controller(Thread):
         # self.__carMovement.forward(self.__CAR_SPEED)
 
     def print_distance_driven(self):
-        print "Left cm's driven : " + str(self.__cm_driven_left)
-        print "Right cm's driven : " + str(self.__cm_driven_right)
         print "Average distance travelled : ", self.__get_average_distance_driven()
 
     def __on_compass_changed(self, compass):
@@ -219,16 +220,12 @@ class Controller(Thread):
     def __on_left_pulse_update(self, left_pulses):
         self.__cm_driven_left = int(left_pulses) * float(self.__CM_PER_PULSE)
 
-        print "Left pulses: ", left_pulses
-
         # Will print distance driven for now
         # TODO : Make a better use of this 'Print distance travelled' function call, not on every left pulse update.
         self.print_distance_driven()
 
     def __on_right_pulse_update(self, right_pulses):
         self.__cm_driven_right = int(right_pulses) * float(self.__CM_PER_PULSE)
-
-        print "Right pulses: ", right_pulses
 
     def __get_average_distance_driven(self):
         return (self.__cm_driven_left + self.__cm_driven_right) / 2
