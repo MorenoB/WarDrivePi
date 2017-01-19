@@ -12,7 +12,9 @@ namespace WarDrivePiServer
                 "~/Scripts/jquery.min.js",
                 "~/Scripts/bootstrap.min.js",
                 "~/Scripts/metisMenu.min.js",
-                "~/Scripts/sb-admin-2.min.js"));
+                "~/Scripts/sb-admin-2.min.js",
+                "~/Scripts/extensions.js"
+                ));
 
             bundles.Add(new StyleBundle("~/Content/sb-admin-2-css").Include(
                 "~/Content/bootstrap.min.css",
@@ -21,10 +23,11 @@ namespace WarDrivePiServer
                 "~/Content/font-awesome.min.css",
                 "~/Content/site.css"));
 
-            bundles.Add(new ScriptBundle("~/bundles/leaflet-js").Include(
-                "~/Scripts/leaflet.js"));
+            bundles.Add(new ScriptBundle("~/bundles/Map").Include(
+                "~/Scripts/leaflet.js",
+                "~/Scripts/Map.js"));
 
-            bundles.Add(new StyleBundle("~/Content/leaflet-css").Include(
+            bundles.Add(new StyleBundle("~/Content/Map").Include(
                 "~/Content/leaflet.css"));
         }
     }

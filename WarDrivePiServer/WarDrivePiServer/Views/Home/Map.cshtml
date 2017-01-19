@@ -1,16 +1,20 @@
-﻿@{
+﻿@using Newtonsoft.Json
+@model IEnumerable<WarDrivePiServer.Models.AccessPoint>
+@{
     ViewBag.Title = "Map";
 }
 
-@Styles.Render("~/Content/leaflet-css")
+@Styles.Render("~/Content/Map")
 
 <div class="row">
     <div class="col-lg-12">
-        <div id="map" style="width: 512px; height: 512px;"></div>
+        <div id="map" style="height: 400px;"></div>
     </div>
     <!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
+
+<div id="test"></div>
 
 <address>
     One Microsoft Way<br />
@@ -24,15 +28,15 @@
     <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
 </address>
 
-@Scripts.Render("~/bundles/leaflet-js")
+@Scripts.Render("~/bundles/Map")
 <script>
-    var map = L.map('map')
-    map.setView([0, 0], 1);
-
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-        attribution: 'The Wardrive Project',
-        maxZoom: 18,
-        id: 'zgl9hfnzmnet.2khh4b0p',
-        accessToken: 'pk.eyJ1IjoiemdsOWhmbnptbmV0IiwiYSI6ImNpeHVtaXI3aTAwMzEyeHFxZHYwb2g2ZWEifQ.WzA0GNxS1eNBFI595CPkJg'
-    }).addTo(map);
+    function autorun() {
+        var accessPoints = @Html.Raw(JsonConvert.SerializeObject(Model));
+        console.log(accessPoints);
+        var object = new Map();
+        object.getLocation();
+    }
+    if (window.addEventListener) window.addEventListener("load", autorun(), false);
+    else if (window.attachEvent) window.attachEvent("onload", autorun());
+    else window.onload = autorun;
 </script>
