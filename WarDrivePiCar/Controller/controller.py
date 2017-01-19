@@ -42,7 +42,7 @@ class Controller(Thread):
     __angleInDegrees = -999
     __compassDirection = None
     __angleMargin = 20
-    __targetAngle = -999
+    __targetAngle = convert_compass_direction_to_angle(CompassDirections.North)
 
     # Public bools
     EnableGPSWaypointSystem = True
@@ -116,7 +116,7 @@ class Controller(Thread):
     def __is_in_target_angle(self):
 
         # Haven't got target angle
-        if self.__angleInDegrees == -999 or self.__targetAngle == -999:
+        if self.__angleInDegrees == -999:
             return True
 
         diff_angle = self.__targetAngle - self.__angleInDegrees
@@ -150,8 +150,6 @@ class Controller(Thread):
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.North)
             elif difference_longitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.South)
-            else:
-                self.__targetAngle = 0
 
         # If we are out of range on latitude, do something
         elif not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
@@ -159,8 +157,6 @@ class Controller(Thread):
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.East)
             elif difference_latitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.West)
-            else:
-                self.__targetAngle = 0
 
     def print_distance_driven(self):
         print "{0} -> Car average distance travelled = {1}".format(self.name, self.__get_average_distance_driven())
