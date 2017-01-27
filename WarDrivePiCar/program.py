@@ -8,7 +8,7 @@ from Communication.internet_connection_checker import InternetConnectionChecker
 from time import sleep
 
 
-class Program:
+class Program(object):
     __CycleTime = 0.1  # 100 ms
     __Running = True
     __KeyboardEnabled = True
@@ -75,6 +75,10 @@ class Program:
             if isinstance(thread_instance, Keyboard) and not self.__KeyboardEnabled:
                 print "Skipping keyboard thread..."
                 continue
+
+            if isinstance(thread_instance, Phone) and self.__TestingMode:
+                # Testing mode wont use LG4
+                thread_instance.USING_LG4 = False
 
             if isinstance(thread_instance, Controller):
                 waypoint_system_activated = not self.__KeyboardEnabled or self.__TestingMode

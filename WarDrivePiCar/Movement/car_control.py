@@ -46,7 +46,7 @@ except ImportError:
     import gpio_mock as gpio
 
 
-class CarControl:
+class CarControl(object):
 
     __BOUNCE_TIME = 200
 

@@ -1,7 +1,7 @@
 import sys
 
 
-class SysArgv:
+class SysArgv(object):
     def __init__(self):
         pass
 

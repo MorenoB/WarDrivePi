@@ -1,0 +1,7 @@
+[report]
+omit =
+    # omit anything in a .local directory anywhere
+    */Sniffer/*
+    # omit this single file
+    WarDrivePiCar/sys_argv.py
+	WarDrivePiCar/__main__.py

@@ -5,7 +5,7 @@ from datetime import datetime
 
 import psycopg2
 from pubsub import pub
-from Util.extensions import *
+from Util.extensions import find_between, convert_int_to_degrees
 
 
 class Phone(Thread):
@@ -13,8 +13,6 @@ class Phone(Thread):
     __CONNECTION_STRING = "dbname=packets user=postgres password=__Raspi2DB host=localhost port=5432"
     __COMPASS_DIFFERENCE = 90  # Calibrated difference, how is the phone attached to the car?
     # Right now it is faced west relative to the position of the car itself so all the input need to be 90
-
-    __USING_LG4 = True
 
     __latitudes = []
     __longitudes = []
@@ -32,6 +30,8 @@ class Phone(Thread):
     __term_longitude = "mLongitude="
     __term_altitude = "mAltitude="
     __term_accuracy = "mAccuracy="
+
+    USING_LG4 = True
 
     # Event names
     EVENT_ON_LOCATION_CHANGED = "OnLocationChanged"
@@ -92,7 +92,7 @@ class Phone(Thread):
             return
 
         # Execute command 'adb shell dumpsys sensorservice' and redirect output to our methods.
-        if self.__USING_LG4:
+        if self.USING_LG4:
             call(["adb", "logcat", "-c"])
             raw_sensor_output = check_output(["adb", "logcat", "-d", "Compass:D", "*:S"])
 
@@ -109,14 +109,14 @@ class Phone(Thread):
             return
 
         # Execute command 'adb dumpsys location' and redirect output to our methods.
-        if self.__USING_LG4:
+        if self.USING_LG4:
             raw_location_output = check_output(["adb", "shell", "dumpsys", "location", "|", "grep", "ready=true"])
         else:
             raw_location_output = check_output(["adb", "shell", "dumpsys", "location"])
         self.__retrieve_location_information(raw_location_output)
 
     def __retrieve_compass_information_from_sensor_service(self, raw_sensor_data):
-        if self.__USING_LG4:
+        if self.USING_LG4:
             self.__retrieve_compass_information_lg4(raw_sensor_data)
         else:
             self.__retrieve_compass_information_samsung(raw_sensor_data)
@@ -213,7 +213,7 @@ class Phone(Thread):
                 self.__accuracies.append(found_accuracy)
 
     def __retrieve_location_information(self, raw_location_data):
-        if self.__USING_LG4:
+        if self.USING_LG4:
             self.__retrieve_location_information_lg4(raw_location_data)
         else:
             self.__retrieve_location_information_samsung_phone(raw_location_data)
