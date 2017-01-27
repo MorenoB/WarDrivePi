@@ -5,7 +5,7 @@ from datetime import datetime
 
 import psycopg2
 from pubsub import pub
-from Util.extensions import *
+from Util.extensions import find_between, convert_int_to_degrees
 
 
 class Phone(Thread):
