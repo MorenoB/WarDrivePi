@@ -8,7 +8,7 @@ from Communication.internet_connection_checker import InternetConnectionChecker
 from time import sleep
 
 
-class Program:
+class Program(object):
     __CycleTime = 0.1  # 100 ms
     __Running = True
     __KeyboardEnabled = True
