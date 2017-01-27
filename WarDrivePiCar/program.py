@@ -76,6 +76,10 @@ class Program(object):
                 print "Skipping keyboard thread..."
                 continue
 
+            if isinstance(thread_instance, Phone) and self.__TestingMode:
+                # Testing mode wont use LG4
+                thread_instance.USING_LG4 = False
+
             if isinstance(thread_instance, Controller):
                 waypoint_system_activated = not self.__KeyboardEnabled or self.__TestingMode
                 thread_instance.EnableGPSWaypointSystem = waypoint_system_activated
