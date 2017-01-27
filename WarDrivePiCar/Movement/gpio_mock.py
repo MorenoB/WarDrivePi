@@ -24,7 +24,7 @@ def setmode(mode):
 
 def setup(pin, value):
     __pin_state_dict[pin] = LOW
-    print "Setup pin ", pin
+    print "Setup pin {0} to value {1}".format(pin, value)
 
 
 def cleanup():
@@ -44,11 +44,11 @@ def getmode():
 
 
 def add_event_detect(param, FALLING, callback):
-    print "added event callback"
+    print "Added event callback. Param = {0} , FALLING = {1}".format(param, FALLING)
     callable(callback)
 
 
-class PWM:
+class PWM(object):
     _frequency = 0
     _value = 0
     _pulse = 0
