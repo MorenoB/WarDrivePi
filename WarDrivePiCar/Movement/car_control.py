@@ -133,6 +133,8 @@ class CarControl:
         if self.__currentOperation == "CLEANUP":
             return
 
+        print "Cleaning up GPIO"
+
         self.stop()
         gpio.cleanup()
         self.__currentOperation = "CLEANUP"

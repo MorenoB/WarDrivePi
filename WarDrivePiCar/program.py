@@ -3,6 +3,7 @@ from Controller.controller import Controller
 from Controller.keyboard import Keyboard
 from Communication.phone_handler import Phone
 from Sniffer.sniffer import Sniffer
+from Communication.internet_connection_checker import InternetConnectionChecker
 
 from time import sleep
 
@@ -15,6 +16,7 @@ class Program:
 
     # Classes should inherit from a Thread and need to join on an KeyboardInterrupt
     __Threads = [
+        InternetConnectionChecker(),
         Sniffer(),
         Controller(),
         Keyboard(),

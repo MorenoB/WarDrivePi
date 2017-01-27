@@ -49,6 +49,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Npgsql, Version=3.1.9.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.1.9\lib\net451\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -102,13 +106,13 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="WebGrease">
-      <Private>True</Private>
-      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
-    </Reference>
     <Reference Include="Antlr3.Runtime">
       <Private>True</Private>
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -124,10 +128,16 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AccessPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\gps-dot.png" />
+    <Content Include="Content\Images\protected-wireless-network-3.png" />
+    <Content Include="Content\Images\protected-wireless-network-2.png" />
+    <Content Include="Content\MarkerCluster.css" />
+    <Content Include="Content\MarkerCluster.Default.css" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Fonts\fontawesome-webfont.svg" />
@@ -137,12 +147,10 @@
     <Content Include="Content\Images\marker-icon.png" />
     <Content Include="Content\Images\marker-shadow.png" />
     <Content Include="Content\Images\protected-wireless-network-1.png" />
-    <Content Include="Content\Images\protected-wireless-network.png" />
     <Content Include="Content\Images\search-wireless-net.png" />
     <Content Include="Content\Images\wifi-access-marker.png" />
     <Content Include="Content\Images\wifi-signal-with-exclamation-mark.png" />
     <Content Include="Content\Images\wireless-error.png" />
-    <Content Include="Content\Images\wireless-protected-net.png" />
     <Content Include="Content\Images\wireless-signal.png" />
     <Content Include="Content\leaflet.css" />
     <Content Include="Content\metisMenu.min.css" />
@@ -161,8 +169,11 @@
     <Content Include="Fonts\FontAwesome.otf" />
     <Content Include="Scripts\jquery.min.js" />
     <Content Include="Scripts\leaflet.js" />
+    <Content Include="Scripts\leaflet.markercluster.js" />
+    <Content Include="Scripts\Map.js" />
     <Content Include="Scripts\metisMenu.min.js" />
     <Content Include="Scripts\sb-admin-2.min.js" />
+    <Content Include="Scripts\extensions.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Vendor\bootstrap-social\bootstrap-social.css" />
     <Content Include="Vendor\datatables-plugins\dataTables.bootstrap.css" />
@@ -233,8 +244,6 @@
     <Content Include="Vendor\flot\jquery.flot.threshold.js" />
     <Content Include="Vendor\flot\jquery.flot.time.js" />
     <Content Include="Vendor\flot\jquery.js" />
-    <Content Include="Vendor\jquery\jquery.js" />
-    <Content Include="Vendor\jquery\jquery.min.js" />
     <Content Include="Vendor\morrisjs\morris.css" />
     <Content Include="Vendor\morrisjs\morris.js" />
     <Content Include="Vendor\morrisjs\morris.min.js" />
@@ -263,8 +272,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Less\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -273,6 +280,9 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
@@ -294,6 +304,9 @@
           <CustomServerUrl>
           </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+          <servers defaultServer="SelfHostServer">
+            <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:42568/" workingDir="" />
+          </servers>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>

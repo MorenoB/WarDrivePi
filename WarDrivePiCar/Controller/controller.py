@@ -5,6 +5,7 @@ from pubsub import pub
 
 from keyboard import Keyboard
 from Communication.phone_handler import Phone
+from Communication.internet_connection_checker import InternetConnectionChecker
 from Movement.car_control import CarControl
 from Util.enums import MovementType, CompassDirections
 from Util.extensions import convert_compass_direction_to_angle, convert_int_to_degrees
@@ -12,7 +13,7 @@ from Util.extensions import convert_compass_direction_to_angle, convert_int_to_d
 
 class Controller(Thread):
     __CPU_CYCLE_TIME = 0.05  # 50 ms
-    __CAR_SPEED = 50  # 50% of the motor speed.
+    __CAR_SPEED = 15  # 15% of the motor speed.
     __CM_PER_PULSE = 0.2  # TODO : Need to verify in Real-Life, will need to bring a ruler to the car and check how
     # much cm's is between a hole.
 
@@ -41,7 +42,7 @@ class Controller(Thread):
     __angleInDegrees = -999
     __compassDirection = None
     __angleMargin = 20
-    __targetAngle = -999
+    __targetAngle = convert_compass_direction_to_angle(CompassDirections.North)
 
     # Public bools
     EnableGPSWaypointSystem = True
@@ -67,6 +68,9 @@ class Controller(Thread):
         pub.subscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.subscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
+        # Register internet connection checker events
+        pub.subscribe(self.__on_internet_connection_changed, InternetConnectionChecker.EVENT_ON_INTERNET_CONNECTION_CHANGED)
+
     def join(self, timeout=None):
         self.__shutdown_controller()
         super(Controller)
@@ -82,9 +86,11 @@ class Controller(Thread):
             # If we have enabled the GPS way-point system, go to target angle if we get compass update.
             if self.EnableGPSWaypointSystem:
                 if self.__needs_to_move_to_target_coordinates:
+                    self.__calculate_target_angle()
 
                     if self.__is_in_target_angle():
-                        self.__go_to_target_coordinates()
+                        # TODO : Move towards point by moving the car forward when in correct direction
+                        self.__carMovement.forward(1)
                     else:
                         self.__go_to_target_angle()
                         continue
@@ -96,13 +102,14 @@ class Controller(Thread):
         if self.__targetLatitude == 0 or self.__targetLongitude == 0:
             return False
 
+        difference_latitude = abs(self.__targetLatitude - self.__latitude)
+        difference_longitude = abs(self.__targetLongitude - self.__longitude)
+
         # If our longitude or our latitude is not within a valid range of the target, then we need to move
-        if not self.__targetLatitude - self.__coordinateMargin <= self.__latitude <= self.__targetLatitude + \
-                self.__coordinateMargin:
+        if not difference_longitude < self.__coordinateMargin:
             return True
 
-        if not self.__targetLongitude - self.__coordinateMargin <= self.__longitude <= self.__targetLongitude + \
-                self.__coordinateMargin:
+        if not difference_latitude < self.__coordinateMargin:
             return True
 
         return False
@@ -110,7 +117,7 @@ class Controller(Thread):
     def __is_in_target_angle(self):
 
         # Haven't got target angle
-        if self.__angleInDegrees == -999 or self.__targetAngle == -999:
+        if self.__angleInDegrees == -999:
             return True
 
         diff_angle = self.__targetAngle - self.__angleInDegrees
@@ -131,58 +138,41 @@ class Controller(Thread):
         else:
             self.__carMovement.spin_left(self.__CAR_SPEED)
 
-    def __go_to_target_coordinates(self):
-        difference_latitude = self.__targetLatitude - self.__latitude
-        difference_longitude = self.__targetLongitude - self.__longitude
+        print "{0} -> Car will rotate to {1} while its own angle is {2}"\
+            .format(self.name, self.__targetAngle, self.__angleInDegrees)
+
+    def __calculate_target_angle(self):
+        difference_latitude = abs(self.__targetLatitude - self.__latitude)
+        difference_longitude = abs(self.__targetLongitude - self.__longitude)
 
         # If we are out of range on longitude, do something
-        if not -self.__coordinateMargin <= difference_longitude <= self.__coordinateMargin:
+        if not difference_longitude < self.__coordinateMargin:
             if difference_longitude > 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.North)
             elif difference_longitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.South)
-            else:
-                self.__targetAngle = 0
 
         # If we are out of range on latitude, do something
-        elif not -self.__coordinateMargin <= difference_latitude <= self.__coordinateMargin:
+        elif not difference_latitude < self.__coordinateMargin:
             if difference_latitude > 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.East)
             elif difference_latitude < 0:
                 self.__targetAngle = convert_compass_direction_to_angle(CompassDirections.West)
-            else:
-                self.__targetAngle = 0
-
-        # We have recalculated the target angle so we need to check if we are at our correct angle.
-        if not self.__is_in_target_angle():
-            self.__carMovement.stop()
-            return
-
-        # TODO : Move towards point by moving the car forward when in correct direction
-        # self.__carMovement.forward(self.__CAR_SPEED)
 
     def print_distance_driven(self):
-        print "Left cm's driven : " + str(self.__cm_driven_left)
-        print "Right cm's driven : " + str(self.__cm_driven_right)
-        print "Average distance travelled : ", self.__get_average_distance_driven()
+        print "{0} -> Car average distance travelled = {1}".format(self.name, self.__get_average_distance_driven())
 
     def __on_compass_changed(self, compass):
 
         if compass == self.__angleInDegrees:
             return
 
-        print "New compass value (degrees) ", compass
         self.__angleInDegrees = compass
 
     def __on_location_changed(self, longitude, latitude, altitude, accuracy):
-
-        print "Average longitude is now ", longitude
-        print "Average latitude is now ", latitude
-        print "Average altitude is now ", altitude
-        print "Average accuracy is now ", accuracy
         self.__longitude = longitude
         self.__latitude = latitude
-        self.__altutyde = altitude
+        self.__altitude = altitude
         self.__accuracy = accuracy
 
     def __on_keyboard_movetype_changed(self, move_type):
@@ -215,16 +205,12 @@ class Controller(Thread):
     def __on_left_pulse_update(self, left_pulses):
         self.__cm_driven_left = int(left_pulses) * float(self.__CM_PER_PULSE)
 
-        print "Left pulses: ", left_pulses
-
         # Will print distance driven for now
         # TODO : Make a better use of this 'Print distance travelled' function call, not on every left pulse update.
         self.print_distance_driven()
 
     def __on_right_pulse_update(self, right_pulses):
         self.__cm_driven_right = int(right_pulses) * float(self.__CM_PER_PULSE)
-
-        print "Right pulses: ", right_pulses
 
     def __get_average_distance_driven(self):
         return (self.__cm_driven_left + self.__cm_driven_right) / 2
@@ -242,7 +228,12 @@ class Controller(Thread):
         pub.unsubscribe(self.__on_location_changed, Phone.EVENT_ON_LOCATION_CHANGED)
         pub.unsubscribe(self.__on_compass_changed, Phone.EVENT_ON_COMPASS_CHANGED)
 
-        print "Cleaning up GPIO"
         self.__carMovement.cleanup()
-        print "Shutting down controller..."
+
+        print "{0} -> Car controller will shut down...".format(self.name)
         self.__isRunning = False
+
+    def __on_internet_connection_changed(self, has_internet_connection):
+        if not has_internet_connection:
+            self.__carMovement.stop()
+            print "{0} -> Car has lost internet connection!".format(self.name)
